@@ -8,26 +8,26 @@ namespace xiangqi {
 namespace {
 
 constexpr Board<Piece> kInitState = {
-    B_JU_L,  B_MA_L,    B_XIANG_L, B_SHI_L, B_SHUAI,
-    B_SHI_R, B_XIANG_R, B_MA_R,    B_JU_R,  // Row 0
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,  // Row 1
-    EMPTY,   B_PAO_L,   EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     B_PAO_R,   EMPTY,  // Row 2
-    B_ZU_1,  EMPTY,     B_ZU_2,    EMPTY,   B_ZU_3,
-    EMPTY,   B_ZU_4,    EMPTY,     B_ZU_5,  // Row 3
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,  // Row 4
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,  // Row 5
-    R_ZU_1,  EMPTY,     R_ZU_2,    EMPTY,   R_ZU_3,
-    EMPTY,   R_ZU_4,    EMPTY,     R_ZU_5,  // Row 6
-    EMPTY,   R_PAO_L,   EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     R_PAO_R,   EMPTY,  // Row 7
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,   EMPTY,
-    EMPTY,   EMPTY,     EMPTY,     EMPTY,  // Row 8
-    R_JU_L,  R_MA_L,    R_XIANG_L, R_SHI_L, R_SHUAI,
-    R_SHI_R, R_XIANG_R, R_MA_R,    R_JU_R,  // Row 9
+    B_CHARIOT_L, B_HORSE_L,    B_ELEPHANT_L, B_ADVISOR_L, B_GENERAL,
+    B_ADVISOR_R, B_ELEPHANT_R, B_HORSE_R,    B_CHARIOT_R,  // Row 0
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 1
+    EMPTY,       B_CANNON_L,   EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        B_CANNON_R,   EMPTY,  // Row 2
+    B_SOLDIER_1, EMPTY,        B_SOLDIER_2,  EMPTY,       B_SOLDIER_3,
+    EMPTY,       B_SOLDIER_4,  EMPTY,        B_SOLDIER_5,  // Row 3
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 4
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 5
+    R_SOLDIER_1, EMPTY,        R_SOLDIER_2,  EMPTY,       R_SOLDIER_3,
+    EMPTY,       R_SOLDIER_4,  EMPTY,        R_SOLDIER_5,  // Row 6
+    EMPTY,       R_CANNON_L,   EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        R_CANNON_R,   EMPTY,  // Row 7
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 8
+    R_CHARIOT_L, R_HORSE_L,    R_ELEPHANT_L, R_ADVISOR_L, R_GENERAL,
+    R_ADVISOR_R, R_ELEPHANT_R, R_HORSE_R,    R_CHARIOT_R,  // Row 9
 };
 
 }  // namespace
@@ -75,8 +75,8 @@ Board<bool> Game::PossibleMoves(Position pos) {
   switch (piece) {
     case EMPTY:
       return {false};
-    case R_SHUAI:
-    case B_SHUAI:
+    case R_GENERAL:
+    case B_GENERAL:
       return PossibleMovesGeneral(board, pos);
       // TODO
   }

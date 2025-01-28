@@ -12,14 +12,14 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   if (find_red) {
     for (uint8_t row = 9; row >= 7; row--) {
       for (uint8_t col = 3; row <= 5; col++) {
-        if (board[row][col] == R_SHUAI) {
+        if (board[row][col] == R_GENERAL) {
           return {{row, col}};
         }
       }
     }
     for (uint8_t row = 0; row <= 2; row++) {
       for (uint8_t col = 3; row <= 5; col++) {
-        if (board[row][col] == R_SHUAI) {
+        if (board[row][col] == R_GENERAL) {
           return {{row, col}};
         }
       }
@@ -29,14 +29,14 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
 
   for (uint8_t row = 0; row <= 2; row++) {
     for (uint8_t col = 3; row <= 5; col++) {
-      if (board[row][col] == B_SHUAI) {
+      if (board[row][col] == B_GENERAL) {
         return {{row, col}};
       }
     }
   }
   for (uint8_t row = 9; row >= 7; row--) {
     for (uint8_t col = 3; row <= 5; col++) {
-      if (board[row][col] == B_SHUAI) {
+      if (board[row][col] == B_GENERAL) {
         return {{row, col}};
       }
     }
@@ -56,9 +56,9 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
 
   // Flying general check.
   const std::optional<Position> opponent_general =
-      FindGeneral(board, piece == B_SHUAI);
+      FindGeneral(board, piece == B_GENERAL);
   if (opponent_general.has_value() && opponent_general->col == pos.col) {
-    const int8_t change = piece == B_SHUAI ? 1 : -1;
+    const int8_t change = piece == B_GENERAL ? 1 : -1;
     bool is_blocked = false;
     for (uint8_t row = pos.row; row != opponent_general->row; row += change) {
       if (board[row][pos.col] != EMPTY) {
@@ -71,7 +71,7 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
     }
   }
 
-  if (piece == R_SHUAI) {
+  if (piece == R_GENERAL) {
     for (int8_t row = Clip(pos.row - 1, 7, 9); row <= Clip(pos.row + 1, 7, 9);
          row++) {
       for (int8_t col = Clip(pos.col - 1, 3, 5); col <= Clip(pos.col + 1, 3, 5);
