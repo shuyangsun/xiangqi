@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace xiangqi {
+namespace xiangqi::internal::util {
 
 namespace {
 
@@ -95,4 +95,4 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   return result;
 }
 
-}  // namespace xiangqi
+}  // namespace xiangqi::internal::util
