@@ -314,4 +314,248 @@ TEST(GameTest, ResetClearsHistory) {
   EXPECT_FALSE(game.Undo());
 }
 
+// ---------------------------------------------------------------------
+// Basic scenarios with only generals on board.
+TEST(IsCheckMadeTest, RedNotInCheck) {
+  // Only both generals are on board and they are not in a “facing”
+  // configuration.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
+  // In Xiangqi, having the two generals directly facing each other with no
+  // intervening piece is illegal. Here we assume the engine flags that as
+  // check.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 4}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Chariot.
+TEST(IsCheckMadeTest, RedInCheckByChariot) {
+  // Black chariot is vertically aligned with the red general with a clear path.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL,
+       {0,
+        3}},  // placed away from column 4 to avoid interfering with other rules
+      {Piece::B_CHARIOT_L, {5, 4}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
+  // Even though the black chariot is aligned, a friendly piece blocks its line
+  // of sight.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_CHARIOT_L, {5, 4}},
+      {Piece::R_SOLDIER_1, {7, 4}},  // blocks the chariot's path to the general
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Soldier.
+TEST(IsCheckMadeTest, RedInCheckBySoldier) {
+  // For red, an enemy (black) soldier directly in front (i.e. one row above)
+  // can capture the general. (Black soldier moves downward.)
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_SOLDIER_1, {8, 4}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Horse.
+TEST(IsCheckMadeTest, RedInCheckByHorse) {
+  // A black horse positioned so that its legal L-shaped move can capture the
+  // red general. For example, from (7,3) the horse can move to (9,4) provided
+  // the intermediate square (8,3) is empty.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_HORSE_L, {7, 3}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
+  // The same configuration as above, but now a piece is placed in the horse's
+  // "leg" at (8,3), which should block its move.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_HORSE_L, {7, 3}},
+      {Piece::R_SOLDIER_1, {8, 3}},  // blocking the horse’s move
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Elephant.
+TEST(IsCheckMadeTest, RedInCheckByElephant) {
+  // In Xiangqi, the elephant moves exactly two points diagonally.
+  // Here, a black elephant from (7,2) can reach the red general at (9,4) if the
+  // intermediate square (8,3) is empty.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_ELEPHANT_L, {7, 2}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
+  // The same as above, but the intermediate square (8,3) is blocked.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_ELEPHANT_L, {7, 2}},
+      {Piece::R_SOLDIER_1, {8, 3}},  // blocks the elephant’s diagonal move
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Advisor.
+TEST(IsCheckMadeTest, RedInCheckByAdvisor) {
+  // The advisor moves one point diagonally. Although palace restrictions
+  // normally apply, here we test that a black advisor one diagonal move away
+  // from the red general is recognized as a threat. (Position red general at
+  // (8,4) so that the one-step diagonal move from (7,3) is valid.)
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {8, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_ADVISOR_L, {7, 3}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, RedNotInCheckByAdvisorWrongDistance) {
+  // The black advisor is too far away (or not diagonally adjacent) to threaten
+  // the red general.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_ADVISOR_L, {6, 1}},  // not one diagonal move away
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests involving the Cannon.
+TEST(IsCheckMadeTest, RedInCheckByCannon) {
+  // A cannon captures like a chariot but requires a single intervening piece (a
+  // screen). Here, the black cannon at (7,4) can capture the red general at
+  // (9,4) because a red soldier at (8,4) acts as a screen.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_CANNON_L, {7, 4}},
+      {Piece::R_SOLDIER_1, {8, 4}},  // screen piece for the cannon
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
+  // Without any screen piece, the cannon cannot capture.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},
+      {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_CANNON_L, {7, 4}},
+      // No piece at (8,4)
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_FALSE(game.IsCheckMade());
+}
+
+// ---------------------------------------------------------------------
+// Tests combining multiple enemy threats.
+TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
+  // Several enemy pieces simultaneously threaten the red general.
+  // - A black soldier directly in front at (8,4).
+  // - A black horse from (7,3) (with its leg at (8,3) clear).
+  // - A black cannon from (7,4) can also capture thanks to the soldier at (8,4)
+  // acting as a screen.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::R_GENERAL, {9, 4}},   {Piece::B_GENERAL, {0, 3}},
+      {Piece::B_SOLDIER_1, {8, 4}}, {Piece::B_HORSE_L, {7, 3}},
+      {Piece::B_CANNON_L, {7, 4}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
+TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
+  // Now test a scenario for black.
+  // For black’s turn, the enemy red pieces are threatening the black general.
+  // - Black general is at (0,4).
+  // - A red soldier at (1,4) (assuming red soldier moves upward, from (1,4) to
+  // (0,4)).
+  // - A red horse from (2,3) can capture if its blocking square (1,3) is clear.
+  // - A red cannon from (2,4) also threatens black general using the soldier at
+  // (1,4) as a screen.
+  std::unordered_map<Piece, Position> board_setup = {
+      {Piece::B_GENERAL, {0, 4}},   {Piece::R_GENERAL, {9, 4}},
+      {Piece::R_SOLDIER_1, {1, 4}}, {Piece::R_HORSE_L, {2, 3}},
+      {Piece::R_CANNON_L, {2, 4}},
+  };
+
+  Game game;
+  game.Reset(std::move(board_setup));
+  game.ChangeTurn();  // Change turn so that it's black's move.
+  EXPECT_TRUE(game.IsCheckMade());
+}
+
 }  // namespace
