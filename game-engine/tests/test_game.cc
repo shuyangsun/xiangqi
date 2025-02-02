@@ -11,6 +11,8 @@
 #include "xiangqi/game.h"
 #include "xiangqi/types.h"
 
+namespace {
+
 using namespace xiangqi;
 
 // ---------------------------------------------------------------------
@@ -310,3 +312,5 @@ TEST(GameTest, ResetClearsHistory) {
   // Undo should now fail because history has been cleared.
   EXPECT_FALSE(game.Undo());
 }
+
+}  // namespace
