@@ -8,6 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add the subdirectory that contains the library’s sources.
 add_subdirectory(src)
 
+add_executable(xiangqi_app_ascii src/main.cc)
+
+target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_engine)
+
 # Enable testing support.
 enable_testing()
 
@@ -40,6 +44,5 @@ target_link_libraries(xiangqi_tests
     gtest_main
 )
 
-# Enable CTest to run the tests.
 include(GoogleTest)
 gtest_discover_tests(xiangqi_tests)
