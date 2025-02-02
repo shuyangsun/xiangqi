@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31.4)
-project(XiangqiGameEngine LANGUAGES CXX)
+project(XiangqiGameEngine LANGUAGES CXX Swift)
 
 # Set the C++ standard (adjust as needed)
 set(CMAKE_CXX_STANDARD 23)
