@@ -33,8 +33,21 @@ constexpr Board<Piece> kInitState = {
     R_ADVISOR_R, R_ELEPHANT_R, R_HORSE_R,    R_CHARIOT_R,  // Row 9
 };
 
+// Converts a piece map to a board. The resulting board will be completely empty
+// (all cells set to EMPTY) except for the positions specified in the map.
 Board<Piece> pieceMapToBoard(std::unordered_map<Piece, Position>&& piece_pos) {
-  return kInitState;  // TODO: placeholdre, please implement.
+  Board<Piece> board;
+  for (auto& row : board) {
+    row.fill(EMPTY);
+  }
+  for (const auto& entry : piece_pos) {
+    Piece piece = entry.first;
+    const Position& pos = entry.second;
+    if (pos.row < kTotalRow && pos.col < kTotalCol) {
+      board[pos.row][pos.col] = piece;
+    }
+  }
+  return board;
 }
 
 }  // namespace
@@ -64,6 +77,10 @@ Board<Piece> Game::CurrentBoard() { return {history_.back()}; }
 Piece Game::PieceAt(Position pos) { return history_.back()[pos.row][pos.col]; }
 
 bool Game::Move(Position from, Position to) {
+  if (from.row == to.row && from.col == to.col) {
+    return false;
+  }
+
   Board<Piece> next = history_.back();
   const Piece piece = PieceAt(from);
   const bool taken = next[to.row][to.col] != EMPTY;
