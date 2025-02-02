@@ -112,10 +112,45 @@ Board<bool> Game::PossibleMoves(Position pos) {
     case R_GENERAL:
     case B_GENERAL:
       return PossibleMovesGeneral(board, pos);
+    case R_ADVISOR_L:
+    case R_ADVISOR_R:
+    case B_ADVISOR_L:
+    case B_ADVISOR_R:
+      return PossibleMovesAdvisor(board, pos);
+    case R_ELEPHANT_L:
+    case R_ELEPHANT_R:
+    case B_ELEPHANT_L:
+    case B_ELEPHANT_R:
+      return PossibleMovesElephant(board, pos);
+    case R_HORSE_L:
+    case R_HORSE_R:
+    case B_HORSE_L:
+    case B_HORSE_R:
+      return PossibleMovesHorse(board, pos);
+    case R_CHARIOT_L:
+    case R_CHARIOT_R:
+    case B_CHARIOT_L:
+    case B_CHARIOT_R:
+      return PossibleMovesChariot(board, pos);
+    case R_CANNON_L:
+    case R_CANNON_R:
+    case B_CANNON_L:
+    case B_CANNON_R:
+      return PossibleMovesCannon(board, pos);
+    case R_SOLDIER_1:
+    case R_SOLDIER_2:
+    case R_SOLDIER_3:
+    case R_SOLDIER_4:
+    case R_SOLDIER_5:
+    case B_SOLDIER_1:
+    case B_SOLDIER_2:
+    case B_SOLDIER_3:
+    case B_SOLDIER_4:
+    case B_SOLDIER_5:
+      return PossibleMovesSoldier(board, pos);
     default:
-      return {false};  // TODO: please implement other scenarios.
+      return {false};
   }
-  return {false};
 }
 
 }  // namespace xiangqi
