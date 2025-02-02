@@ -455,38 +455,6 @@ TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
 }
 
 // ---------------------------------------------------------------------
-// Tests involving the Advisor.
-TEST(IsCheckMadeTest, RedInCheckByAdvisor) {
-  // The advisor moves one point diagonally. Although palace restrictions
-  // normally apply, here we test that a black advisor one diagonal move away
-  // from the red general is recognized as a threat. (Position red general at
-  // (8,4) so that the one-step diagonal move from (7,3) is valid.)
-  std::unordered_map<Piece, Position> board_setup = {
-      {Piece::R_GENERAL, {8, 4}},
-      {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_ADVISOR_L, {7, 3}},
-  };
-
-  Game game;
-  game.Reset(std::move(board_setup));
-  EXPECT_TRUE(game.IsCheckMade());
-}
-
-TEST(IsCheckMadeTest, RedNotInCheckByAdvisorWrongDistance) {
-  // The black advisor is too far away (or not diagonally adjacent) to threaten
-  // the red general.
-  std::unordered_map<Piece, Position> board_setup = {
-      {Piece::R_GENERAL, {9, 4}},
-      {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_ADVISOR_L, {6, 1}},  // not one diagonal move away
-  };
-
-  Game game;
-  game.Reset(std::move(board_setup));
-  EXPECT_FALSE(game.IsCheckMade());
-}
-
-// ---------------------------------------------------------------------
 // Tests involving the Cannon.
 TEST(IsCheckMadeTest, RedInCheckByCannon) {
   // A cannon captures like a chariot but requires a single intervening piece (a

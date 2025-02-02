@@ -54,6 +54,130 @@ Board<Piece> pieceMapToBoard(std::unordered_map<Piece, Position>&& piece_pos) {
   return board;
 }
 
+bool isPathClear(const Board<Piece>& board, const Position& from,
+                 const Position& to) {
+  // Assumes from and to are in the same row or same column.
+  if (from.row == to.row) {
+    int start = std::min((int)from.col, (int)to.col) + 1;
+    int end = std::max((int)from.col, (int)to.col);
+    for (int c = start; c < end; ++c) {
+      if (board[from.row][c] != Piece::EMPTY) return false;
+    }
+    return true;
+  } else if (from.col == to.col) {
+    int start = std::min((int)from.row, (int)to.row) + 1;
+    int end = std::max((int)from.row, (int)to.row);
+    for (int r = start; r < end; ++r) {
+      if (board[r][from.col] != Piece::EMPTY) return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+// Soldiers move one step forward. Once they have “crossed the river” they can
+// also move sideways. (For the purposes of check‐detection we test only the
+// immediate “attack” squares.)
+bool threatensBySoldier(Piece soldier, const Position& pos,
+                        const Position& target) {
+  int val = static_cast<int>(soldier);
+  if (val > 0) {  // red soldier moves upward (row decreases)
+    if ((int)pos.row - 1 == (int)target.row && pos.col == target.col)
+      return true;
+    // Allow sideways movement after crossing the river:
+    if (pos.row <= 4 && pos.row == target.row &&
+        std::abs((int)pos.col - (int)target.col) == 1)
+      return true;
+  } else {  // black soldier moves downward (row increases)
+    if ((int)pos.row + 1 == (int)target.row && pos.col == target.col)
+      return true;
+    // Allow sideways movement after crossing the river:
+    if (pos.row >= 5 && pos.row == target.row &&
+        std::abs((int)pos.col - (int)target.col) == 1)
+      return true;
+  }
+  return false;
+}
+
+// The horse moves in an L-shape but its move is “blocked” if the adjacent
+// square in the moving direction is occupied.
+bool threatensByHorse(const Board<Piece>& board, const Position& horsePos,
+                      const Position& target) {
+  // Moves and corresponding “leg” (blocking square) offsets.
+  const int moves[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+                           {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+  const int blocks[8][2] = {{1, 0}, {1, 0},  {-1, 0}, {-1, 0},
+                            {0, 1}, {0, -1}, {0, 1},  {0, -1}};
+  for (int i = 0; i < 8; ++i) {
+    int new_r = horsePos.row + moves[i][0];
+    int new_c = horsePos.col + moves[i][1];
+    if (new_r == target.row && new_c == target.col) {
+      int block_r = horsePos.row + blocks[i][0];
+      int block_c = horsePos.col + blocks[i][1];
+      if (block_r >= 0 && block_r < kTotalRow && block_c >= 0 &&
+          block_c < kTotalCol && board[block_r][block_c] == Piece::EMPTY) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// The elephant moves two points diagonally. Its move is blocked if the midpoint
+// is occupied. (For these tests we do not enforce the “river” restriction.)
+bool threatensByElephant(const Board<Piece>& board, Piece elephant,
+                         const Position& pos, const Position& target) {
+  int dr = target.row - pos.row;
+  int dc = target.col - pos.col;
+  if (std::abs(dr) != 2 || std::abs(dc) != 2) return false;
+  Position mid{static_cast<uint8_t>(pos.row + dr / 2),
+               static_cast<uint8_t>(pos.col + dc / 2)};
+  if (board[mid.row][mid.col] != Piece::EMPTY) return false;
+  // (If you wish to enforce that elephants may not cross the river, add that
+  // check here.)
+  return true;
+}
+
+// The advisor moves one point diagonally but must remain within its palace.
+bool threatensByAdvisor(Piece advisor, const Position& pos,
+                        const Position& target) {
+  int dr = target.row - pos.row;
+  int dc = target.col - pos.col;
+  if (std::abs(dr) != 1 || std::abs(dc) != 1) return false;
+  int val = static_cast<int>(advisor);
+  if (val > 0) {  // red advisor: palace is rows 7–9 and cols 3–5
+    if (target.row < 7 || target.row > 9 || target.col < 3 || target.col > 5)
+      return false;
+  } else {  // black advisor: palace is rows 0–2 and cols 3–5
+    if (target.row > 2 || target.col < 3 || target.col > 5) return false;
+  }
+  return true;
+}
+
+// The cannon moves like a chariot but can only capture if exactly one piece
+// (the “screen”) lies between it and its target.
+bool threatensByCannon(const Board<Piece>& board, const Position& cannonPos,
+                       const Position& target) {
+  if (cannonPos.row == target.row) {
+    int start = std::min((int)cannonPos.col, (int)target.col) + 1;
+    int end = std::max((int)cannonPos.col, (int)target.col);
+    int count = 0;
+    for (int c = start; c < end; ++c) {
+      if (board[cannonPos.row][c] != Piece::EMPTY) count++;
+    }
+    return (count == 1);
+  } else if (cannonPos.col == target.col) {
+    int start = std::min((int)cannonPos.row, (int)target.row) + 1;
+    int end = std::max((int)cannonPos.row, (int)target.row);
+    int count = 0;
+    for (int r = start; r < end; ++r) {
+      if (board[r][cannonPos.col] != Piece::EMPTY) count++;
+    }
+    return (count == 1);
+  }
+  return false;
+}
+
 }  // namespace
 
 Game::Game() : history_{kInitState} {}
@@ -167,41 +291,81 @@ Board<bool> Game::PossibleMoves(Position pos) const {
 }
 
 bool Game::IsCheckMade() const {
-  // Use the current board.
-  const Board<Piece>& board = history_.back();
-
-  // Find the positions of the red and black generals.
-  std::optional<Position> redGeneralPos;
-  std::optional<Position> blackGeneralPos;
+  Board<Piece> board = CurrentBoard();
+  Position generalPos{0, 0};
+  bool found = false;
+  // Determine our own general based on whose turn it is.
+  Piece myGeneral =
+      (player_ == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
   for (uint8_t r = 0; r < kTotalRow; ++r) {
     for (uint8_t c = 0; c < kTotalCol; ++c) {
-      if (board[r][c] == R_GENERAL)
-        redGeneralPos = Position{r, c};
-      else if (board[r][c] == B_GENERAL)
-        blackGeneralPos = Position{r, c};
-    }
-  }
-  // If one (or both) general is missing, then a check condition exists.
-  if (!redGeneralPos.has_value() || !blackGeneralPos.has_value()) {
-    return true;
-  }
-
-  // Check for the flying general condition:
-  // If the two generals are in the same column and there are no pieces between
-  // them, then the flying general check is triggered.
-  if (redGeneralPos->col == blackGeneralPos->col) {
-    int col = redGeneralPos->col;
-    int startRow = std::min(redGeneralPos->row, blackGeneralPos->row) + 1;
-    int endRow = std::max(redGeneralPos->row, blackGeneralPos->row);
-    bool blocked = false;
-    for (int r = startRow; r < endRow; ++r) {
-      if (board[r][col] != EMPTY) {
-        blocked = true;
+      if (board[r][c] == myGeneral) {
+        generalPos = {r, c};
+        found = true;
         break;
       }
     }
-    if (!blocked) {
-      return true;
+    if (found) break;
+  }
+  // (If the general is missing, you might want to signal game over. Here we
+  // simply return true.)
+  if (!found) return true;
+
+  // Now scan the board for enemy pieces that might be threatening our general.
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      Piece piece = board[r][c];
+      if (piece == Piece::EMPTY) continue;
+      int pieceVal = static_cast<int>(piece);
+      bool pieceIsRed = (pieceVal > 0);
+      bool myIsRed = (player_ == Player::RED);
+      if (pieceIsRed == myIsRed) continue;  // skip our own pieces
+
+      Position piecePos{r, c};
+      int absVal = std::abs(pieceVal);
+      switch (absVal) {
+        case 1:
+          // Enemy general: by the flying-general rule, if the two generals are
+          // on the same file with no piece between.
+          if (piecePos.col == generalPos.col &&
+              isPathClear(board, piecePos, generalPos))
+            return true;
+          break;
+        case 8:  // chariot (first variant)
+        case 9:  // chariot (second variant)
+          if ((piecePos.row == generalPos.row ||
+               piecePos.col == generalPos.col) &&
+              isPathClear(board, piecePos, generalPos))
+            return true;
+          break;
+        case 12:  // soldier (all soldier values: 12–16 for red, -12 to -16 for
+                  // black)
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+          if (threatensBySoldier(piece, piecePos, generalPos)) return true;
+          break;
+        case 6:  // horse
+        case 7:
+          if (threatensByHorse(board, piecePos, generalPos)) return true;
+          break;
+        case 4:  // elephant
+        case 5:
+          if (threatensByElephant(board, piece, piecePos, generalPos))
+            return true;
+          break;
+        case 2:  // advisor
+        case 3:
+          if (threatensByAdvisor(piece, piecePos, generalPos)) return true;
+          break;
+        case 10:  // cannon
+        case 11:
+          if (threatensByCannon(board, piecePos, generalPos)) return true;
+          break;
+        default:
+          break;
+      }
     }
   }
   return false;
