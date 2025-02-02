@@ -31,6 +31,7 @@ FetchContent_MakeAvailable(googletest)
 # Specify the test source file(s). Adjust the path if needed.
 add_executable(xiangqi_tests
     tests/test_game.cc
+    tests/test_possible_moves.cc
 )
 
 # Link the engine library and GoogleTest libraries.
