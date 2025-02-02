@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "xiangqi/moves.h"
+#include "xiangqi/internal/moves.h"
 #include "xiangqi/types.h"
 
 namespace xiangqi {

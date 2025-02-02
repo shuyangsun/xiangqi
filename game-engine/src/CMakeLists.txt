@@ -1,6 +1,6 @@
 add_library(xiangqi_engine
     game.cc
-    moves.cc
+    internal/moves.cc
 )
 
 target_include_directories(xiangqi_engine PUBLIC

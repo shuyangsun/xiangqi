@@ -1,4 +1,4 @@
-#include "xiangqi/moves.h"
+#include "xiangqi/internal/moves.h"
 
 #include <algorithm>
 #include <cstdint>
