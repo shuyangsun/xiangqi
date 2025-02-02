@@ -73,7 +73,8 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   if (opponent_general.has_value() && opponent_general->col == pos.col) {
     const int8_t change = piece == B_GENERAL ? 1 : -1;
     bool is_blocked = false;
-    for (uint8_t row = pos.row; row != opponent_general->row; row += change) {
+    for (uint8_t row = pos.row + change; row != opponent_general->row;
+         row += change) {
       if (board[row][pos.col] != EMPTY) {
         is_blocked = true;
         break;
