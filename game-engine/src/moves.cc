@@ -20,14 +20,14 @@ Board<bool> makeEmptyBoard() {
 std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   if (find_red) {
     for (uint8_t row = 9; row >= 7; row--) {
-      for (uint8_t col = 3; row <= 5; col++) {
+      for (uint8_t col = 3; col <= 5; col++) {
         if (board[row][col] == R_GENERAL) {
           return {{row, col}};
         }
       }
     }
     for (uint8_t row = 0; row <= 2; row++) {
-      for (uint8_t col = 3; row <= 5; col++) {
+      for (uint8_t col = 3; col <= 5; col++) {
         if (board[row][col] == R_GENERAL) {
           return {{row, col}};
         }
@@ -37,14 +37,14 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   }
 
   for (uint8_t row = 0; row <= 2; row++) {
-    for (uint8_t col = 3; row <= 5; col++) {
+    for (uint8_t col = 3; col <= 5; col++) {
       if (board[row][col] == B_GENERAL) {
         return {{row, col}};
       }
     }
   }
   for (uint8_t row = 9; row >= 7; row--) {
-    for (uint8_t col = 3; row <= 5; col++) {
+    for (uint8_t col = 3; col <= 5; col++) {
       if (board[row][col] == B_GENERAL) {
         return {{row, col}};
       }
