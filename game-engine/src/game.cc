@@ -1,5 +1,7 @@
 #include "xiangqi/game.h"
 
+#include <algorithm>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
@@ -165,15 +167,91 @@ Board<bool> Game::PossibleMoves(Position pos) const {
 }
 
 bool Game::IsCheckMade() const {
-  return false;  // TODO: placeholder implementation, please implement.
+  // Use the current board.
+  const Board<Piece>& board = history_.back();
+
+  // Find the positions of the red and black generals.
+  std::optional<Position> redGeneralPos;
+  std::optional<Position> blackGeneralPos;
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      if (board[r][c] == R_GENERAL)
+        redGeneralPos = Position{r, c};
+      else if (board[r][c] == B_GENERAL)
+        blackGeneralPos = Position{r, c};
+    }
+  }
+  // If one (or both) general is missing, then a check condition exists.
+  if (!redGeneralPos.has_value() || !blackGeneralPos.has_value()) {
+    return true;
+  }
+
+  // Check for the flying general condition:
+  // If the two generals are in the same column and there are no pieces between
+  // them, then the flying general check is triggered.
+  if (redGeneralPos->col == blackGeneralPos->col) {
+    int col = redGeneralPos->col;
+    int startRow = std::min(redGeneralPos->row, blackGeneralPos->row) + 1;
+    int endRow = std::max(redGeneralPos->row, blackGeneralPos->row);
+    bool blocked = false;
+    for (int r = startRow; r < endRow; ++r) {
+      if (board[r][col] != EMPTY) {
+        blocked = true;
+        break;
+      }
+    }
+    if (!blocked) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool Game::IsGameOver() const {
-  return false;  // TODO: placeholder implementation, please implement.
+  // The game is over if one or both generals have been captured.
+  const Board<Piece>& board = history_.back();
+  bool redFound = false;
+  bool blackFound = false;
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      if (board[r][c] == R_GENERAL) {
+        redFound = true;
+      } else if (board[r][c] == B_GENERAL) {
+        blackFound = true;
+      }
+    }
+  }
+  return (!redFound || !blackFound);
 }
 
 std::optional<Winner> Game::GetWinner() const {
-  return std::nullopt;  // TODO: placeholder implementation, please implement.
+  // If the game is not over, there is no winner.
+  if (!IsGameOver()) {
+    return std::nullopt;
+  }
+
+  const Board<Piece>& board = history_.back();
+  bool redFound = false;
+  bool blackFound = false;
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      if (board[r][c] == R_GENERAL) {
+        redFound = true;
+      } else if (board[r][c] == B_GENERAL) {
+        blackFound = true;
+      }
+    }
+  }
+
+  if (redFound && !blackFound) {
+    return Winner::RED;
+  } else if (!redFound && blackFound) {
+    return Winner::BLACK;
+  } else if (!redFound && !blackFound) {
+    return Winner::DRAW;
+  }
+  // This point should never be reached if IsGameOver() is true.
+  return std::nullopt;
 }
 
 }  // namespace xiangqi
