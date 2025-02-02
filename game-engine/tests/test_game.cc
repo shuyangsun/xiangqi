@@ -142,12 +142,12 @@ TEST(GameTest, ResetWithPieceMap) {
 }
 
 // ---------------------------------------------------------------------
-// Test that calling ChangeTurn() does not alter the board.
+// Test that calling MakeBlackMoveFirst() does not alter the board.
 // ---------------------------------------------------------------------
-TEST(GameTest, ChangeTurnDoesNotAffectBoard) {
+TEST(GameTest, MakeBlackMoveFirstDoesNotAffectBoard) {
   Game game;
   Board<Piece> board_before = game.CurrentBoard();
-  game.ChangeTurn();
+  game.MakeBlackMoveFirst();
   Board<Piece> board_after = game.CurrentBoard();
   EXPECT_EQ(board_before, board_after);
 }
@@ -271,23 +271,21 @@ TEST(GameTest, UndoAfterOneMove) {
 TEST(GameTest, UndoMultipleMoves) {
   Game game;
   std::unordered_map<Piece, Position> piece_map;
-  piece_map[R_SOLDIER_1] = {5, 5};
-  piece_map[B_SOLDIER_1] = {4, 5};
+  piece_map[R_SOLDIER_3] = {6, 4};
+  piece_map[B_SOLDIER_3] = {3, 4};
 
   game.Reset(std::move(piece_map));
 
   Board<Piece> initial_board = game.CurrentBoard();
 
-  // First move: red soldier moves from (5,5) to (4,5) and captures black
-  // soldier.
-  game.Move({5, 5}, {4, 5});
-  // Second move: red soldier moves forward from (4,5) to (3,5).
-  game.Move({4, 5}, {3, 5});
+  game.Move({6, 4}, {5, 4});
+  game.Move({3, 4}, {4, 4});
 
   // Undo the second move.
   EXPECT_TRUE(game.Undo());
-  EXPECT_EQ(game.PieceAt({4, 5}), R_SOLDIER_1);
-  EXPECT_EQ(game.PieceAt({3, 5}), EMPTY);
+  EXPECT_EQ(game.PieceAt({5, 4}), R_SOLDIER_3);
+  EXPECT_EQ(game.PieceAt({4, 4}), EMPTY);
+  EXPECT_EQ(game.PieceAt({3, 4}), B_SOLDIER_3);
 
   // Undo the first move.
   EXPECT_TRUE(game.Undo());
@@ -522,7 +520,7 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
 
   Game game;
   game.Reset(std::move(board_setup));
-  game.ChangeTurn();  // Change turn so that it's black's move.
+  game.MakeBlackMoveFirst();
   EXPECT_TRUE(game.IsCheckMade());
 }
 

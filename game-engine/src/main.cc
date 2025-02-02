@@ -13,7 +13,9 @@ using ::xiangqi::Game;
 using ::xiangqi::kTotalCol;
 using ::xiangqi::kTotalRow;
 using ::xiangqi::Piece;
+using ::xiangqi::Player;
 using ::xiangqi::Position;
+using ::xiangqi::Winner;
 
 // Converts a Piece value to a one-character representation.
 // Red pieces are uppercase, Black pieces are lowercase, and empty squares are
@@ -90,7 +92,7 @@ char PieceToChar(Piece piece) {
 
 // Prints a 10x9 board with row and column indices.
 // The column header is printed without spaces between the numbers.
-void PrintBoard(const Board<Piece>& board) {
+void PrintGame(const Game& game) {
   // Print the column header without spaces between numbers.
   std::cout << "  ";
   for (uint8_t col = 0; col < kTotalCol; ++col) {
@@ -98,13 +100,24 @@ void PrintBoard(const Board<Piece>& board) {
   }
   std::cout << "\n";
 
+  const Board<Piece> board = game.CurrentBoard();
   for (uint8_t row = 0; row < kTotalRow; ++row) {
     std::cout << static_cast<int>(row) << ' ';
     for (uint8_t col = 0; col < kTotalCol; ++col) {
       std::cout << PieceToChar(board[row][col]) << ' ';
     }
-    std::cout << '\n';
+    std::cout << std::endl;
   }
+  std::cout << std::endl;
+  std::cout << "Turn: " << (game.Turn() == Player::RED ? "Red" : "Black")
+            << std::endl;
+  std::cout << "Check made: " << (game.IsCheckMade() ? "true" : "false")
+            << std::endl;
+  const std::optional<Winner> winner = game.GetWinner();
+  std::cout << "Winner: "
+            << (winner.has_value() ? (*winner == Winner::RED ? "Red" : "Black")
+                                   : "None")
+            << std::endl;
 }
 
 }  // namespace
@@ -116,7 +129,7 @@ void PrintBoard(const Board<Piece>& board) {
 int main() {
   // Create a game instance with the default Xiangqi opening board.
   Game game;
-  PrintBoard(game.CurrentBoard());
+  PrintGame(game);
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
@@ -204,7 +217,7 @@ int main() {
       game.Move({static_cast<uint8_t>(row), static_cast<uint8_t>(col)},
                 {static_cast<uint8_t>(row_2), static_cast<uint8_t>(col_2)});
 
-      PrintBoard(game.CurrentBoard());
+      PrintGame(game);
     }
   }
 

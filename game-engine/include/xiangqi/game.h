@@ -30,8 +30,8 @@ class Game {
   // Returns true if it is red's turn, false if black's.
   Player Turn() const;
 
-  // Change the current turn. Should only be called when the game starts.
-  void ChangeTurn();
+  // Change the starting turn to Black.
+  void MakeBlackMoveFirst();
 
   // Get a copy of the current board.
   Board<Piece> CurrentBoard() const;

@@ -1,6 +1,7 @@
 #include "xiangqi/game.h"
 
 #include <algorithm>
+#include <cctype>
 #include <optional>
 #include <unordered_map>
 #include <utility>
@@ -201,9 +202,11 @@ void Game::Reset(std::unordered_map<Piece, Position>&& piece_pos) {
 
 Player Game::Turn() const { return player_; }
 
-void Game::ChangeTurn() {
-  using enum Player;
-  player_ = player_ == RED ? BLACK : RED;
+void Game::MakeBlackMoveFirst() {
+  if (history_.size() > 1) {
+    return;
+  }
+  player_ = Player::BLACK;
 }
 
 Board<Piece> Game::CurrentBoard() const { return {history_.back()}; }
@@ -213,28 +216,37 @@ Piece Game::PieceAt(Position pos) const {
 }
 
 bool Game::Move(Position from, Position to) {
+  using enum Player;
   if (from.row == to.row && from.col == to.col) {
+    return false;
+  }
+  const Piece piece = PieceAt(from);
+  const auto piece_value = static_cast<std::underlying_type_t<Piece>>(piece);
+  if (piece == Piece::EMPTY || player_ == RED && piece_value < 0 ||
+      player_ == BLACK && piece_value > 0) {
     return false;
   }
 
   Board<Piece> next = history_.back();
-  const Piece piece = PieceAt(from);
   const bool taken = next[to.row][to.col] != EMPTY;
   next[to.row][to.col] = PieceAt(from);
   next[from.row][from.col] = EMPTY;
   moves_.emplace_back(piece, from, to);
   history_.emplace_back(next);
+  player_ = player_ == RED ? BLACK : RED;
   return taken;
 }
 
 bool Game::Undo() {
+  using enum Player;
+
   if (history_.size() <= 1) {
     return false;
   }
 
   moves_.pop_back();
   history_.pop_back();
-  ChangeTurn();
+  player_ = player_ == RED ? BLACK : RED;
   return true;
 }
 
