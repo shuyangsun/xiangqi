@@ -26,7 +26,7 @@ bool IsBlackOrEmpty(Piece piece) {
 }
 
 // Helper function to create an empty (all false) board.
-Board<bool> makeEmptyBoard() {
+Board<bool> MakeEmptyBoard() {
   Board<bool> board;
   for (auto& row : board) {
     row.fill(false);
@@ -77,7 +77,7 @@ int8_t Clip(int8_t num, int8_t lower_bound, int8_t upper_bound) {
 }  // namespace
 
 Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {
-  return makeEmptyBoard();
+  return MakeEmptyBoard();
 }
 
 Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
@@ -128,7 +128,7 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 
@@ -161,7 +161,7 @@ Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 
@@ -197,7 +197,7 @@ Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 
@@ -288,7 +288,7 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 
@@ -349,7 +349,7 @@ Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 
@@ -360,13 +360,13 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
   // Upwards.
   {
-    bool screenFound = false;
+    bool screen_found = false;
     for (int r = pos.row - 1; r >= 0; r--) {
-      if (!screenFound) {
+      if (!screen_found) {
         if (board[r][pos.col] == Piece::EMPTY) {
           result[r][pos.col] = true;
         } else {
-          screenFound = true;
+          screen_found = true;
         }
       } else {
         if (board[r][pos.col] != Piece::EMPTY) {
@@ -383,13 +383,13 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
   // Downwards.
   {
-    bool screenFound = false;
+    bool screen_found = false;
     for (int r = pos.row + 1; r < kTotalRow; r++) {
-      if (!screenFound) {
+      if (!screen_found) {
         if (board[r][pos.col] == Piece::EMPTY) {
           result[r][pos.col] = true;
         } else {
-          screenFound = true;
+          screen_found = true;
         }
       } else {
         if (board[r][pos.col] != Piece::EMPTY) {
@@ -406,13 +406,13 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
   // Leftwards.
   {
-    bool screenFound = false;
+    bool screen_found = false;
     for (int c = pos.col - 1; c >= 0; c--) {
-      if (!screenFound) {
+      if (!screen_found) {
         if (board[pos.row][c] == Piece::EMPTY) {
           result[pos.row][c] = true;
         } else {
-          screenFound = true;
+          screen_found = true;
         }
       } else {
         if (board[pos.row][c] != Piece::EMPTY) {
@@ -429,13 +429,13 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
   // Rightwards.
   {
-    bool screenFound = false;
+    bool screen_found = false;
     for (int c = pos.col + 1; c < kTotalCol; c++) {
-      if (!screenFound) {
+      if (!screen_found) {
         if (board[pos.row][c] == Piece::EMPTY) {
           result[pos.row][c] = true;
         } else {
-          screenFound = true;
+          screen_found = true;
         }
       } else {
         if (board[pos.row][c] != Piece::EMPTY) {
@@ -454,7 +454,7 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesSoldier(const Board<Piece>& board, Position pos) {
-  Board<bool> result = makeEmptyBoard();
+  Board<bool> result = MakeEmptyBoard();
   const Piece piece = board[pos.row][pos.col];
   bool isRed = IsRed(piece);
 

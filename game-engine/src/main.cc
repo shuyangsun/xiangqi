@@ -123,19 +123,25 @@ int main() {
     PrintBoard(board);
 
     // Ask the user to enter the coordinates of a piece.
-    std::cout << "\nEnter the row and column of a piece (e.g., '34') or 'q' to "
-                 "quit: ";
-    std::string inputLine;
-    if (!std::getline(std::cin, inputLine)) break;
-    if (inputLine == "q" || inputLine == "Q") break;
+    std::cout << "\n1. Enter the row and column of a piece (e.g., '34') to "
+                 "view possible moves.\n"
+                 "2. Enter two positions separated by comma (e.g, '34,54') to "
+                 "move.\n";
+    "3. Enter or 'q' to quit.\n: ";
+    std::string input_line;
+    if (!std::getline(std::cin, input_line)) break;
+    if (input_line == "q" || input_line == "Q") break;
 
     // Expect input in the format of two digits (with no space).
-    if (inputLine.size() < 2) {
-      std::cout << "Invalid input. Please enter two digits.\n";
+    const size_t input_size = input_line.size();
+    const bool input_size_valid =
+        input_size == 1 || input_size == 2 || input_size == 5;
+    if (!input_size_valid) {
+      std::cout << "Invalid input.\n";
       continue;
     }
-    char rowChar = inputLine[0];
-    char colChar = inputLine[1];
+    char rowChar = input_line[0];
+    char colChar = input_line[1];
     if (!std::isdigit(rowChar) || !std::isdigit(colChar)) {
       std::cout << "Invalid input. Please enter two digits.\n";
       continue;
