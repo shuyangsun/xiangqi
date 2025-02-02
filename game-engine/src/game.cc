@@ -1,5 +1,8 @@
 #include "xiangqi/game.h"
 
+#include <unordered_map>
+#include <utility>
+
 #include "xiangqi/moves.h"
 #include "xiangqi/types.h"
 
@@ -30,15 +33,28 @@ constexpr Board<Piece> kInitState = {
     R_ADVISOR_R, R_ELEPHANT_R, R_HORSE_R,    R_CHARIOT_R,  // Row 9
 };
 
+Board<Piece> pieceMapToBoard(std::unordered_map<Piece, Position>&& piece_pos) {
+  return kInitState;  // TODO: placeholdre, please implement.
+}
+
 }  // namespace
 
 Game::Game() : history_{kInitState} {}
 
-void Game::Reset() {
+void Game::Reset(Board<Piece>&& board) {
   moves_.clear();
   history_.clear();
-  history_.emplace_back(kInitState);
+  history_.emplace_back(std::move(board));
   is_red_turn_ = true;
+}
+
+void Game::Reset() {
+  Board<Piece> board = kInitState;
+  Reset(std::move(board));
+}
+
+void Game::Reset(std::unordered_map<Piece, Position>&& piece_pos) {
+  Reset(pieceMapToBoard(std::move(piece_pos)));
 }
 
 void Game::ChangeTurn() { is_red_turn_ = !is_red_turn_; }
@@ -50,11 +66,12 @@ Piece Game::PieceAt(Position pos) { return history_.back()[pos.row][pos.col]; }
 bool Game::Move(Position from, Position to) {
   Board<Piece> next = history_.back();
   const Piece piece = PieceAt(from);
+  const bool taken = next[to.row][to.col] != EMPTY;
   next[to.row][to.col] = PieceAt(from);
   next[from.row][from.col] = EMPTY;
   moves_.emplace_back(piece, from, to);
   history_.emplace_back(next);
-  return false;  // TODO: return check or not.
+  return taken;
 }
 
 bool Game::Undo() {
@@ -79,7 +96,7 @@ Board<bool> Game::PossibleMoves(Position pos) {
     case B_GENERAL:
       return PossibleMovesGeneral(board, pos);
     default:
-      return {false};  // TODO: remove this default switch statement.
+      return {false};  // TODO: please implement other scenarios.
   }
   return {false};
 }
