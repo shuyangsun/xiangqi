@@ -13,7 +13,10 @@ constexpr uint8_t kTotalPieces = 32;
 template <typename T>
 using Board = std::array<std::array<T, kTotalCol>, kTotalRow>;
 
-enum Piece : int8_t {
+enum class Player : bool { RED = true, BLACK = false };
+enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1 };
+
+enum class Piece : int8_t {
   EMPTY = 0,
   R_GENERAL = 1,
   B_GENERAL = -1,

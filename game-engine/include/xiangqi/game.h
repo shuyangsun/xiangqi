@@ -1,6 +1,7 @@
 #ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -26,19 +27,22 @@ class Game {
   // Reset the game with a map of pieces to their positions.
   void Reset(std::unordered_map<Piece, Position>&& piece_pos);
 
+  // Returns true if it is red's turn, false if black's.
+  Player Turn() const;
+
   // Change the current turn. Should only be called when the game starts.
   void ChangeTurn();
 
   // Get a copy of the current board.
-  Board<Piece> CurrentBoard();
+  Board<Piece> CurrentBoard() const;
 
   // Get the piece at a speific position of the current board.
-  Piece PieceAt(Position pos);
+  Piece PieceAt(Position pos) const;
 
   // Get all possible moves of a position. Returns a 10x9 boolean board, with
   // possible locations marked as true. If there is no piece at the position,
   // returns a board with all false values.
-  Board<bool> PossibleMoves(Position pos);
+  Board<bool> PossibleMoves(Position pos) const;
 
   // Move a piece from a position to another position. Returns true if the new
   // move caused a piece to be taken.
@@ -48,8 +52,19 @@ class Game {
   // if the board is already at its original state when initialized or reset.
   bool Undo();
 
+  // Returns true if the game is over (for example, one of the generals has been
+  // captured).
+  bool IsCheckMade() const;
+
+  // Returns true if the game is over (for example, one of the generals has been
+  // captured).
+  bool IsGameOver() const;
+
+  // Returns the winner, if the game is over.
+  std::optional<Winner> GetWinner() const;
+
  private:
-  bool is_red_turn_ = true;
+  Player player_ = Player::RED;
   std::vector<Board<Piece>> history_;
   std::vector<MoveAction> moves_;
 };

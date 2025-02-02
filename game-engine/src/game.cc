@@ -10,6 +10,8 @@ namespace xiangqi {
 
 namespace {
 
+using enum Piece;
+
 constexpr Board<Piece> kInitState = {
     B_CHARIOT_L, B_HORSE_L,    B_ELEPHANT_L, B_ADVISOR_L, B_GENERAL,
     B_ADVISOR_R, B_ELEPHANT_R, B_HORSE_R,    B_CHARIOT_R,  // Row 0
@@ -55,10 +57,11 @@ Board<Piece> pieceMapToBoard(std::unordered_map<Piece, Position>&& piece_pos) {
 Game::Game() : history_{kInitState} {}
 
 void Game::Reset(Board<Piece>&& board) {
+  using enum Player;
   moves_.clear();
   history_.clear();
   history_.emplace_back(std::move(board));
-  is_red_turn_ = true;
+  player_ = RED;
 }
 
 void Game::Reset() {
@@ -70,11 +73,18 @@ void Game::Reset(std::unordered_map<Piece, Position>&& piece_pos) {
   Reset(pieceMapToBoard(std::move(piece_pos)));
 }
 
-void Game::ChangeTurn() { is_red_turn_ = !is_red_turn_; }
+Player Game::Turn() const { return player_; }
 
-Board<Piece> Game::CurrentBoard() { return {history_.back()}; }
+void Game::ChangeTurn() {
+  using enum Player;
+  player_ = player_ == RED ? BLACK : RED;
+}
 
-Piece Game::PieceAt(Position pos) { return history_.back()[pos.row][pos.col]; }
+Board<Piece> Game::CurrentBoard() const { return {history_.back()}; }
+
+Piece Game::PieceAt(Position pos) const {
+  return history_.back()[pos.row][pos.col];
+}
 
 bool Game::Move(Position from, Position to) {
   if (from.row == to.row && from.col == to.col) {
@@ -102,8 +112,9 @@ bool Game::Undo() {
   return true;
 }
 
-Board<bool> Game::PossibleMoves(Position pos) {
+Board<bool> Game::PossibleMoves(Position pos) const {
   using namespace xiangqi::internal::util;
+  using enum Piece;
   const Piece piece = PieceAt(pos);
   const Board<Piece>& board = history_.back();
   switch (piece) {

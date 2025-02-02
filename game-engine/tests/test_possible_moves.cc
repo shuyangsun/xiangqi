@@ -9,6 +9,9 @@ using namespace xiangqi;
 
 namespace {
 
+using namespace ::xiangqi;
+using enum ::xiangqi::Piece;
+
 // Helper: Check that every cell in a Board<bool> is false.
 void ExpectAllFalse(const Board<bool>& moves) {
   for (uint8_t r = 0; r < kTotalRow; ++r) {
@@ -55,7 +58,7 @@ TEST(PossibleMovesTest, RedGeneralCenter) {
 TEST(PossibleMovesTest, BlackGeneralCenter) {
   Game game;
   // Black palace: rows 0 to 2, cols 3 to 5.
-  game.Reset({{B_GENERAL, {1, 4}}});
+  game.Reset({{Piece::B_GENERAL, {1, 4}}});
   Board<bool> moves = game.PossibleMoves({1, 4});
   // Expected normal moves: up (0,4), down (2,4), left (1,3), right (1,5)
   EXPECT_TRUE(moves[0][4]);
@@ -74,7 +77,7 @@ TEST(PossibleMovesTest, BlackGeneralCenter) {
 // should include the black general's square (1,4) as a "flying" move.
 TEST(PossibleMovesTest, RedGeneralFlyingUnblocked) {
   Game game;
-  game.Reset({{R_GENERAL, {8, 4}}, {B_GENERAL, {1, 4}}});
+  game.Reset({{R_GENERAL, {8, 4}}, {Piece::B_GENERAL, {1, 4}}});
   Board<bool> moves = game.PossibleMoves({8, 4});
   // Flying move: red general should be allowed to move to (1,4).
   EXPECT_TRUE(moves[1][4]);
@@ -87,7 +90,8 @@ TEST(PossibleMovesTest, RedGeneralFlyingBlocked) {
   Game game;
   // Place red general at (8,4), black general at (1,4), and a blocking piece at
   // (5,4).
-  game.Reset({{R_GENERAL, {8, 4}}, {B_GENERAL, {1, 4}}, {R_SOLDIER_1, {5, 4}}});
+  game.Reset(
+      {{R_GENERAL, {8, 4}}, {Piece::B_GENERAL, {1, 4}}, {R_SOLDIER_1, {5, 4}}});
   Board<bool> moves = game.PossibleMoves({8, 4});
   // With a block in between, the flying move should not be available.
   EXPECT_FALSE(moves[1][4]);
@@ -98,7 +102,7 @@ TEST(PossibleMovesTest, RedGeneralFlyingBlocked) {
 // between them, the black general's move set should mark (8,4) as available.
 TEST(PossibleMovesTest, BlackGeneralFlyingUnblocked) {
   Game game;
-  game.Reset({{B_GENERAL, {1, 4}}, {R_GENERAL, {8, 4}}});
+  game.Reset({{Piece::B_GENERAL, {1, 4}}, {R_GENERAL, {8, 4}}});
   Board<bool> moves = game.PossibleMoves({1, 4});
   EXPECT_TRUE(moves[8][4]);
 }
@@ -109,7 +113,9 @@ TEST(PossibleMovesTest, BlackGeneralFlyingBlocked) {
   Game game;
   // Place black general at (1,4), red general at (8,4), and a blocking piece at
   // (3,4).
-  game.Reset({{B_GENERAL, {1, 4}}, {R_GENERAL, {8, 4}}, {B_SOLDIER_1, {3, 4}}});
+  game.Reset({{Piece::B_GENERAL, {1, 4}},
+              {R_GENERAL, {8, 4}},
+              {Piece::B_SOLDIER_1, {3, 4}}});
   Board<bool> moves = game.PossibleMoves({1, 4});
   EXPECT_FALSE(moves[8][4]);
 }
@@ -120,7 +126,7 @@ TEST(PossibleMovesTest, BlackGeneralFlyingBlocked) {
 // be marked.
 TEST(PossibleMovesTest, FlyingGeneralNotTriggeredDifferentColumn) {
   Game game;
-  game.Reset({{R_GENERAL, {8, 4}}, {B_GENERAL, {1, 5}}});
+  game.Reset({{R_GENERAL, {8, 4}}, {Piece::B_GENERAL, {1, 5}}});
   Board<bool> moves = game.PossibleMoves({8, 4});
   // Ensure that the square (1,5) is not marked due to flying general.
   EXPECT_FALSE(moves[1][5]);
@@ -147,7 +153,7 @@ TEST(PossibleMovesTest, RedAdvisorEdge) {
 TEST(PossibleMovesTest, BlackAdvisorCenter) {
   Game game;
   // Place a black advisor at (0,4) (black palace: rows 0-2, cols 3-5).
-  game.Reset({{B_ADVISOR_R, {0, 4}}});
+  game.Reset({{Piece::B_ADVISOR_R, {0, 4}}});
   Board<bool> moves = game.PossibleMoves({0, 4});
   // For (0,4), the only valid diagonal moves are downward: (1,3) and (1,5).
   EXPECT_TRUE(moves[1][3]);
@@ -281,7 +287,7 @@ TEST(PossibleMovesTest, RedChariotBlockedByAlly) {
 TEST(PossibleMovesTest, RedChariotCapturingEnemy) {
   Game game;
   // Place a red chariot at (5,5) and an enemy (black) soldier at (3,5).
-  game.Reset({{R_CHARIOT_L, {5, 5}}, {B_SOLDIER_1, {3, 5}}});
+  game.Reset({{R_CHARIOT_L, {5, 5}}, {Piece::B_SOLDIER_1, {3, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // Upward: It should mark (4,5) as a normal move and (3,5) as a capturing
   // move.
@@ -325,8 +331,9 @@ TEST(PossibleMovesTest, RedCannonCapturing) {
   Game game;
   // Place a red cannon at (5,5), a blocking (screen) piece at (5,4), and an
   // enemy piece at (5,3).
-  game.Reset(
-      {{R_CANNON_L, {5, 5}}, {R_SOLDIER_1, {5, 4}}, {B_SOLDIER_1, {5, 3}}});
+  game.Reset({{R_CANNON_L, {5, 5}},
+              {R_SOLDIER_1, {5, 4}},
+              {Piece::B_SOLDIER_1, {5, 3}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // In the leftward direction:
   // The square at (5,4) becomes the screen and is not a destination.
@@ -369,7 +376,7 @@ TEST(PossibleMovesTest, RedSoldierCrossed) {
 TEST(PossibleMovesTest, BlackSoldierNotCrossed) {
   Game game;
   // For black, not crossed if row < 5. Place a black soldier at (3,5).
-  game.Reset({{B_SOLDIER_1, {3, 5}}});
+  game.Reset({{Piece::B_SOLDIER_1, {3, 5}}});
   Board<bool> moves = game.PossibleMoves({3, 5});
   // For black, forward is downward (row + 1).
   EXPECT_TRUE(moves[4][5]);
@@ -382,7 +389,7 @@ TEST(PossibleMovesTest, BlackSoldierNotCrossed) {
 TEST(PossibleMovesTest, BlackSoldierCrossed) {
   Game game;
   // For black, crossed if row >= 5. Place a black soldier at (6,5).
-  game.Reset({{B_SOLDIER_1, {6, 5}}});
+  game.Reset({{Piece::B_SOLDIER_1, {6, 5}}});
   Board<bool> moves = game.PossibleMoves({6, 5});
   // Expected: forward (7,5) and sideways (6,4) and (6,6).
   EXPECT_TRUE(moves[7][5]);
