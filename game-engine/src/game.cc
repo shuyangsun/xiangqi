@@ -164,4 +164,16 @@ Board<bool> Game::PossibleMoves(Position pos) const {
   }
 }
 
+bool Game::IsCheckMade() const {
+  return false;  // TODO: placeholder implementation, please implement.
+}
+
+bool Game::IsGameOver() const {
+  return false;  // TODO: placeholder implementation, please implement.
+}
+
+std::optional<Winner> Game::GetWinner() const {
+  return std::nullopt;  // TODO: placeholder implementation, please implement.
+}
+
 }  // namespace xiangqi

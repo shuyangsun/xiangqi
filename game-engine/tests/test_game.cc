@@ -314,4 +314,321 @@ TEST(GameTest, ResetClearsHistory) {
   EXPECT_FALSE(game.Undo());
 }
 
+//
+// Note: These tests assume the following semantics:
+//
+// - When both generals are present and arranged normally (not facing each
+// other),
+//   the game is not over and no check is flagged.
+// - If the generals are directly facing each other (with no intervening
+// pieces),
+//   then IsCheckMade() returns true (a flying general check), but the game is
+//   not yet over.
+// - If one general is missing (i.e. has been captured), then both IsCheckMade()
+// and
+//   IsGameOver() return true, and GetWinner() returns the surviving side.
+//
+
+//
+// Test: Both generals are on board and not in a check configuration.
+// Expected: No check, game not over, and no winner.
+//
+TEST(GameStatusTest, NoCheckNoGameOver) {
+  Game game;
+  // Place red general at (8,4) in the red palace and black general at (1,3) in
+  // the black palace.
+  game.Reset({{R_GENERAL, {8, 4}}, {B_GENERAL, {1, 3}}});
+  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(game.IsGameOver());
+  EXPECT_EQ(game.GetWinner(), std::nullopt);
+}
+
+//
+// Test: Flying General check.
+// Arrange the generals so they face each other in the same column with no
+// blocking pieces. Expected: A check is detected, but the game is not over
+// because both generals are still on board.
+//
+TEST(GameStatusTest, FlyingGeneralCheck) {
+  Game game;
+  // Place red general at (8,4) and black general at (1,4) so that they are in
+  // the same column.
+  game.Reset({{R_GENERAL, {8, 4}}, {B_GENERAL, {1, 4}}});
+  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_FALSE(game.IsGameOver());
+  EXPECT_EQ(game.GetWinner(), std::nullopt);
+}
+
+//
+// Test: Game over with red as the winner.
+// Here, black's general is missing (captured), so the game should be over.
+// Expected: Both IsCheckMade() and IsGameOver() return true and GetWinner()
+// returns Winner::RED.
+//
+TEST(GameStatusTest, RedWinsGameOver) {
+  Game game;
+  // Only the red general is present in the red palace.
+  game.Reset({{R_GENERAL, {8, 4}}});
+  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(game.IsGameOver());
+  std::optional<Winner> winner = game.GetWinner();
+  ASSERT_TRUE(winner.has_value());
+  EXPECT_EQ(winner.value(), Winner::RED);
+}
+
+//
+// Test: Game over with black as the winner.
+// Here, red's general is missing (captured), so the game should be over.
+// Expected: Both IsCheckMade() and IsGameOver() return true and GetWinner()
+// returns Winner::BLACK.
+//
+TEST(GameStatusTest, BlackWinsGameOver) {
+  Game game;
+  // Only the black general is present in the black palace.
+  game.Reset({{B_GENERAL, {1, 4}}});
+  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(game.IsGameOver());
+  std::optional<Winner> winner = game.GetWinner();
+  ASSERT_TRUE(winner.has_value());
+  EXPECT_EQ(winner.value(), Winner::BLACK);
+}
+
+//
+// Test 1: Standard full board setup (using many pieces) should not be in check
+// or game over. This simulates a near-starting position that includes generals
+// and all other piece types.
+//
+TEST(GameStatusComplexTest, FullBoardNormalPosition) {
+  Game game;
+  game.Reset({// Black pieces (top of the board)
+              {B_CHARIOT_L, {0, 0}},
+              {B_HORSE_L, {0, 1}},
+              {B_ELEPHANT_L, {0, 2}},
+              {B_ADVISOR_L, {0, 3}},
+              {B_GENERAL, {0, 4}},
+              {B_ADVISOR_R, {0, 5}},
+              {B_ELEPHANT_R, {0, 6}},
+              {B_HORSE_R, {0, 7}},
+              {B_CHARIOT_R, {0, 8}},
+              {B_CANNON_L, {2, 1}},
+              {B_CANNON_R, {2, 7}},
+              {B_SOLDIER_1, {3, 0}},
+              {B_SOLDIER_2, {3, 2}},
+              {B_SOLDIER_3, {3, 4}},
+              {B_SOLDIER_4, {3, 6}},
+              {B_SOLDIER_5, {3, 8}},
+              // Red pieces (bottom of the board)
+              {R_CHARIOT_L, {9, 0}},
+              {R_HORSE_L, {9, 1}},
+              {R_ELEPHANT_L, {9, 2}},
+              {R_ADVISOR_L, {9, 3}},
+              {R_GENERAL, {9, 4}},
+              {R_ADVISOR_R, {9, 5}},
+              {R_ELEPHANT_R, {9, 6}},
+              {R_HORSE_R, {9, 7}},
+              {R_CHARIOT_R, {9, 8}},
+              {R_CANNON_L, {7, 1}},
+              {R_CANNON_R, {7, 7}},
+              {R_SOLDIER_1, {6, 0}},
+              {R_SOLDIER_2, {6, 2}},
+              {R_SOLDIER_3, {6, 4}},
+              {R_SOLDIER_4, {6, 6}},
+              {R_SOLDIER_5, {6, 8}}});
+  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(game.IsGameOver());
+  EXPECT_EQ(game.GetWinner(), std::nullopt);
+}
+
+//
+// Test 2: Complex position with extra pieces where the generals are aligned
+// (flying general check) even though many other pieces are present off the
+// critical column. The extra pieces do not interfere with the flying check if
+// they are off the generals’ column.
+//
+TEST(GameStatusComplexTest, FlyingGeneralCheckWithExtraPieces) {
+  Game game;
+  game.Reset({// Generals aligned in the same column (col 4)
+              {R_GENERAL, {8, 4}},
+              {B_GENERAL, {1, 4}},
+              // Extra red pieces (placed off column 4)
+              {R_ADVISOR_L, {8, 3}},
+              {R_ELEPHANT_L, {8, 2}},
+              {R_HORSE_L, {9, 1}},
+              {R_CHARIOT_L, {9, 0}},
+              {R_CANNON_L, {7, 1}},
+              {R_SOLDIER_1, {6, 0}},
+              // Extra black pieces (placed off column 4)
+              {B_ADVISOR_L, {0, 3}},
+              {B_ELEPHANT_L, {0, 2}},
+              {B_HORSE_L, {0, 1}},
+              {B_CHARIOT_L, {0, 0}},
+              {B_CANNON_L, {2, 1}},
+              {B_SOLDIER_1, {3, 0}}});
+  // With no blocking piece in column 4 between row 1 and row 8,
+  // the flying general check should be triggered.
+  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_FALSE(game.IsGameOver());
+  EXPECT_EQ(game.GetWinner(), std::nullopt);
+}
+
+//
+// Test 3: Complex position where extra pieces are present but a blocking piece
+// prevents the flying general check from occurring.
+// For example, place a red soldier directly in the path (col 4) between the
+// generals.
+//
+TEST(GameStatusComplexTest, FlyingGeneralBlockedWithExtraPieces) {
+  Game game;
+  game.Reset({{R_GENERAL, {8, 4}},
+              {B_GENERAL, {1, 4}},
+              // Extra pieces off the main column.
+              {R_ADVISOR_R, {8, 5}},
+              {B_ADVISOR_R, {0, 5}},
+              // Blocking piece on column 4 between the generals.
+              {R_SOLDIER_1, {5, 4}},
+              // Other extra pieces.
+              {R_HORSE_R, {9, 7}},
+              {B_HORSE_R, {0, 7}}});
+  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(game.IsGameOver());
+  EXPECT_EQ(game.GetWinner(), std::nullopt);
+}
+
+//
+// Test 4: Complex board where black’s general is missing amid a field of
+// pieces, so red wins. Extra pieces of various types are present on both sides.
+//
+TEST(GameStatusComplexTest, ComplexPositionGameOverRedWins) {
+  Game game;
+  game.Reset({// Red pieces
+              {R_GENERAL, {9, 4}},
+              {R_ADVISOR_L, {9, 3}},
+              {R_ADVISOR_R, {9, 5}},
+              {R_ELEPHANT_L, {9, 2}},
+              {R_ELEPHANT_R, {9, 6}},
+              {R_HORSE_L, {9, 1}},
+              {R_HORSE_R, {9, 7}},
+              {R_CHARIOT_L, {9, 0}},
+              {R_CHARIOT_R, {9, 8}},
+              {R_CANNON_L, {7, 1}},
+              {R_CANNON_R, {7, 7}},
+              {R_SOLDIER_1, {6, 0}},
+              {R_SOLDIER_2, {6, 2}},
+              {R_SOLDIER_3, {6, 4}},
+              {R_SOLDIER_4, {6, 6}},
+              {R_SOLDIER_5, {6, 8}},
+              // Black pieces but NO general.
+              {B_ADVISOR_L, {0, 3}},
+              {B_ADVISOR_R, {0, 5}},
+              {B_ELEPHANT_L, {0, 2}},
+              {B_ELEPHANT_R, {0, 6}},
+              {B_HORSE_L, {0, 1}},
+              {B_HORSE_R, {0, 7}},
+              {B_CHARIOT_L, {0, 0}},
+              {B_CHARIOT_R, {0, 8}},
+              {B_CANNON_L, {2, 1}},
+              {B_CANNON_R, {2, 7}},
+              {B_SOLDIER_1, {3, 0}},
+              {B_SOLDIER_2, {3, 2}},
+              {B_SOLDIER_3, {3, 4}},
+              {B_SOLDIER_4, {3, 6}},
+              {B_SOLDIER_5, {3, 8}}});
+  EXPECT_TRUE(game.IsGameOver());
+  EXPECT_TRUE(game.IsCheckMade());
+  std::optional<Winner> winner = game.GetWinner();
+  ASSERT_TRUE(winner.has_value());
+  EXPECT_EQ(winner.value(), Winner::RED);
+}
+
+//
+// Test 5: Complex board where red’s general is missing amid extra pieces,
+// so black wins.
+//
+TEST(GameStatusComplexTest, ComplexPositionGameOverBlackWins) {
+  Game game;
+  game.Reset({// Black pieces
+              {B_GENERAL, {0, 4}},
+              {B_ADVISOR_L, {0, 3}},
+              {B_ADVISOR_R, {0, 5}},
+              {B_ELEPHANT_L, {0, 2}},
+              {B_ELEPHANT_R, {0, 6}},
+              {B_HORSE_L, {0, 1}},
+              {B_HORSE_R, {0, 7}},
+              {B_CHARIOT_L, {0, 0}},
+              {B_CHARIOT_R, {0, 8}},
+              {B_CANNON_L, {2, 1}},
+              {B_CANNON_R, {2, 7}},
+              {B_SOLDIER_1, {3, 0}},
+              {B_SOLDIER_2, {3, 2}},
+              {B_SOLDIER_3, {3, 4}},
+              {B_SOLDIER_4, {3, 6}},
+              {B_SOLDIER_5, {3, 8}},
+              // Red pieces but NO general.
+              {R_ADVISOR_L, {9, 3}},
+              {R_ADVISOR_R, {9, 5}},
+              {R_ELEPHANT_L, {9, 2}},
+              {R_ELEPHANT_R, {9, 6}},
+              {R_HORSE_L, {9, 1}},
+              {R_HORSE_R, {9, 7}},
+              {R_CHARIOT_L, {9, 0}},
+              {R_CHARIOT_R, {9, 8}},
+              {R_CANNON_L, {7, 1}},
+              {R_CANNON_R, {7, 7}},
+              {R_SOLDIER_1, {6, 0}},
+              {R_SOLDIER_2, {6, 2}},
+              {R_SOLDIER_3, {6, 4}},
+              {R_SOLDIER_4, {6, 6}},
+              {R_SOLDIER_5, {6, 8}}});
+  EXPECT_TRUE(game.IsGameOver());
+  EXPECT_TRUE(game.IsCheckMade());
+  std::optional<Winner> winner = game.GetWinner();
+  ASSERT_TRUE(winner.has_value());
+  EXPECT_EQ(winner.value(), Winner::BLACK);
+}
+
+//
+// Test 6: Complex board with extra pieces from both sides but with both
+// generals missing, resulting in a draw.
+//
+TEST(GameStatusComplexTest, ComplexPositionBothGeneralsMissingDraw) {
+  Game game;
+  game.Reset({// Red extra pieces
+              {R_ADVISOR_L, {9, 3}},
+              {R_ADVISOR_R, {9, 5}},
+              {R_ELEPHANT_L, {9, 2}},
+              {R_ELEPHANT_R, {9, 6}},
+              {R_HORSE_L, {9, 1}},
+              {R_HORSE_R, {9, 7}},
+              {R_CHARIOT_L, {9, 0}},
+              {R_CHARIOT_R, {9, 8}},
+              {R_CANNON_L, {7, 1}},
+              {R_CANNON_R, {7, 7}},
+              {R_SOLDIER_1, {6, 0}},
+              {R_SOLDIER_2, {6, 2}},
+              {R_SOLDIER_3, {6, 4}},
+              {R_SOLDIER_4, {6, 6}},
+              {R_SOLDIER_5, {6, 8}},
+              // Black extra pieces
+              {B_ADVISOR_L, {0, 3}},
+              {B_ADVISOR_R, {0, 5}},
+              {B_ELEPHANT_L, {0, 2}},
+              {B_ELEPHANT_R, {0, 6}},
+              {B_HORSE_L, {0, 1}},
+              {B_HORSE_R, {0, 7}},
+              {B_CHARIOT_L, {0, 0}},
+              {B_CHARIOT_R, {0, 8}},
+              {B_CANNON_L, {2, 1}},
+              {B_CANNON_R, {2, 7}},
+              {B_SOLDIER_1, {3, 0}},
+              {B_SOLDIER_2, {3, 2}},
+              {B_SOLDIER_3, {3, 4}},
+              {B_SOLDIER_4, {3, 6}},
+              {B_SOLDIER_5, {3, 8}}});
+  EXPECT_TRUE(game.IsGameOver());
+  EXPECT_TRUE(game.IsCheckMade());
+  std::optional<Winner> winner = game.GetWinner();
+  ASSERT_TRUE(winner.has_value());
+  EXPECT_EQ(winner.value(), Winner::DRAW);
+}
+
 }  // namespace
