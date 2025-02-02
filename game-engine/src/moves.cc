@@ -8,6 +8,15 @@ namespace xiangqi::internal::util {
 
 namespace {
 
+// Helper function to create an empty (all false) board.
+Board<bool> makeEmptyBoard() {
+  Board<bool> board;
+  for (auto& row : board) {
+    row.fill(false);
+  }
+  return board;
+}
+
 std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   if (find_red) {
     for (uint8_t row = 9; row >= 7; row--) {
@@ -49,6 +58,10 @@ int8_t Clip(int8_t num, int8_t lower_bound, int8_t upper_bound) {
 }
 
 }  // namespace
+
+Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {
+  return makeEmptyBoard();
+}
 
 Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   const Piece piece = board[pos.row][pos.col];
@@ -93,6 +106,36 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
     }
   }
   return result;
+}
+
+Board<bool> PossibleMovesAdvisor(const Board<Piece>& /*board*/,
+                                 Position /*pos*/) {
+  return makeEmptyBoard();
+}
+
+Board<bool> PossibleMovesElephant(const Board<Piece>& /*board*/,
+                                  Position /*pos*/) {
+  return makeEmptyBoard();
+}
+
+Board<bool> PossibleMovesHorse(const Board<Piece>& /*board*/,
+                               Position /*pos*/) {
+  return makeEmptyBoard();
+}
+
+Board<bool> PossibleMovesChariot(const Board<Piece>& /*board*/,
+                                 Position /*pos*/) {
+  return makeEmptyBoard();
+}
+
+Board<bool> PossibleMovesCannon(const Board<Piece>& /*board*/,
+                                Position /*pos*/) {
+  return makeEmptyBoard();
+}
+
+Board<bool> PossibleMovesSoldier(const Board<Piece>& /*board*/,
+                                 Position /*pos*/) {
+  return makeEmptyBoard();
 }
 
 }  // namespace xiangqi::internal::util

@@ -108,7 +108,7 @@ Board<bool> Game::PossibleMoves(Position pos) {
   const Board<Piece>& board = history_.back();
   switch (piece) {
     case EMPTY:
-      return {false};
+      return PossibleMovesEmpty(board, pos);
     case R_GENERAL:
     case B_GENERAL:
       return PossibleMovesGeneral(board, pos);

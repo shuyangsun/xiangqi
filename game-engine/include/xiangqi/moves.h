@@ -5,6 +5,9 @@
 
 namespace xiangqi::internal::util {
 
+// Return board full of false.
+Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos);
+
 // Returns a board (10×9) with "true" set for squares that the General can
 // legally move to. The General is assumed to move one square orthogonally
 // within the palace.
