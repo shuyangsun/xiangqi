@@ -1,7 +1,7 @@
-#include "game.h"
+#include "xiangqi/game.h"
 
-#include "moves.h"
-#include "types.h"
+#include "xiangqi/moves.h"
+#include "xiangqi/types.h"
 
 namespace xiangqi {
 
@@ -48,7 +48,7 @@ Board<Piece> Game::CurrentBoard() { return {history_.back()}; }
 Piece Game::PieceAt(Position pos) { return history_.back()[pos.row][pos.col]; }
 
 bool Game::Move(Position from, Position to) {
-  Board next = history_.back();
+  Board<Piece> next = history_.back();
   const Piece piece = PieceAt(from);
   next[to.row][to.col] = PieceAt(from);
   next[from.row][from.col] = EMPTY;
@@ -78,7 +78,8 @@ Board<bool> Game::PossibleMoves(Position pos) {
     case R_GENERAL:
     case B_GENERAL:
       return PossibleMovesGeneral(board, pos);
-      // TODO
+    default:
+      return {false};  // TODO: remove this default switch statement.
   }
   return {false};
 }

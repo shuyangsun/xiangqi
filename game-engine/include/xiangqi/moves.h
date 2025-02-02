@@ -1,7 +1,7 @@
 #ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_MOVES_H__
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_MOVES_H__
 
-#include "types.h"
+#include "xiangqi/types.h"
 
 namespace xiangqi::internal::util {
 
