@@ -1,5 +1,5 @@
-#ifndef XIANGQI_GAME_ENGINE_TYPES_H__
-#define XIANGQI_GAME_ENGINE_TYPES_H__
+#ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__
+#define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__
 
 #include <array>
 #include <cstdint>
@@ -62,4 +62,4 @@ struct MoveAction {
 
 }  // namespace xiangqi
 
-#endif  // XIANGQI_GAME_ENGINE_TYPES_H__
+#endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__

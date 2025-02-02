@@ -1,5 +1,5 @@
-#ifndef XIANGQI_GAME_ENGINE_GAME_H__
-#define XIANGQI_GAME_ENGINE_GAME_H__
+#ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
+#define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 
 #include <vector>
 
@@ -30,4 +30,4 @@ class Game {
 
 }  // namespace xiangqi
 
-#endif  // XIANGQI_GAME_ENGINE_GAME_H__
+#endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
