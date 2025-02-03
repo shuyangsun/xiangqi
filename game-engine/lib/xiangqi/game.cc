@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <optional>
 #include <unordered_map>
 #include <utility>
 
@@ -400,10 +399,9 @@ bool Game::IsGameOver() const {
   return (!redFound || !blackFound);
 }
 
-std::optional<Winner> Game::GetWinner() const {
-  // If the game is not over, there is no winner.
+Winner Game::GetWinner() const {
   if (!IsGameOver()) {
-    return std::nullopt;
+    return Winner::DRAW;  // Default when game is not over.
   }
 
   const Board<Piece>& board = history_.back();
@@ -426,8 +424,7 @@ std::optional<Winner> Game::GetWinner() const {
   } else if (!redFound && !blackFound) {
     return Winner::DRAW;
   }
-  // This point should never be reached if IsGameOver() is true.
-  return std::nullopt;
+  return Winner::DRAW;
 }
 
 }  // namespace xiangqi

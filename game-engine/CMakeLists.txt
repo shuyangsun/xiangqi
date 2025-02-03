@@ -6,14 +6,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(XIANGQI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(XIANGQI_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(XIANGQI_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(XIANGQI_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 include_directories(${XIANGQI_INCLUDE_DIR})
-
-add_subdirectory(src)
-add_executable(xiangqi_app_ascii src/main.cc)
-target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_engine)
 
 # ---------------------- Swift Library ----------------------
 
@@ -39,6 +36,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_OSX_DEPLOYMENT_TARGET 15.0)
 endif()
 
+# ---------------------- Library and Binary ----------------------
+
+add_subdirectory("${XIANGQI_LIB_DIR}/xiangqi")
+add_executable(xiangqi_app_ascii "${XIANGQI_SRC_DIR}/main.cc")
+target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi)
+
 # ---------------------- GoogleTest ----------------------
 
 include(FetchContent)
@@ -56,7 +59,7 @@ add_executable(
 )
 target_link_libraries(
     xiangqi_tests
-    PRIVATE xiangqi_engine
+    PRIVATE xiangqi
     gtest_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)

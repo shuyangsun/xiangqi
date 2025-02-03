@@ -1,3 +1,5 @@
+# Source: https://github.com/apple/swift-cmake-examples/blob/main/3_bidirectional_cxx_interop/cmake/modules/InitializeSwift.cmake
+#
 # This source file is part of the Swift open source project
 #
 # Copyright (c) 2023 Apple Inc. and the Swift project authors.

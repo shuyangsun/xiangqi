@@ -1,6 +1,5 @@
-module Fibonacci {
+module Xiangqi {
   header "types.h"
   header "game.h"
   export *
-  re
 }

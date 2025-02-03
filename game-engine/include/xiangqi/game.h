@@ -1,7 +1,6 @@
 #ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -62,8 +61,9 @@ class Game {
   // to not be captured.
   bool IsGameOver() const;
 
-  // Returns the winner, if the game is over.
-  std::optional<Winner> GetWinner() const;
+  // Returns the winner if the game is over. Returns DRAW if the game is not
+  // over.
+  Winner GetWinner() const;
 
  private:
   Player player_ = Player::RED;
