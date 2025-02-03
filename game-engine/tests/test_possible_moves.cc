@@ -388,13 +388,13 @@ TEST(PossibleMovesTest, BlackSoldierNotCrossed) {
 // Black Soldier after crossing.
 TEST(PossibleMovesTest, BlackSoldierCrossed) {
   Game game;
-  // For black, crossed if row >= 5. Place a black soldier at (6,5).
-  game.Reset({{Piece::B_SOLDIER_1, {6, 5}}});
-  Board<bool> moves = game.PossibleMoves({6, 5});
-  // Expected: forward (7,5) and sideways (6,4) and (6,6).
-  EXPECT_TRUE(moves[7][5]);
+  // For black, crossed if row >= 5. Place a black soldier at (5,4).
+  game.Reset({{Piece::B_SOLDIER_3, {5, 4}}});
+  Board<bool> moves = game.PossibleMoves({5, 4});
+  // Expected: forward (6,4) and sideways (5,3) and (5,5).
   EXPECT_TRUE(moves[6][4]);
-  EXPECT_TRUE(moves[6][6]);
+  EXPECT_TRUE(moves[5][3]);
+  EXPECT_TRUE(moves[5][5]);
 }
 
 }  // namespace
