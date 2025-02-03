@@ -1,48 +1,62 @@
 cmake_minimum_required(VERSION 3.31.4)
+
 project(XiangqiGameEngine LANGUAGES CXX Swift)
 
-# Set the C++ standard (adjust as needed)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add the subdirectory that contains the library’s sources.
+set(XIANGQI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(XIANGQI_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(XIANGQI_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+
+include_directories(${XIANGQI_INCLUDE_DIR})
+
 add_subdirectory(src)
-
 add_executable(xiangqi_app_ascii src/main.cc)
-
 target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_engine)
 
-# Enable testing support.
-enable_testing()
+# ---------------------- Swift Library ----------------------
 
-# --- Configure GoogleTest using FetchContent ---
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # Verify that we have a new enough compiler
+    if("${CMAKE_Swift_COMPILER_VERSION}" VERSION_LESS 5.9)
+        message(FATAL_ERROR "Bidirectional C++ Interop requires Swift 5.9 or greater. Have ${CMAKE_Swift_COMPILER_VERSION}")
+    endif()
+
+    if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND
+        NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+        message(FATAL_ERROR "Project requires building with Clang. Have ${CMAKE_CXX_COMPILER_ID}")
+    endif()
+
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
+    # Set up swiftrt.o and runtime library search paths
+    include(InitializeSwift)
+    # cmake/modules/AddSwift.cmake provides the function for creating the Swift to
+    # C++ bridging header
+    include(AddSwift)
+
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 15.0)
+endif()
+
+# ---------------------- GoogleTest ----------------------
+
 include(FetchContent)
-
-# Download GoogleTest.
 FetchContent_Declare(
     googletest
-    URL https://github.com/google/googletest/archive/release-1.12.1.zip
+    URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
 )
-
-# Optionally, for Windows, enforce shared CRT.
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Make the content available.
 FetchContent_MakeAvailable(googletest)
 
-# --- Create the test executable ---
-
-# Specify the test source file(s). Adjust the path if needed.
-add_executable(xiangqi_tests
+add_executable(
+    xiangqi_tests
     tests/test_game.cc
     tests/test_possible_moves.cc
 )
-
-# Link the engine library and GoogleTest libraries.
-target_link_libraries(xiangqi_tests
+target_link_libraries(
+    xiangqi_tests
     PRIVATE xiangqi_engine
     gtest_main
 )
-
-include(GoogleTest)
-gtest_discover_tests(xiangqi_tests)
+add_test(NAME xiangqi_test COMMAND xiangqi_test)

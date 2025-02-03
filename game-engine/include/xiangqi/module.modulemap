@@ -1,0 +1,6 @@
+module Fibonacci {
+  header "types.h"
+  header "game.h"
+  export *
+  re
+}
