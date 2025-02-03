@@ -40,7 +40,7 @@ endif()
 
 add_subdirectory("${XIANGQI_LIB_DIR}/xiangqi")
 add_executable(xiangqi_app_ascii "${XIANGQI_SRC_DIR}/main.cc")
-target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi)
+target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_lib)
 
 # ---------------------- GoogleTest ----------------------
 
@@ -59,7 +59,7 @@ add_executable(
 )
 target_link_libraries(
     xiangqi_tests
-    PRIVATE xiangqi
+    PRIVATE xiangqi_lib
     gtest_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)
