@@ -1,13 +1,14 @@
 import SpriteKit
+import XiangqiLib
 
 class GameScene: SKScene {
     
     // Board dimensions (number of columns and rows in our data structure)
-    let totalCols = 9    // Columns (files)
     let totalRows = 10   // Rows (ranks)
+    let totalCols = 9    // Columns (files)
     
     // tileSize will be computed from a chosen board height.
-    var tileSize: CGFloat = 40.0
+    var tileSize: CGFloat = 0.0
     
     // boardOrigin is the bottom-left of the board (in scene coordinates).
     // We will align the board so that its right edge is flush with the scene’s right edge.
@@ -22,7 +23,7 @@ class GameScene: SKScene {
         backgroundColor = SKColor(red: 0.95, green: 0.87, blue: 0.70, alpha: 1.0)  // light wooden color
         
         // Instead of using the full scene height, reserve a margin.
-        let boardHeight = size.height * 0.9
+        let boardHeight = size.height * 0.85
         tileSize = boardHeight / CGFloat(totalRows - 1)
         let boardWidth = CGFloat(totalCols - 1) * tileSize
         
@@ -30,7 +31,7 @@ class GameScene: SKScene {
         // - Horizontally: right edge aligned with scene’s right edge.
         // - Vertically: center the board.
         let boardY = (size.height - boardHeight) / 2
-        boardOrigin = CGPoint(x: size.width - boardWidth, y: boardY)
+        boardOrigin = CGPoint(x: size.width - boardWidth - tileSize, y: boardY)
         
         drawBoard()
         drawPieces()
@@ -223,7 +224,8 @@ class GameScene: SKScene {
             piece.lineWidth = 2
             piece.name = "piece"  // Helps us identify it in touch events.
             
-            let label = SKLabelNode(text: text)
+            let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            label.text = text
             label.fontSize = pieceRadius
             label.fontColor = .white
             label.verticalAlignmentMode = .center
