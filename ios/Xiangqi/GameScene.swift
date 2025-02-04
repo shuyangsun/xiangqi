@@ -7,17 +7,20 @@
 
 import SpriteKit
 import GameplayKit
+import XiangqiLib
 
 class GameScene: SKScene {
-    
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
     
     private var lastUpdateTime : TimeInterval = 0
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
-    
+
     override func sceneDidLoad() {
+        var asdfPosition = xq.Position(row: 1, col: 1)
+        var asdfMoveAction = xq.MoveAction(piece: xq.Piece.B_SOLDIER_1, from: xq.Position(row: 1, col: 1), to: xq.Position(row: 2, col: 2))
+//        var asdfGame = xq.Game() // Not working yet
 
         self.lastUpdateTime = 0
         

@@ -105,3 +105,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .xcuserstate
+xiangqi_lib

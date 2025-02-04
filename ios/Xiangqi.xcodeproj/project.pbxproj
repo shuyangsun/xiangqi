@@ -24,6 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3529ABEC2D5117C3002465D6 /* libxiangqi_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxiangqi_lib.a; path = "../game-engine/build/lib/xiangqi/libxiangqi_lib.a"; sourceTree = "<group>"; };
 		359A3F752D4F8819002A4FDF /* Xiangqi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Xiangqi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		359A3F8E2D4F881B002A4FDF /* XiangqiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiangqiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		359A3F982D4F881B002A4FDF /* XiangqiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiangqiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,12 +73,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3529ABEB2D5117C3002465D6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3529ABEC2D5117C3002465D6 /* libxiangqi_lib.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		359A3F6C2D4F8819002A4FDF = {
 			isa = PBXGroup;
 			children = (
 				359A3F772D4F8819002A4FDF /* Xiangqi */,
 				359A3F912D4F881B002A4FDF /* XiangqiTests */,
 				359A3F9B2D4F881B002A4FDF /* XiangqiUITests */,
+				3529ABEB2D5117C3002465D6 /* Frameworks */,
 				359A3F762D4F8819002A4FDF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -397,22 +407,27 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7Q6SA8R25D;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "/Users/shuyang/developer/xiangqi/game-engine/build/lib/xiangqi/";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shuyangsun.Xiangqi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Xiangqi/xiangqi_lib/**";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = /Users/shuyang/developer/xiangqi/ios/Xiangqi/xiangqi_lib/include/;
 			};
 			name = Debug;
 		};
@@ -425,22 +440,27 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7Q6SA8R25D;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "/Users/shuyang/developer/xiangqi/game-engine/build/lib/xiangqi/";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shuyangsun.Xiangqi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Xiangqi/xiangqi_lib/**";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = /Users/shuyang/developer/xiangqi/ios/Xiangqi/xiangqi_lib/include/;
 			};
 			name = Release;
 		};
