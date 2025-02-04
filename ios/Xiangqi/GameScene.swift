@@ -1,3 +1,4 @@
+import Foundation
 import SpriteKit
 import XiangqiLib
 
@@ -18,6 +19,9 @@ class GameScene: SKScene {
 
     // Keep track of a selected piece.
     var selectedPiece: SKShapeNode?
+    var selectedRow: Int?
+    var selectedCol: Int?
+    var possibleMovesMark: [SKShapeNode] = []
 
     // MARK: - Scene Setup
 
@@ -224,7 +228,7 @@ class GameScene: SKScene {
             piece.fillColor = xqPiece.rawValue > 0 ? .red : .black
             piece.strokeColor = .white
             piece.lineWidth = 2
-            piece.name = String(format: "%@%d", "piece_", xqPiece.rawValue)
+            piece.name = "piece_\(xqPiece.rawValue)"
 
             let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
             label.text = text
@@ -298,10 +302,22 @@ class GameScene: SKScene {
         if let tappedPiece = pieceNode {
             // If no piece is selected, select this piece.
             if selectedPiece == nil {
-                selectedPiece = tappedPiece
-                tappedPiece.strokeColor = .yellow
+                // Calculate the board coordinate (if the touch is within the board)
+                if let boardCoord = boardCoordinateForPoint(location) {
+                    self.selectedRow = boardCoord.row
+                    self.selectedCol = boardCoord.col
+                    let tappedValue = self.game.PieceAt(xq.Position(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))).rawValue
+                    let isRedTurn = self.game.Turn() == .RED && tappedValue > 0
+                    let isBlackTurn = self.game.Turn() == .BLACK && tappedValue < 0
+                    if isRedTurn || isBlackTurn {
+                        selectedPiece = tappedPiece
+                        tappedPiece.strokeColor = .yellow
+                        drawPossibleMoves(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))
+                    }
+                }
             } else {
                 // If the same piece is tapped, deselect it.
+                self.clearPossibleMovesMark()
                 if tappedPiece == selectedPiece {
                     tappedPiece.strokeColor = .white
                     selectedPiece = nil
@@ -325,5 +341,32 @@ class GameScene: SKScene {
                 selectedPiece = nil
             }
         }
+    }
+    
+    func drawPossibleMoves(row: UInt8, col: UInt8) {
+        let possibleMoves = self.game.PossibleMoves(xq.Position(row: row, col: col));
+        for row in 0...9 {
+            for col in 0...8 {
+                if (!possibleMoves[row][col]) {
+                    continue;
+                }
+                self.createPossibleMovesMark(row: row, col: col)
+            }
+        }
+    }
+    
+    func createPossibleMovesMark(row: Int, col: Int) {
+        let mark = SKShapeNode(circleOfRadius: 5)
+        mark.position = pointForBoardCoordinate(col: col, row: row)
+        mark.fillColor = .blue
+        self.possibleMovesMark.append(mark)
+        addChild(mark)
+    }
+    
+    func clearPossibleMovesMark() {
+        for mark in self.possibleMovesMark {
+            mark.removeFromParent()
+        }
+        self.possibleMovesMark.removeAll()
     }
 }
