@@ -2,43 +2,45 @@ import SpriteKit
 import XiangqiLib
 
 class GameScene: SKScene {
-    
+
+    let game = xq.Game()
+
     // Board dimensions (number of columns and rows in our data structure)
     let totalRows = 10   // Rows (ranks)
     let totalCols = 9    // Columns (files)
-    
+
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
-    
+
     // boardOrigin is the bottom-left of the board (in scene coordinates).
     // We will align the board so that its right edge is flush with the scene’s right edge.
     var boardOrigin: CGPoint = .zero
-    
+
     // Keep track of a selected piece.
     var selectedPiece: SKShapeNode?
-    
+
     // MARK: - Scene Setup
-    
+
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.95, green: 0.87, blue: 0.70, alpha: 1.0)  // light wooden color
-        
+
         // Instead of using the full scene height, reserve a margin.
         let boardHeight = size.height * 0.85
         tileSize = boardHeight / CGFloat(totalRows - 1)
         let boardWidth = CGFloat(totalCols - 1) * tileSize
-        
+
         // Position the board:
         // - Horizontally: right edge aligned with scene’s right edge.
         // - Vertically: center the board.
         let boardY = (size.height - boardHeight) / 2
         boardOrigin = CGPoint(x: size.width - boardWidth - tileSize, y: boardY)
-        
+
         drawBoard()
         drawPieces()
     }
-    
+
     // MARK: - Coordinate Transformation
-    
+
     /// Given board coordinates (with (0,0) at the top‑left), return the scene coordinate.
     func pointForBoardCoordinate(col: Int, row: Int) -> CGPoint {
         // Our board data is in row‑major order with (0,0) at the top.
@@ -47,21 +49,21 @@ class GameScene: SKScene {
         let y = boardOrigin.y + CGFloat((totalRows - 1) - row) * tileSize
         return CGPoint(x: x, y: y)
     }
-    
+
     /// Converts a scene point to a board coordinate (col, row) by snapping to the grid.
     /// Returns nil if the point is outside the board’s bounds.
     func boardCoordinateForPoint(_ point: CGPoint) -> (col: Int, row: Int)? {
         let boardWidth = CGFloat(totalCols - 1) * tileSize
         let boardHeight = CGFloat(totalRows - 1) * tileSize
-        
+
         let relativeX = point.x - boardOrigin.x
         let relativeY = point.y - boardOrigin.y
-        
+
         // Check that the point is within the board’s rectangle.
         if relativeX < 0 || relativeX > boardWidth || relativeY < 0 || relativeY > boardHeight {
             return nil
         }
-        
+
         // Snap by rounding to the nearest grid index.
         let col = Int(round(relativeX / tileSize))
         // Our board rows are counted from the top. Since our origin is at the bottom,
@@ -69,7 +71,7 @@ class GameScene: SKScene {
         let row = (totalRows - 1) - Int(round(relativeY / tileSize))
         return (col, row)
     }
-    
+
     /// Given a scene point, return the nearest grid point on the board.
     func snappedPosition(from point: CGPoint) -> CGPoint? {
         guard let (col, row) = boardCoordinateForPoint(point) else {
@@ -77,12 +79,12 @@ class GameScene: SKScene {
         }
         return pointForBoardCoordinate(col: col, row: row)
     }
-    
+
     // MARK: - Board Drawing
-    
+
     func drawBoard() {
         let boardWidth = CGFloat(totalCols - 1) * tileSize
-        
+
         // 1. Draw horizontal lines.
         for r in 0..<totalRows {
             let path = CGMutablePath()
@@ -92,13 +94,13 @@ class GameScene: SKScene {
             let end = CGPoint(x: boardOrigin.x + boardWidth, y: y)
             path.move(to: start)
             path.addLine(to: end)
-            
+
             let line = SKShapeNode(path: path)
             line.strokeColor = .black
             line.lineWidth = 2
             addChild(line)
         }
-        
+
         // 2. Draw vertical lines.
         for c in 0..<totalCols {
             if c == 0 || c == totalCols - 1 {
@@ -107,7 +109,7 @@ class GameScene: SKScene {
                 let end   = pointForBoardCoordinate(col: c, row: totalRows - 1) // bottom
                 path.move(to: start)
                 path.addLine(to: end)
-                
+
                 let line = SKShapeNode(path: path)
                 line.strokeColor = .black
                 line.lineWidth = 2
@@ -119,32 +121,32 @@ class GameScene: SKScene {
                 let endTop = pointForBoardCoordinate(col: c, row: 4)
                 topPath.move(to: startTop)
                 topPath.addLine(to: endTop)
-                
+
                 let topLine = SKShapeNode(path: topPath)
                 topLine.strokeColor = .black
                 topLine.lineWidth = 2
                 addChild(topLine)
-                
+
                 let bottomPath = CGMutablePath()
                 let startBottom = pointForBoardCoordinate(col: c, row: 5)
                 let endBottom = pointForBoardCoordinate(col: c, row: totalRows - 1)
                 bottomPath.move(to: startBottom)
                 bottomPath.addLine(to: endBottom)
-                
+
                 let bottomLine = SKShapeNode(path: bottomPath)
                 bottomLine.strokeColor = .black
                 bottomLine.lineWidth = 2
                 addChild(bottomLine)
             }
         }
-        
+
         // 3. Draw the palace diagonals.
         // Black palace (top): occupies columns 3-5 and rows 0-2.
         let blackPalaceTopLeft     = pointForBoardCoordinate(col: 3, row: 0)
         let blackPalaceTopRight    = pointForBoardCoordinate(col: 5, row: 0)
         let blackPalaceBottomLeft  = pointForBoardCoordinate(col: 3, row: 2)
         let blackPalaceBottomRight = pointForBoardCoordinate(col: 5, row: 2)
-        
+
         let blackDiagonal1 = SKShapeNode(path: {
             let path = CGMutablePath()
             path.move(to: blackPalaceTopLeft)
@@ -154,7 +156,7 @@ class GameScene: SKScene {
         blackDiagonal1.strokeColor = .black
         blackDiagonal1.lineWidth = 2
         addChild(blackDiagonal1)
-        
+
         let blackDiagonal2 = SKShapeNode(path: {
             let path = CGMutablePath()
             path.move(to: blackPalaceTopRight)
@@ -164,13 +166,13 @@ class GameScene: SKScene {
         blackDiagonal2.strokeColor = .black
         blackDiagonal2.lineWidth = 2
         addChild(blackDiagonal2)
-        
+
         // Red palace (bottom): occupies columns 3-5 and rows 7-9.
         let redPalaceTopLeft     = pointForBoardCoordinate(col: 3, row: 7)
         let redPalaceTopRight    = pointForBoardCoordinate(col: 5, row: 7)
         let redPalaceBottomLeft  = pointForBoardCoordinate(col: 3, row: 9)
         let redPalaceBottomRight = pointForBoardCoordinate(col: 5, row: 9)
-        
+
         let redDiagonal1 = SKShapeNode(path: {
             let path = CGMutablePath()
             path.move(to: redPalaceTopLeft)
@@ -180,7 +182,7 @@ class GameScene: SKScene {
         redDiagonal1.strokeColor = .black
         redDiagonal1.lineWidth = 2
         addChild(redDiagonal1)
-        
+
         let redDiagonal2 = SKShapeNode(path: {
             let path = CGMutablePath()
             path.move(to: redPalaceTopRight)
@@ -190,7 +192,7 @@ class GameScene: SKScene {
         redDiagonal2.strokeColor = .black
         redDiagonal2.lineWidth = 2
         addChild(redDiagonal2)
-        
+
         // 4. Draw the river labels ("楚河" and "漢界").
         let chuLabel = SKLabelNode(text: "楚河")
         chuLabel.fontSize = 30
@@ -199,7 +201,7 @@ class GameScene: SKScene {
                                     y: boardOrigin.y + 4.5 * tileSize)
         chuLabel.verticalAlignmentMode = .center
         addChild(chuLabel)
-        
+
         let hanLabel = SKLabelNode(text: "漢界")
         hanLabel.fontSize = 30
         hanLabel.fontColor = .black
@@ -208,22 +210,22 @@ class GameScene: SKScene {
         hanLabel.verticalAlignmentMode = .center
         addChild(hanLabel)
     }
-    
+
     // MARK: - Piece Setup
-    
+
     func drawPieces() {
         // Use a circle to represent each piece.
         let pieceRadius = tileSize * 0.4
-        
+
         /// Helper function to create a piece node.
-        func createPieceNode(col: Int, row: Int, text: String, isRed: Bool) {
+        func createPieceNode(col: Int, row: Int, text: String, xqPiece: xq.Piece) {
             let piece = SKShapeNode(circleOfRadius: pieceRadius)
             piece.position = pointForBoardCoordinate(col: col, row: row)
-            piece.fillColor = isRed ? .red : .black
+            piece.fillColor = xqPiece.rawValue > 0 ? .red : .black
             piece.strokeColor = .white
             piece.lineWidth = 2
-            piece.name = "piece"  // Helps us identify it in touch events.
-            
+            piece.name = String(format: "%@%d", "piece_", xqPiece.rawValue)
+
             let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
             label.text = text
             label.fontSize = pieceRadius
@@ -231,68 +233,68 @@ class GameScene: SKScene {
             label.verticalAlignmentMode = .center
             label.horizontalAlignmentMode = .center
             piece.addChild(label)
-            
+
             addChild(piece)
         }
-        
+
         // --- Black Pieces (opponent) ---
-        createPieceNode(col: 0, row: 0, text: "車", isRed: false)
-        createPieceNode(col: 8, row: 0, text: "車", isRed: false)
-        createPieceNode(col: 1, row: 0, text: "馬", isRed: false)
-        createPieceNode(col: 7, row: 0, text: "馬", isRed: false)
-        createPieceNode(col: 2, row: 0, text: "象", isRed: false)
-        createPieceNode(col: 6, row: 0, text: "象", isRed: false)
-        createPieceNode(col: 3, row: 0, text: "士", isRed: false)
-        createPieceNode(col: 5, row: 0, text: "士", isRed: false)
-        createPieceNode(col: 4, row: 0, text: "將", isRed: false)
+        createPieceNode(col: 0, row: 0, text: "車", xqPiece: xq.Piece.B_CHARIOT_L)
+        createPieceNode(col: 8, row: 0, text: "車", xqPiece: xq.Piece.B_CHARIOT_R)
+        createPieceNode(col: 1, row: 0, text: "馬", xqPiece: xq.Piece.B_HORSE_L)
+        createPieceNode(col: 7, row: 0, text: "馬", xqPiece: xq.Piece.B_HORSE_R)
+        createPieceNode(col: 2, row: 0, text: "象", xqPiece: xq.Piece.B_ELEPHANT_L)
+        createPieceNode(col: 6, row: 0, text: "象", xqPiece: xq.Piece.B_ELEPHANT_R)
+        createPieceNode(col: 3, row: 0, text: "士", xqPiece: xq.Piece.B_ADVISOR_L)
+        createPieceNode(col: 5, row: 0, text: "士", xqPiece: xq.Piece.B_ADVISOR_R)
+        createPieceNode(col: 4, row: 0, text: "將", xqPiece: xq.Piece.B_GENERAL)
         // Cannons (row 2)
-        createPieceNode(col: 1, row: 2, text: "砲", isRed: false)
-        createPieceNode(col: 7, row: 2, text: "砲", isRed: false)
+        createPieceNode(col: 1, row: 2, text: "砲", xqPiece: xq.Piece.B_CANNON_L)
+        createPieceNode(col: 7, row: 2, text: "砲", xqPiece: xq.Piece.B_CANNON_R)
         // Soldiers (row 3)
-        createPieceNode(col: 0, row: 3, text: "卒", isRed: false)
-        createPieceNode(col: 2, row: 3, text: "卒", isRed: false)
-        createPieceNode(col: 4, row: 3, text: "卒", isRed: false)
-        createPieceNode(col: 6, row: 3, text: "卒", isRed: false)
-        createPieceNode(col: 8, row: 3, text: "卒", isRed: false)
-        
+        createPieceNode(col: 0, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_1)
+        createPieceNode(col: 2, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_2)
+        createPieceNode(col: 4, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_3)
+        createPieceNode(col: 6, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_4)
+        createPieceNode(col: 8, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_5)
+
         // --- Red Pieces (self) ---
-        createPieceNode(col: 0, row: 9, text: "車", isRed: true)
-        createPieceNode(col: 8, row: 9, text: "車", isRed: true)
-        createPieceNode(col: 1, row: 9, text: "馬", isRed: true)
-        createPieceNode(col: 7, row: 9, text: "馬", isRed: true)
-        createPieceNode(col: 2, row: 9, text: "相", isRed: true)
-        createPieceNode(col: 6, row: 9, text: "相", isRed: true)
-        createPieceNode(col: 3, row: 9, text: "仕", isRed: true)
-        createPieceNode(col: 5, row: 9, text: "仕", isRed: true)
-        createPieceNode(col: 4, row: 9, text: "帥", isRed: true)
+        createPieceNode(col: 0, row: 9, text: "車", xqPiece: xq.Piece.R_CHARIOT_L)
+        createPieceNode(col: 8, row: 9, text: "車", xqPiece: xq.Piece.R_CHARIOT_R)
+        createPieceNode(col: 1, row: 9, text: "馬", xqPiece: xq.Piece.R_HORSE_L)
+        createPieceNode(col: 7, row: 9, text: "馬", xqPiece: xq.Piece.R_HORSE_R)
+        createPieceNode(col: 2, row: 9, text: "相", xqPiece: xq.Piece.R_ELEPHANT_L)
+        createPieceNode(col: 6, row: 9, text: "相", xqPiece: xq.Piece.R_ELEPHANT_R)
+        createPieceNode(col: 3, row: 9, text: "仕", xqPiece: xq.Piece.R_ADVISOR_L)
+        createPieceNode(col: 5, row: 9, text: "仕", xqPiece: xq.Piece.R_ADVISOR_R)
+        createPieceNode(col: 4, row: 9, text: "帥", xqPiece: xq.Piece.R_GENERAL)
         // Cannons (row 7)
-        createPieceNode(col: 1, row: 7, text: "炮", isRed: true)
-        createPieceNode(col: 7, row: 7, text: "炮", isRed: true)
+        createPieceNode(col: 1, row: 7, text: "炮", xqPiece: xq.Piece.R_CANNON_L)
+        createPieceNode(col: 7, row: 7, text: "炮", xqPiece: xq.Piece.R_CANNON_R)
         // Soldiers (row 6)
-        createPieceNode(col: 0, row: 6, text: "兵", isRed: true)
-        createPieceNode(col: 2, row: 6, text: "兵", isRed: true)
-        createPieceNode(col: 4, row: 6, text: "兵", isRed: true)
-        createPieceNode(col: 6, row: 6, text: "兵", isRed: true)
-        createPieceNode(col: 8, row: 6, text: "兵", isRed: true)
+        createPieceNode(col: 0, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_1)
+        createPieceNode(col: 2, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_2)
+        createPieceNode(col: 4, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_3)
+        createPieceNode(col: 6, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_4)
+        createPieceNode(col: 8, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_5)
     }
-    
+
     // MARK: - Touch Handling for Moving Pieces
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        
+
         // Identify the node at the touch location.
         let tappedNode = atPoint(location)
-        
+
         // Check if the tapped node (or its parent) is a piece.
         var pieceNode: SKShapeNode?
-        if let name = tappedNode.name, name == "piece", let shape = tappedNode as? SKShapeNode {
+        if let name = tappedNode.name, name.starts(with:"piece_"), let shape = tappedNode as? SKShapeNode {
             pieceNode = shape
-        } else if let parent = tappedNode.parent as? SKShapeNode, parent.name == "piece" {
+        } else if let parent = tappedNode.parent as? SKShapeNode, parent.name != nil && parent.name!.starts(with:"piece_") {
             pieceNode = parent
         }
-        
+
         if let tappedPiece = pieceNode {
             // If no piece is selected, select this piece.
             if selectedPiece == nil {
@@ -325,4 +327,3 @@ class GameScene: SKScene {
         }
     }
 }
-
