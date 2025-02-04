@@ -15,10 +15,6 @@ class Game {
   Game();
   ~Game() = default;
 
-  // Disable copy and move constructors.
-  Game(const Game& game) = delete;
-  Game(Game&& game) = delete;
-
   // Reset the board with default Xiangqi openning board.
   void Reset();
   // Reset the game with a given board position.

@@ -13,20 +13,18 @@ class GameScene: SKScene {
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
     
+    private var game = xq.Game()
     private var lastUpdateTime : TimeInterval = 0
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
 
     override func sceneDidLoad() {
-        var asdfPosition = xq.Position(row: 1, col: 1)
-        var asdfMoveAction = xq.MoveAction(piece: xq.Piece.B_SOLDIER_1, from: xq.Position(row: 1, col: 1), to: xq.Position(row: 2, col: 2))
-//        var asdfGame = xq.Game() // Not working yet
-
         self.lastUpdateTime = 0
         
         // Get label node from scene and store it for use later
         self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
         if let label = self.label {
+            label.text = self.game.Turn() == .RED ? "Red's turn" : "Black's turn"
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
         }

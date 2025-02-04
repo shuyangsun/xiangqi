@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3529AC122D522B8B002465D6 /* libxiangqi_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3529ABEC2D5117C3002465D6 /* libxiangqi_lib.a */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		359A3F8F2D4F881B002A4FDF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -53,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3529AC122D522B8B002465D6 /* libxiangqi_lib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
