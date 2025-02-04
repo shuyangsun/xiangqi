@@ -221,8 +221,8 @@ bool Game::Move(Position from, Position to) {
   }
   const Piece piece = PieceAt(from);
   const auto piece_value = static_cast<std::underlying_type_t<Piece>>(piece);
-  if (piece == Piece::EMPTY || player_ == RED && piece_value < 0 ||
-      player_ == BLACK && piece_value > 0) {
+  if (piece == Piece::EMPTY || (player_ == RED && piece_value < 0) ||
+      (player_ == BLACK && piece_value > 0)) {
     return false;
   }
 
