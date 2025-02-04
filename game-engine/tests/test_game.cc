@@ -13,8 +13,8 @@
 
 namespace {
 
-using namespace ::xiangqi;
-using enum ::xiangqi::Piece;
+using namespace ::xq;
+using enum ::xq::Piece;
 
 // ---------------------------------------------------------------------
 // Verify at compile time that Game is neither copyable nor movable.

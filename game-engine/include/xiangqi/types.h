@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdint>
 
-namespace xiangqi {
+namespace xq {
 
 constexpr uint8_t kTotalRow = 10;
 constexpr uint8_t kTotalCol = 9;
@@ -63,6 +63,6 @@ struct MoveAction {
   Position to;
 };
 
-}  // namespace xiangqi
+}  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__

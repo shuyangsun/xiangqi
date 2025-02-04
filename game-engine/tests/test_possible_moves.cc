@@ -5,12 +5,12 @@
 #include "xiangqi/game.h"
 #include "xiangqi/types.h"
 
-using namespace xiangqi;
+using namespace xq;
 
 namespace {
 
-using namespace ::xiangqi;
-using enum ::xiangqi::Piece;
+using namespace ::xq;
+using enum ::xq::Piece;
 
 // Helper: Check that every cell in a Board<bool> is false.
 void ExpectAllFalse(const Board<bool>& moves) {

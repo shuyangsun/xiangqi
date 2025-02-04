@@ -6,7 +6,7 @@
 
 #include "xiangqi/types.h"
 
-namespace xiangqi {
+namespace xq {
 
 class Game {
  public:
@@ -71,6 +71,6 @@ class Game {
   std::vector<MoveAction> moves_;
 };
 
-}  // namespace xiangqi
+}  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__

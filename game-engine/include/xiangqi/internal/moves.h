@@ -3,7 +3,7 @@
 
 #include "xiangqi/types.h"
 
-namespace xiangqi::internal::util {
+namespace xq::internal::util {
 
 // Return board full of false.
 Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos);
@@ -44,6 +44,6 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos);
 // Once a Soldier has crossed the river, it may also move horizontally.
 Board<bool> PossibleMovesSoldier(const Board<Piece>& board, Position pos);
 
-}  // namespace xiangqi::internal::util
+}  // namespace xq::internal::util
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_MOVES_H__

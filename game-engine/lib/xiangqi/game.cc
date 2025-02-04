@@ -8,7 +8,7 @@
 #include "xiangqi/internal/moves.h"
 #include "xiangqi/types.h"
 
-namespace xiangqi {
+namespace xq {
 
 namespace {
 
@@ -250,7 +250,7 @@ bool Game::Undo() {
 }
 
 Board<bool> Game::PossibleMoves(Position pos) const {
-  using namespace xiangqi::internal::util;
+  using namespace xq::internal::util;
   using enum Piece;
   const Piece piece = PieceAt(pos);
   const Board<Piece>& board = history_.back();
@@ -427,4 +427,4 @@ Winner Game::GetWinner() const {
   return Winner::DRAW;
 }
 
-}  // namespace xiangqi
+}  // namespace xq

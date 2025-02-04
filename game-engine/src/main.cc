@@ -8,14 +8,14 @@
 
 namespace {
 
-using ::xiangqi::Board;
-using ::xiangqi::Game;
-using ::xiangqi::kTotalCol;
-using ::xiangqi::kTotalRow;
-using ::xiangqi::Piece;
-using ::xiangqi::Player;
-using ::xiangqi::Position;
-using ::xiangqi::Winner;
+using ::xq::Board;
+using ::xq::Game;
+using ::xq::kTotalCol;
+using ::xq::kTotalRow;
+using ::xq::Piece;
+using ::xq::Player;
+using ::xq::Position;
+using ::xq::Winner;
 
 // Converts a Piece value to a one-character representation.
 // Red pieces are uppercase, Black pieces are lowercase, and empty squares are

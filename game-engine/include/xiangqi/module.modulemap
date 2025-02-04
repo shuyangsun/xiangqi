@@ -1,4 +1,4 @@
-module Xiangqi {
+module XiangqiLib {
   header "types.h"
   header "game.h"
   export *

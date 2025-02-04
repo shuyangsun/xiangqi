@@ -7,7 +7,7 @@
 #include <optional>
 #include <type_traits>
 
-namespace xiangqi::internal::util {
+namespace xq::internal::util {
 
 namespace {
 
@@ -500,4 +500,4 @@ Board<bool> PossibleMovesSoldier(const Board<Piece>& board, Position pos) {
   return result;
 }
 
-}  // namespace xiangqi::internal::util
+}  // namespace xq::internal::util
