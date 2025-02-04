@@ -7,7 +7,6 @@
 #include "xiangqi/types.h"
 
 namespace xq {
-
 class Game {
  public:
   // Initialize an empty game with the default Xiangqi opening board.
@@ -47,14 +46,14 @@ class Game {
   // if the board is already at its original state when initialized or reset.
   bool Undo();
 
-  // Returns true if it's checkmade for the current player. I.e., if the current
-  // player does not take certain actions, the opponent can capture the general
-  // with their next move.
+  // Returns true if it's checkmade for the current player. I.e., if the
+  // current player does not take certain actions, the opponent can capture
+  // the general with their next move.
   bool IsCheckMade() const;
 
-  // Returns true if the game is over. For example, one of the generals has been
-  // captured, or if there is no possible move for the current player's general
-  // to not be captured.
+  // Returns true if the game is over. For example, one of the generals has
+  // been captured, or if there is no possible move for the current player's
+  // general to not be captured.
   bool IsGameOver() const;
 
   // Returns the winner if the game is over. Returns DRAW if the game is not
