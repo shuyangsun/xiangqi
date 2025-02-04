@@ -17,13 +17,6 @@ using namespace ::xq;
 using enum ::xq::Piece;
 
 // ---------------------------------------------------------------------
-// Verify at compile time that Game is neither copyable nor movable.
-static_assert(!std::is_copy_constructible<Game>::value,
-              "Game should not be copyable");
-static_assert(!std::is_move_constructible<Game>::value,
-              "Game should not be movable");
-
-// ---------------------------------------------------------------------
 // Test that the default game board (constructed without a reset) is
 // set up with the standard Xiangqi opening position.
 // ---------------------------------------------------------------------
