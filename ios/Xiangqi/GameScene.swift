@@ -10,6 +10,15 @@ class GameScene: SKScene {
     let totalRows = 10
     let totalCols = 9
     
+    let boardColor = SKColor(red: 0.91, green: 0.82, blue: 0.64, alpha: 1.0)
+    let lineColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+    let pieceColor = SKColor(red: 0.80, green: 0.65, blue: 0.57, alpha: 1.0)
+    let pieceStrokeColor = SKColor(red: 0.64, green: 0.5, blue: 0.38, alpha: 1.0)
+    let pieceStrokeSelectedColor = SKColor(red: 0.35, green: 0.22, blue: 0.09, alpha: 1.0)
+    let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
+    let blackTextColor = SKColor(red: 0.15, green: 0.12, blue: 0.1, alpha: 1.0)
+    let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
+
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
     
@@ -28,7 +37,7 @@ class GameScene: SKScene {
     // MARK: - Scene Setup
     
     override func didMove(to view: SKView) {
-        backgroundColor = SKColor(red: 0.95, green: 0.87, blue: 0.70, alpha: 1.0)  // light wooden color
+        backgroundColor = boardColor
         
         // Instead of using the full scene height, reserve a margin.
         let boardHeight = size.height * 0.85
@@ -43,23 +52,28 @@ class GameScene: SKScene {
         
         drawBoard()
         drawPieces()
-        addUndoButton()
+        addButtons()
     }
     
     // MARK: - Add Undo Button
     
-    func addUndoButton() {
+    func addButtons() {
         // Create an SKLabelNode to serve as our button.
         let undoButton = SKLabelNode(text: "悔棋")
         undoButton.fontName = "AvenirNext-Bold"
         undoButton.fontSize = 36
-        undoButton.fontColor = .blue
+        undoButton.fontColor = .black
         undoButton.name = "undoButton"
-        // Place it in the blank space to the left of the board.
-        // boardOrigin.x is the left edge of the board so the blank area spans x from 0 to boardOrigin.x.
-        // Center horizontally in that area and vertically in the scene.
-        undoButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2)
+        undoButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 + 50)
         addChild(undoButton)
+        
+        let resetButton = SKLabelNode(text: "重新开始")
+        resetButton.fontName = "AvenirNext-Bold"
+        resetButton.fontSize = 36
+        resetButton.fontColor = .red
+        resetButton.name = "resetButton"
+        resetButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 - 50)
+        addChild(resetButton)
     }
     
     // MARK: - Coordinate Transformation
@@ -120,7 +134,7 @@ class GameScene: SKScene {
             path.addLine(to: end)
             
             let line = SKShapeNode(path: path)
-            line.strokeColor = .black
+            line.strokeColor = lineColor
             line.lineWidth = 2
             addChild(line)
         }
@@ -135,7 +149,7 @@ class GameScene: SKScene {
                 path.addLine(to: end)
                 
                 let line = SKShapeNode(path: path)
-                line.strokeColor = .black
+                line.strokeColor = lineColor
                 line.lineWidth = 2
                 addChild(line)
             } else {
@@ -177,7 +191,7 @@ class GameScene: SKScene {
             path.addLine(to: blackPalaceBottomRight)
             return path
         }())
-        blackDiagonal1.strokeColor = .black
+        blackDiagonal1.strokeColor = lineColor
         blackDiagonal1.lineWidth = 2
         addChild(blackDiagonal1)
         
@@ -203,7 +217,7 @@ class GameScene: SKScene {
             path.addLine(to: redPalaceBottomRight)
             return path
         }())
-        redDiagonal1.strokeColor = .black
+        redDiagonal1.strokeColor = lineColor
         redDiagonal1.lineWidth = 2
         addChild(redDiagonal1)
         
@@ -220,7 +234,7 @@ class GameScene: SKScene {
         // 4. Draw the river labels ("楚河" and "漢界").
         let chuLabel = SKLabelNode(text: "楚河")
         chuLabel.fontSize = 30
-        chuLabel.fontColor = .black
+        chuLabel.fontColor = lineColor
         chuLabel.position = CGPoint(x: boardOrigin.x + boardWidth * 0.25,
                                     y: boardOrigin.y + 4.5 * tileSize)
         chuLabel.verticalAlignmentMode = .center
@@ -228,7 +242,7 @@ class GameScene: SKScene {
         
         let hanLabel = SKLabelNode(text: "漢界")
         hanLabel.fontSize = 30
-        hanLabel.fontColor = .black
+        hanLabel.fontColor = lineColor
         hanLabel.position = CGPoint(x: boardOrigin.x + boardWidth * 0.75,
                                     y: boardOrigin.y + 4.5 * tileSize)
         hanLabel.verticalAlignmentMode = .center
@@ -238,9 +252,6 @@ class GameScene: SKScene {
     // MARK: - Piece Setup
     
     func drawPieces() {
-        // Use a circle to represent each piece.
-        let pieceRadius = tileSize * 0.4
-        
         func pieceText(piece: xq.Piece) -> String {
             switch (piece) {
             case .B_CHARIOT_L, .B_CHARIOT_R, .R_CHARIOT_L, .R_CHARIOT_R:
@@ -272,18 +283,20 @@ class GameScene: SKScene {
             }
         }
         
+        let pieceRadius = tileSize * 0.4
         func createPieceNode(row: Int, col: Int, piece: xq.Piece) {
             let node = SKShapeNode(circleOfRadius: pieceRadius)
             node.position = pointForBoardCoordinate(col: col, row: row)
-            node.fillColor = piece.rawValue > 0 ? .red : .black
-            node.strokeColor = .white
-            node.lineWidth = 2
+            node.fillColor = pieceColor
+            node.strokeColor = pieceStrokeColor
+            node.lineWidth = 5
             node.name = "piece_\(piece.rawValue)"
+            node.zPosition = 1
             
             let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
             label.text = pieceText(piece: piece)
-            label.fontSize = pieceRadius
-            label.fontColor = .white
+            label.fontSize = pieceRadius * 1.2
+            label.fontColor = piece.rawValue > 0 ? redTextColor : blackTextColor
             label.verticalAlignmentMode = .center
             label.horizontalAlignmentMode = .center
             node.addChild(label)
@@ -312,10 +325,15 @@ class GameScene: SKScene {
         let tappedNode = atPoint(location)
         
         // Check if the undo button was tapped.
-        if let name = tappedNode.name, name == "undoButton" ||
-            tappedNode.parent?.name == "undoButton" {
-            undo()
-            return
+        if let name = tappedNode.name {
+            if name == "undoButton" ||
+                tappedNode.parent?.name == "undoButton" {
+                undo()
+                return
+            } else if name == "resetButton" || tappedNode.parent?.name == "resetButton" {
+                reset()
+                return
+            }
         }
 
         guard let boardPointMaybe = boardCoordinateForPoint(location) else {
@@ -337,8 +355,8 @@ class GameScene: SKScene {
                 clearSelection()
             } else if (game.Turn() == .RED && xqPiece.rawValue > 0) || (game.Turn() == .BLACK && xqPiece.rawValue < 0) {
                 // Selecting a different self piece, change selection.
-                selectedPiece?.strokeColor = .white
-                tappedPiece!.strokeColor = .yellow
+                selectedPiece?.strokeColor = pieceStrokeColor
+                tappedPiece!.strokeColor = pieceStrokeSelectedColor
                 selectedRow = tappedRow
                 selectedCol = tappedCol
                 selectedPiece = tappedPiece
@@ -398,6 +416,25 @@ class GameScene: SKScene {
         }
     }
     
+    func reset() {
+        game.Reset()
+
+        clearSelection()
+        clearPossibleMovesMark()
+
+        for row in 0..<totalRows {
+            for col in 0..<totalCols {
+                let piece = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                if piece != .EMPTY {
+                    let node = pieceToNode[piece]
+                    node?.position = pointForBoardCoordinate(col: col, row: row)
+                    node?.isHidden = false
+                }
+            }
+        }
+
+    }
+    
     func drawPossibleMoves(row: UInt8, col: UInt8) {
         let possibleMoves = self.game.PossibleMoves(xq.Position(row: row, col: col))
         for row in 0...9 {
@@ -411,9 +448,9 @@ class GameScene: SKScene {
     }
     
     func createPossibleMovesMark(row: Int, col: Int) {
-        let mark = SKShapeNode(circleOfRadius: 5)
+        let mark = SKShapeNode(circleOfRadius: 10)
         mark.position = pointForBoardCoordinate(col: col, row: row)
-        mark.fillColor = .blue
+        mark.fillColor = possibleMoveColor
         self.possibleMovesMark.append(mark)
         addChild(mark)
     }
@@ -426,7 +463,7 @@ class GameScene: SKScene {
     }
     
     func clearSelection() {
-        self.selectedPiece?.strokeColor = .white
+        self.selectedPiece?.strokeColor = pieceStrokeColor
         self.selectedRow = nil
         self.selectedCol = nil
         self.selectedPiece = nil
