@@ -527,4 +527,20 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
   EXPECT_TRUE(game.IsCheckMade());
 }
 
+TEST(GameHistory, ExportAndRestoreMoves) {
+  Game game;
+  game.Move({7, 1}, {0, 1});
+  game.Move({0, 0}, {0, 1});
+  game.Move({7, 7}, {0, 7});
+  game.Move({0, 8}, {0, 7});
+
+  Game game2;
+  game2.RestoreMoves(game.ExportMoves());
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      EXPECT_EQ(game.PieceAt({row, col}), game2.PieceAt({row, col}));
+    }
+  }
+}
+
 }  // namespace

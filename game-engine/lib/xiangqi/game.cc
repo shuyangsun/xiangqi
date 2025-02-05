@@ -431,10 +431,30 @@ Winner Game::GetWinner() const {
   return Winner::DRAW;
 }
 
-std::vector<uint16_t> Game::ExportMoves() const { return {}; }
+std::vector<uint16_t> Game::ExportMoves() const {
+  std::vector<uint16_t> result;
+  result.reserve(moves_.size());
+  for (const MoveAction& move : moves_) {
+    result.emplace_back((static_cast<uint16_t>(move.from.row) << 12) |
+                        (static_cast<uint16_t>(move.from.col) << 8) |
+                        (static_cast<uint16_t>(move.to.row) << 4) |
+                        move.to.col);
+  }
+  return result;
+}
 
 void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
-  // TODO
+  for (const uint16_t move : moves) {
+    Move(
+        Position{
+            .row = static_cast<uint8_t>((move & 0xF000) >> 12),
+            .col = static_cast<uint8_t>((move & 0x0F00) >> 8),
+        },
+        Position{
+            .row = static_cast<uint8_t>((move & 0x00F0) >> 4),
+            .col = static_cast<uint8_t>((move & 0x000F)),
+        });
+  }
 }
 
 }  // namespace xq
