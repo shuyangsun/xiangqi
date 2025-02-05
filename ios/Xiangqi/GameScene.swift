@@ -64,7 +64,8 @@ class GameScene: SKScene {
         let relativeY = point.y - boardOrigin.y
 
         // Check that the point is within the board’s rectangle.
-        if relativeX < 0 || relativeX > boardWidth || relativeY < 0 || relativeY > boardHeight {
+        let tsizeHalf = tileSize / 2
+        if relativeX < -tsizeHalf || relativeX > boardWidth + tsizeHalf || relativeY < -tsizeHalf || relativeY > boardHeight + tsizeHalf {
             return nil
         }
 
@@ -298,27 +299,32 @@ class GameScene: SKScene {
         } else if let parent = tappedNode.parent as? SKShapeNode, parent.name != nil && parent.name!.starts(with:"piece_") {
             pieceNode = parent
         }
+        
+        let boardPointMaybe = boardCoordinateForPoint(location)
+        if boardPointMaybe == nil {
+            return;
+        }
+        let row = boardPointMaybe!.row
+        let col = boardPointMaybe!.col
 
         if let tappedPiece = pieceNode {
             // If no piece is selected, select this piece.
             if selectedPiece == nil {
                 // Calculate the board coordinate (if the touch is within the board)
-                if let boardCoord = boardCoordinateForPoint(location) {
-                    self.selectedRow = boardCoord.row
-                    self.selectedCol = boardCoord.col
-                    let tappedValue = self.game.PieceAt(xq.Position(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))).rawValue
-                    let isRedTurn = self.game.Turn() == .RED && tappedValue > 0
-                    let isBlackTurn = self.game.Turn() == .BLACK && tappedValue < 0
-                    if isRedTurn || isBlackTurn {
-                        selectedPiece = tappedPiece
-                        tappedPiece.strokeColor = .yellow
-                        drawPossibleMoves(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))
-                    }
+                self.selectedRow = row
+                self.selectedCol = col
+                let tappedValue = self.game.PieceAt(xq.Position(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))).rawValue
+                let isRedTurn = self.game.Turn() == .RED && tappedValue > 0
+                let isBlackTurn = self.game.Turn() == .BLACK && tappedValue < 0
+                if isRedTurn || isBlackTurn {
+                    selectedPiece = tappedPiece
+                    tappedPiece.strokeColor = .yellow
+                    drawPossibleMoves(row: UInt8(self.selectedRow!), col: UInt8(self.selectedCol!))
                 }
             } else {
-                // If the same piece is tapped, deselect it.
                 self.clearPossibleMovesMark()
                 if tappedPiece == selectedPiece {
+                    // If the same piece is tapped, deselect it.
                     tappedPiece.strokeColor = .white
                     selectedPiece = nil
                 } else {
