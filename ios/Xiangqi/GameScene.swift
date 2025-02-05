@@ -1,6 +1,7 @@
 import Foundation
 import SpriteKit
 import XiangqiLib
+import UIKit  // Needed for UIAlertController
 
 class GameScene: SKScene {
     
@@ -19,7 +20,7 @@ class GameScene: SKScene {
     let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
     let blackTextColor = SKColor(red: 0.15, green: 0.12, blue: 0.1, alpha: 1.0)
     let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
-
+    
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
     
@@ -58,10 +59,10 @@ class GameScene: SKScene {
         addStatusLabels()
     }
     
-    // MARK: - Add Undo Button
+    // MARK: - Add Buttons
     
     func addButtons() {
-        // Create an SKLabelNode to serve as our button.
+        // Undo button.
         let undoButton = SKLabelNode(text: "悔棋")
         undoButton.fontName = "AvenirNext-Bold"
         undoButton.fontSize = 36
@@ -70,6 +71,7 @@ class GameScene: SKScene {
         undoButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 + 50)
         addChild(undoButton)
         
+        // Reset button.
         let resetButton = SKLabelNode(text: "重新开始")
         resetButton.fontName = "AvenirNext-Bold"
         resetButton.fontSize = 36
@@ -104,6 +106,25 @@ class GameScene: SKScene {
             winnerLabel.fontColor = .black
             winnerLabel.text = "黑方胜！"
         }
+    }
+    
+    // MARK: - Confirmation Alert for Reset
+    
+    func showResetConfirmation() {
+        // Get the view controller from the scene's view.
+        guard let viewController = self.view?.window?.rootViewController else { return }
+        
+        let alert = UIAlertController(title: "确认重置", message: "您确定要重新开始游戏吗？", preferredStyle: .alert)
+        
+        // Cancel action.
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        
+        // Confirm action.
+        alert.addAction(UIAlertAction(title: "确认", style: .destructive, handler: { _ in
+            self.reset()
+        }))
+        
+        viewController.present(alert, animated: true, completion: nil)
     }
     
     // MARK: - Coordinate Transformation
@@ -354,18 +375,18 @@ class GameScene: SKScene {
         // Identify the node at the touch location.
         let tappedNode = atPoint(location)
         
-        // Check if the undo button was tapped.
+        // Check if the undo or reset buttons were tapped.
         if let name = tappedNode.name {
-            if name == "undoButton" ||
-                tappedNode.parent?.name == "undoButton" {
+            if name == "undoButton" || tappedNode.parent?.name == "undoButton" {
                 undo()
                 return
             } else if name == "resetButton" || tappedNode.parent?.name == "resetButton" {
-                reset()
+                // Instead of resetting immediately, show a confirmation alert.
+                showResetConfirmation()
                 return
             }
         }
-
+        
         guard let boardPointMaybe = boardCoordinateForPoint(location) else {
             return // Touch is outside board.
         }
@@ -378,7 +399,7 @@ class GameScene: SKScene {
         let tappedCol = boardPointMaybe.col
         let xqPiece = game.PieceAt(xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol)))
         let tappedPiece = pieceToNode[xqPiece]
-
+        
         if tappedPiece != nil {
             if selectedPieceValue == xqPiece {
                 // Selecting the same piece, deselect.
@@ -446,7 +467,7 @@ class GameScene: SKScene {
                 undoSingleMove()
             }
         }
-
+        
         clearPossibleMovesMark()
         clearSelection()
         updateStatusLabels()
@@ -454,10 +475,10 @@ class GameScene: SKScene {
     
     func reset() {
         game.Reset()
-
+        
         clearSelection()
         clearPossibleMovesMark()
-
+        
         for row in 0..<totalRows {
             for col in 0..<totalCols {
                 let piece = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
