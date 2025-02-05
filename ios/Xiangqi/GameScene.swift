@@ -309,35 +309,34 @@ class GameScene: SKScene {
         }
         
         // Touching board:
-        if game.Turn() != .RED { return }
         clearPossibleMovesMark()
         
-        let row = boardPointMaybe!.row
-        let col = boardPointMaybe!.col
+        let tappedRow = boardPointMaybe!.row
+        let tappedCol = boardPointMaybe!.col
 
         if let tappedPiece = pieceNode {
-            let xqPiece = self.game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+            let xqPiece = self.game.PieceAt(xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol)))
             if selectedPieceValue == xqPiece {
                 // Selecting the same piece, deselect.
                 clearSelection()
-            } else if xqPiece.rawValue > 0 {
-                // Selecting a different red piece, change selection.
+            } else if (game.Turn() == .RED && xqPiece.rawValue > 0) || (game.Turn() == .BLACK && xqPiece.rawValue < 0) {
+                // Selecting a different self piece, change selection.
                 selectedPiece?.strokeColor = .white
                 tappedPiece.strokeColor = .yellow
-                selectedRow = row
-                selectedCol = col
+                selectedRow = tappedRow
+                selectedCol = tappedCol
                 selectedPiece = tappedPiece
                 selectedPieceValue = xqPiece
-                self.drawPossibleMoves(row: UInt8(row), col: UInt8(col))
-            } else {
-                // Selecting a black piece, check possible moves.
+                self.drawPossibleMoves(row: UInt8(tappedRow), col: UInt8(tappedCol))
+            } else if selectedPiece != nil && ((game.Turn() == .RED && xqPiece.rawValue < 0) || (game.Turn() == .BLACK && xqPiece.rawValue > 0)) {
+                // Selecting an opponent piece, check possible moves.
                 let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
-                if possibleMoves[row][col], let destination = snappedPosition(from: tappedPiece.position) {
+                if possibleMoves[tappedRow][tappedCol], let destination = snappedPosition(from: tappedPiece.position) {
                     let moveAction = SKAction.move(to: destination, duration: 0.3)
                     selectedPiece?.run(moveAction)
                     game.Move(
                         xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
-                        xq.Position(row: UInt8(row), col: UInt8(col))
+                        xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
                     )
                     tappedPiece.isHidden = true
                 }
@@ -346,12 +345,12 @@ class GameScene: SKScene {
         } else if selectedPiece != nil {
             // Move to empty space.
             let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
-            if possibleMoves[row][col],  let destination = snappedPosition(from: location) {
+            if possibleMoves[tappedRow][tappedCol],  let destination = snappedPosition(from: location) {
                 let moveAction = SKAction.move(to: destination, duration: 0.3)
                 selectedPiece?.run(moveAction)
                 game.Move(
                     xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
-                    xq.Position(row: UInt8(row), col: UInt8(col))
+                    xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
                 )
             }
             clearSelection()
