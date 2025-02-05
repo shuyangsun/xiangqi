@@ -202,6 +202,8 @@ void Game::Reset(std::unordered_map<Piece, Position>&& piece_pos) {
 
 Player Game::Turn() const { return player_; }
 
+size_t Game::MovesCount() const { return moves_.size(); }
+
 void Game::MakeBlackMoveFirst() {
   if (history_.size() > 1) {
     return;

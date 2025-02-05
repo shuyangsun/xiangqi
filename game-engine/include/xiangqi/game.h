@@ -24,6 +24,9 @@ class Game {
   // Returns true if it is red's turn, false if black's.
   Player Turn() const;
 
+  // Returns the number of moves has been made in this game.
+  size_t MovesCount() const;
+
   // Change the starting turn to Black.
   void MakeBlackMoveFirst();
 

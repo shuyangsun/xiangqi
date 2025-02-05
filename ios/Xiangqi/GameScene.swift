@@ -386,7 +386,7 @@ class GameScene: SKScene {
             if name == "undoButton" || tappedNode.parent?.name == "undoButton" {
                 undo()
                 return
-            } else if name == "resetButton" || tappedNode.parent?.name == "resetButton" {
+            } else if (name == "resetButton" || tappedNode.parent?.name == "resetButton") && game.MovesCount() > 0 {
                 // Instead of resetting immediately, show a confirmation alert.
                 showResetConfirmation()
                 return
