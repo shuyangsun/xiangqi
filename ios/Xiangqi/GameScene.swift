@@ -17,7 +17,7 @@ class GameScene: SKScene {
     // We will align the board so that its right edge is flush with the scene’s right edge.
     var boardOrigin: CGPoint = .zero
 
-    // Keep track of a selected piece.
+    var humanVsHuman: Bool = true
     var selectedPiece: SKShapeNode?
     var selectedPieceValue: xq.Piece?
     var selectedRow: Int?
@@ -309,6 +309,7 @@ class GameScene: SKScene {
         }
         
         // Touching board:
+        if !humanVsHuman && game.Turn() != .RED { return }
         clearPossibleMovesMark()
         
         let tappedRow = boardPointMaybe!.row
