@@ -305,7 +305,7 @@ class GameScene: SKScene {
         
         let boardPointMaybe = boardCoordinateForPoint(location)
         if boardPointMaybe == nil {
-            return; // TODO: other menu stuff.
+            return; // TODO
         }
         
         // Touching board:
@@ -355,6 +355,29 @@ class GameScene: SKScene {
                 )
             }
             clearSelection()
+        }
+    }
+    
+    func undo() {
+        if !game.CanUndo() { return }
+        
+        func undoSingleMove() {
+            let undoneMove = game.Undo()
+            if let original = snappedPosition(from: pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))) {
+                let moveAction = SKAction.move(to: original, duration: 0.3)
+                pieceToNode[undoneMove.piece]?.run(moveAction)
+                if undoneMove.captured != .EMPTY {
+                    pieceToNode[undoneMove.captured]?.isHidden = false
+                }
+            }
+        }
+        if humanVsHuman {
+            undoSingleMove()
+        } else {
+            undoSingleMove()
+            if game.Turn() != .RED && game.CanUndo() {
+                undoSingleMove()
+            }
         }
     }
     
