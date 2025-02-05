@@ -63,6 +63,13 @@ class Game {
   // over.
   Winner GetWinner() const;
 
+  // Export moves as vector of uint16_t. The integer represents four 4-bit
+  // integers as from.row, from.col, to.row and to.col.
+  std::vector<uint16_t> ExportMoves() const;
+
+  // Restores game state from exported moves.
+  void RestoreMoves(const std::vector<uint16_t>& moves) const;
+
  private:
   Player player_ = Player::RED;
   std::vector<Board<Piece>> history_;

@@ -4,6 +4,7 @@
 #include <cctype>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "xiangqi/internal/moves.h"
 #include "xiangqi/types.h"
@@ -428,6 +429,12 @@ Winner Game::GetWinner() const {
     return Winner::DRAW;
   }
   return Winner::DRAW;
+}
+
+std::vector<uint16_t> Game::ExportMoves() const { return {}; }
+
+void Game::RestoreMoves(const std::vector<uint16_t>& moves) const {
+  // TODO
 }
 
 }  // namespace xq
