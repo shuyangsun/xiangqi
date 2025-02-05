@@ -284,6 +284,7 @@ class GameScene: SKScene {
         
         // 4. Draw the river labels ("楚河" and "漢界").
         let chuLabel = SKLabelNode(text: "楚河")
+        chuLabel.fontName = "AvenirNext-Bold"
         chuLabel.fontSize = 30
         chuLabel.fontColor = lineColor
         chuLabel.position = CGPoint(x: boardOrigin.x + boardWidth * 0.25,
@@ -292,6 +293,7 @@ class GameScene: SKScene {
         addChild(chuLabel)
         
         let hanLabel = SKLabelNode(text: "漢界")
+        hanLabel.fontName = "AvenirNext-Bold"
         hanLabel.fontSize = 30
         hanLabel.fontColor = lineColor
         hanLabel.position = CGPoint(x: boardOrigin.x + boardWidth * 0.75,
