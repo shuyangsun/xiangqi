@@ -70,10 +70,6 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   return std::nullopt;
 }
 
-int8_t Clip(int8_t num, int8_t lower_bound, int8_t upper_bound) {
-  return std::min(std::max(num, lower_bound), upper_bound);
-}
-
 }  // namespace
 
 Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {

@@ -7,8 +7,8 @@ class GameScene: SKScene {
     var game = xq.Game()
 
     // Board dimensions (number of columns and rows in our data structure)
-    let totalRows = 10   // Rows (ranks)
-    let totalCols = 9    // Columns (files)
+    let totalRows = 10
+    let totalCols = 9
 
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
@@ -23,6 +23,7 @@ class GameScene: SKScene {
     var selectedRow: Int?
     var selectedCol: Int?
     var possibleMovesMark: [SKShapeNode] = []
+    var pieceToNode: [xq.Piece: SKShapeNode] = [:]
 
     // MARK: - Scene Setup
 
@@ -222,67 +223,68 @@ class GameScene: SKScene {
     func drawPieces() {
         // Use a circle to represent each piece.
         let pieceRadius = tileSize * 0.4
+        
+        func pieceText(piece: xq.Piece) -> String {
+            switch (piece) {
+            case .B_CHARIOT_L, .B_CHARIOT_R, .R_CHARIOT_L, .R_CHARIOT_R:
+                return "車"
+            case .B_HORSE_L, .B_HORSE_R, .R_HORSE_L, .R_HORSE_R:
+                return "馬"
+            case .B_ELEPHANT_L, .B_ELEPHANT_R:
+                return "象"
+            case .R_ELEPHANT_L, .R_ELEPHANT_R:
+                return "象"
+            case .B_ADVISOR_L, .B_ADVISOR_R:
+                return "士"
+            case .R_ADVISOR_L, .R_ADVISOR_R:
+                return "仕"
+            case .B_GENERAL:
+                return "将"
+            case .R_GENERAL:
+                return "帥"
+            case .B_CANNON_L, .B_CANNON_R:
+                return "砲"
+            case .R_CANNON_L, .R_CANNON_R:
+                return "炮"
+            case .B_SOLDIER_1, .B_SOLDIER_2, .B_SOLDIER_3, .B_SOLDIER_4, .B_SOLDIER_5:
+                return "卒"
+            case .R_SOLDIER_1, .R_SOLDIER_2, .R_SOLDIER_3, .R_SOLDIER_4, .R_SOLDIER_5:
+                return "兵"
+            default:
+                return "?"
+            }
+        }
 
-        /// Helper function to create a piece node.
-        func createPieceNode(col: Int, row: Int, text: String, xqPiece: xq.Piece) {
-            let piece = SKShapeNode(circleOfRadius: pieceRadius)
-            piece.position = pointForBoardCoordinate(col: col, row: row)
-            piece.fillColor = xqPiece.rawValue > 0 ? .red : .black
-            piece.strokeColor = .white
-            piece.lineWidth = 2
-            piece.name = "piece_\(xqPiece.rawValue)"
+        func createPieceNode(row: Int, col: Int, piece: xq.Piece) {
+            let node = SKShapeNode(circleOfRadius: pieceRadius)
+            node.position = pointForBoardCoordinate(col: col, row: row)
+            node.fillColor = piece.rawValue > 0 ? .red : .black
+            node.strokeColor = .white
+            node.lineWidth = 2
+            node.name = "piece_\(piece.rawValue)"
 
             let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
-            label.text = text
+            label.text = pieceText(piece: piece)
             label.fontSize = pieceRadius
             label.fontColor = .white
             label.verticalAlignmentMode = .center
             label.horizontalAlignmentMode = .center
-            piece.addChild(label)
+            node.addChild(label)
 
-            addChild(piece)
+            addChild(node)
+            pieceToNode[piece] = node
         }
 
-        // --- Black Pieces (opponent) ---
-        createPieceNode(col: 0, row: 0, text: "車", xqPiece: xq.Piece.B_CHARIOT_L)
-        createPieceNode(col: 8, row: 0, text: "車", xqPiece: xq.Piece.B_CHARIOT_R)
-        createPieceNode(col: 1, row: 0, text: "馬", xqPiece: xq.Piece.B_HORSE_L)
-        createPieceNode(col: 7, row: 0, text: "馬", xqPiece: xq.Piece.B_HORSE_R)
-        createPieceNode(col: 2, row: 0, text: "象", xqPiece: xq.Piece.B_ELEPHANT_L)
-        createPieceNode(col: 6, row: 0, text: "象", xqPiece: xq.Piece.B_ELEPHANT_R)
-        createPieceNode(col: 3, row: 0, text: "士", xqPiece: xq.Piece.B_ADVISOR_L)
-        createPieceNode(col: 5, row: 0, text: "士", xqPiece: xq.Piece.B_ADVISOR_R)
-        createPieceNode(col: 4, row: 0, text: "將", xqPiece: xq.Piece.B_GENERAL)
-        // Cannons (row 2)
-        createPieceNode(col: 1, row: 2, text: "砲", xqPiece: xq.Piece.B_CANNON_L)
-        createPieceNode(col: 7, row: 2, text: "砲", xqPiece: xq.Piece.B_CANNON_R)
-        // Soldiers (row 3)
-        createPieceNode(col: 0, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_1)
-        createPieceNode(col: 2, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_2)
-        createPieceNode(col: 4, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_3)
-        createPieceNode(col: 6, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_4)
-        createPieceNode(col: 8, row: 3, text: "卒", xqPiece: xq.Piece.B_SOLDIER_5)
-
-        // --- Red Pieces (self) ---
-        createPieceNode(col: 0, row: 9, text: "車", xqPiece: xq.Piece.R_CHARIOT_L)
-        createPieceNode(col: 8, row: 9, text: "車", xqPiece: xq.Piece.R_CHARIOT_R)
-        createPieceNode(col: 1, row: 9, text: "馬", xqPiece: xq.Piece.R_HORSE_L)
-        createPieceNode(col: 7, row: 9, text: "馬", xqPiece: xq.Piece.R_HORSE_R)
-        createPieceNode(col: 2, row: 9, text: "相", xqPiece: xq.Piece.R_ELEPHANT_L)
-        createPieceNode(col: 6, row: 9, text: "相", xqPiece: xq.Piece.R_ELEPHANT_R)
-        createPieceNode(col: 3, row: 9, text: "仕", xqPiece: xq.Piece.R_ADVISOR_L)
-        createPieceNode(col: 5, row: 9, text: "仕", xqPiece: xq.Piece.R_ADVISOR_R)
-        createPieceNode(col: 4, row: 9, text: "帥", xqPiece: xq.Piece.R_GENERAL)
-        // Cannons (row 7)
-        createPieceNode(col: 1, row: 7, text: "炮", xqPiece: xq.Piece.R_CANNON_L)
-        createPieceNode(col: 7, row: 7, text: "炮", xqPiece: xq.Piece.R_CANNON_R)
-        // Soldiers (row 6)
-        createPieceNode(col: 0, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_1)
-        createPieceNode(col: 2, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_2)
-        createPieceNode(col: 4, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_3)
-        createPieceNode(col: 6, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_4)
-        createPieceNode(col: 8, row: 6, text: "兵", xqPiece: xq.Piece.R_SOLDIER_5)
+        for row in 0..<totalRows {
+            for col in 0..<totalCols {
+                let piece = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                if piece != .EMPTY {
+                    createPieceNode(row: row, col: col, piece: piece)
+                }
+            }
+        }
     }
+    
 
     // MARK: - Touch Handling for Moving Pieces
 
