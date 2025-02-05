@@ -54,6 +54,34 @@ TEST(PossibleMovesTest, RedGeneralCenter) {
   EXPECT_FALSE(moves[8][4]);
 }
 
+TEST(PossibleMovesTest, RedGeneralStarting) {
+  Game game;
+  game.Reset({
+      {R_GENERAL, {9, 4}},
+      {R_ADVISOR_L, {9, 3}},
+      {R_ADVISOR_R, {9, 5}},
+  });
+  Board<bool> moves = game.PossibleMoves({9, 4});
+  EXPECT_TRUE(moves[8][4]);
+  EXPECT_FALSE(moves[9][3]);
+  EXPECT_FALSE(moves[9][5]);
+  EXPECT_FALSE(moves[9][4]);
+  EXPECT_FALSE(moves[8][3]);
+  EXPECT_FALSE(moves[8][5]);
+}
+
+TEST(PossibleMovesTest, RedGeneralStartingNoAdvisor) {
+  Game game;
+  game.Reset({{R_GENERAL, {9, 4}}});
+  Board<bool> moves = game.PossibleMoves({9, 4});
+  EXPECT_TRUE(moves[8][4]);
+  EXPECT_TRUE(moves[9][3]);
+  EXPECT_TRUE(moves[9][5]);
+  EXPECT_FALSE(moves[9][4]);
+  EXPECT_FALSE(moves[8][3]);
+  EXPECT_FALSE(moves[8][5]);
+}
+
 // Black General in the center of its palace.
 TEST(PossibleMovesTest, BlackGeneralCenter) {
   Game game;
@@ -65,6 +93,33 @@ TEST(PossibleMovesTest, BlackGeneralCenter) {
   EXPECT_TRUE(moves[2][4]);
   EXPECT_TRUE(moves[1][3]);
   EXPECT_TRUE(moves[1][5]);
+}
+
+TEST(PossibleMovesTest, BlackGeneralStarting) {
+  Game game;
+  game.Reset({
+      {R_GENERAL, {0, 4}},
+      {R_ADVISOR_L, {0, 3}},
+      {R_ADVISOR_R, {0, 5}},
+  });
+  Board<bool> moves = game.PossibleMoves({0, 4});
+  EXPECT_TRUE(moves[1][4]);
+  EXPECT_FALSE(moves[0][3]);
+  EXPECT_FALSE(moves[0][5]);
+  EXPECT_FALSE(moves[0][4]);
+  EXPECT_FALSE(moves[1][3]);
+  EXPECT_FALSE(moves[1][5]);
+}
+
+TEST(PossibleMovesTest, BlackGeneralStartingNoAdvisor) {
+  Game game;
+  game.Reset({{R_GENERAL, {0, 4}}});
+  Board<bool> moves = game.PossibleMoves({0, 4});
+  EXPECT_TRUE(moves[1][4]);
+  EXPECT_TRUE(moves[0][3]);
+  EXPECT_TRUE(moves[0][5]);
+  EXPECT_FALSE(moves[1][3]);
+  EXPECT_FALSE(moves[1][5]);
 }
 
 //--------------------------------------------------------------

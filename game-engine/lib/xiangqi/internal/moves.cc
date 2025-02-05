@@ -36,15 +36,15 @@ Board<bool> MakeEmptyBoard() {
 
 std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   if (find_red) {
-    for (uint8_t row = 9; row >= 7; row--) {
-      for (uint8_t col = 3; col <= 5; col++) {
+    for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
+      for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
         if (board[row][col] == Piece::R_GENERAL) {
           return {{row, col}};
         }
       }
     }
-    for (uint8_t row = 0; row <= 2; row++) {
-      for (uint8_t col = 3; col <= 5; col++) {
+    for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
+      for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
         if (board[row][col] == Piece::R_GENERAL) {
           return {{row, col}};
         }
@@ -53,15 +53,15 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
     return std::nullopt;
   }
 
-  for (uint8_t row = 0; row <= 2; row++) {
-    for (uint8_t col = 3; col <= 5; col++) {
+  for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
+    for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
       if (board[row][col] == Piece::B_GENERAL) {
         return {{row, col}};
       }
     }
   }
-  for (uint8_t row = 9; row >= 7; row--) {
-    for (uint8_t col = 3; col <= 5; col++) {
+  for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
+    for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
       if (board[row][col] == Piece::B_GENERAL) {
         return {{row, col}};
       }
@@ -103,25 +103,56 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
     }
   }
 
+  int8_t row, col;
   if (piece == Piece::R_GENERAL) {
-    for (int8_t row = Clip(pos.row - 1, 7, 9); row <= Clip(pos.row + 1, 7, 9);
-         row++) {
-      for (int8_t col = Clip(pos.col - 1, 3, 5); col <= Clip(pos.col + 1, 3, 5);
-           col++) {
-        if (IsBlackOrEmpty(board[row][col])) {
-          result[row][col] = true;
-        }
-      }
+    // Move down:
+    row = pos.row + 1;
+    col = pos.col;
+    if (row <= kRedPalaceRowMax && IsBlackOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move up:
+    row = pos.row - 1;
+    col = pos.col;
+    if (row >= kRedPalaceRowMin && IsBlackOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move left:
+    row = pos.row;
+    col = pos.col - 1;
+    if (col >= kPalaceColMin && IsBlackOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move right:
+    row = pos.row;
+    col = pos.col + 1;
+    if (col <= kPalaceColMax && IsBlackOrEmpty(board[row][col])) {
+      result[row][col] = true;
     }
   } else {
-    for (int8_t row = Clip(pos.row - 1, 0, 2); row <= Clip(pos.row + 1, 0, 2);
-         row++) {
-      for (int8_t col = Clip(pos.col - 1, 3, 5); col <= Clip(pos.col + 1, 3, 5);
-           col++) {
-        if (IsRedOrEmpty(board[row][col])) {
-          result[row][col] = true;
-        }
-      }
+    // Move down:
+    row = pos.row + 1;
+    col = pos.col;
+    if (row <= kBlackPalaceRowMax && IsRedOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move up:
+    row = pos.row - 1;
+    col = pos.col;
+    if (row >= kBlackPalaceRowMin && IsRedOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move left:
+    row = pos.row;
+    col = pos.col - 1;
+    if (col >= kPalaceColMin && IsRedOrEmpty(board[row][col])) {
+      result[row][col] = true;
+    }
+    // Move right:
+    row = pos.row;
+    col = pos.col + 1;
+    if (col <= kPalaceColMax && IsRedOrEmpty(board[row][col])) {
+      result[row][col] = true;
     }
   }
   return result;
