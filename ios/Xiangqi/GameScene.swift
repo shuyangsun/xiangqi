@@ -33,6 +33,7 @@ class GameScene: SKScene {
     var selectedCol: Int?
     var possibleMovesMark: [SKShapeNode] = []
     var pieceToNode: [xq.Piece: SKShapeNode] = [:]
+    var winnerLabel: SKLabelNode = SKLabelNode(text: "")
     
     // MARK: - Scene Setup
     
@@ -53,6 +54,7 @@ class GameScene: SKScene {
         drawBoard()
         drawPieces()
         addButtons()
+        addStatusLabels()
     }
     
     // MARK: - Add Undo Button
@@ -70,10 +72,37 @@ class GameScene: SKScene {
         let resetButton = SKLabelNode(text: "重新开始")
         resetButton.fontName = "AvenirNext-Bold"
         resetButton.fontSize = 36
-        resetButton.fontColor = .red
+        resetButton.fontColor = .black
         resetButton.name = "resetButton"
         resetButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 - 50)
         addChild(resetButton)
+    }
+    
+    func addStatusLabels() {
+        winnerLabel.fontName = "AvenirNext-Bold"
+        winnerLabel.fontSize = 42
+        winnerLabel.fontColor = .black
+        winnerLabel.name = "winnerLabel"
+        winnerLabel.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 + 150)
+        addChild(winnerLabel)
+    }
+    
+    func updateStatusLabels() {
+        if !game.IsGameOver() {
+            winnerLabel.text = ""
+            return
+        }
+        let winner = game.GetWinner()
+        if winner == .DRAW {
+            winnerLabel.fontColor = .black
+            winnerLabel.text = "和棋！"
+        } else if winner == .RED {
+            winnerLabel.fontColor = .red
+            winnerLabel.text = "红方胜！"
+        } else if winner == .BLACK {
+            winnerLabel.fontColor = .black
+            winnerLabel.text = "黑方胜！"
+        }
     }
     
     // MARK: - Coordinate Transformation
@@ -377,6 +406,7 @@ class GameScene: SKScene {
                     selectedPiece?.run(moveAction)
                 }
                 clearSelection()
+                updateStatusLabels()
             }
         } else if selectedPiece != nil {
             // Move to empty space.
@@ -390,6 +420,7 @@ class GameScene: SKScene {
                 )
             }
             clearSelection()
+            updateStatusLabels()
         }
     }
     
@@ -414,6 +445,7 @@ class GameScene: SKScene {
                 undoSingleMove()
             }
         }
+        updateStatusLabels()
     }
     
     func reset() {
@@ -432,27 +464,28 @@ class GameScene: SKScene {
                 }
             }
         }
-
+        updateStatusLabels()
     }
     
     func drawPossibleMoves(row: UInt8, col: UInt8) {
+        func createPossibleMovesMark(row: Int, col: Int) {
+            let mark = SKShapeNode(circleOfRadius: 10)
+            mark.position = pointForBoardCoordinate(col: col, row: row)
+            mark.fillColor = possibleMoveColor
+            mark.zPosition = 5
+            possibleMovesMark.append(mark)
+            addChild(mark)
+        }
+        
         let possibleMoves = self.game.PossibleMoves(xq.Position(row: row, col: col))
         for row in 0...9 {
             for col in 0...8 {
                 if (!possibleMoves[row][col]) {
                     continue;
                 }
-                self.createPossibleMovesMark(row: row, col: col)
+                createPossibleMovesMark(row: row, col: col)
             }
         }
-    }
-    
-    func createPossibleMovesMark(row: Int, col: Int) {
-        let mark = SKShapeNode(circleOfRadius: 10)
-        mark.position = pointForBoardCoordinate(col: col, row: row)
-        mark.fillColor = possibleMoveColor
-        self.possibleMovesMark.append(mark)
-        addChild(mark)
     }
     
     func clearPossibleMovesMark() {
