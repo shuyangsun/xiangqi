@@ -68,7 +68,7 @@ class Game {
   std::vector<uint16_t> ExportMoves() const;
 
   // Restores game state from exported moves.
-  void RestoreMoves(const std::vector<uint16_t>& moves) const;
+  void RestoreMoves(const std::vector<uint16_t>& moves);
 
  private:
   Player player_ = Player::RED;

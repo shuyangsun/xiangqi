@@ -433,7 +433,7 @@ Winner Game::GetWinner() const {
 
 std::vector<uint16_t> Game::ExportMoves() const { return {}; }
 
-void Game::RestoreMoves(const std::vector<uint16_t>& moves) const {
+void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
   // TODO
 }
 
