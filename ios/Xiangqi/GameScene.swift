@@ -428,7 +428,7 @@ class GameScene: SKScene {
                     if captured != .EMPTY {
                         pieceToNode[captured]?.isHidden = true
                     }
-                    let moveAction = SKAction.move(to: destination, duration: 0.3)
+                    let moveAction = SKAction.move(to: destination, duration: 0.25)
                     selectedPiece?.run(moveAction)
                 }
                 clearSelection()
@@ -438,7 +438,7 @@ class GameScene: SKScene {
             // Move to empty space.
             let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
             if possibleMoves[tappedRow][tappedCol],  let destination = snappedPosition(from: location) {
-                let moveAction = SKAction.move(to: destination, duration: 0.3)
+                let moveAction = SKAction.move(to: destination, duration: 0.25)
                 selectedPiece?.run(moveAction)
                 game.Move(
                     xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
@@ -456,7 +456,7 @@ class GameScene: SKScene {
         func undoSingleMove() {
             let undoneMove = game.Undo()
             if let original = snappedPosition(from: pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))) {
-                let moveAction = SKAction.move(to: original, duration: 0.3)
+                let moveAction = SKAction.move(to: original, duration: 0.25)
                 pieceToNode[undoneMove.piece]?.run(moveAction)
                 if undoneMove.captured != .EMPTY {
                     pieceToNode[undoneMove.captured]?.isHidden = false
