@@ -170,8 +170,8 @@ TEST(GameTest, MoveNonCapture) {
   game.Reset(std::move(piece_map));
 
   // Move red soldier from (5,5) to an empty square (4,5).
-  bool captured = game.Move({5, 5}, {4, 5});
-  EXPECT_FALSE(captured);
+  Piece captured = game.Move({5, 5}, {4, 5});
+  EXPECT_EQ(captured, EMPTY);
   EXPECT_EQ(game.PieceAt({5, 5}), EMPTY);
   EXPECT_EQ(game.PieceAt({4, 5}), R_SOLDIER_1);
 }
@@ -188,8 +188,8 @@ TEST(GameTest, MoveCapture) {
   game.Reset(std::move(piece_map));
 
   // Move red soldier from (5,5) to (5,6), capturing the black soldier.
-  bool captured = game.Move({5, 5}, {5, 6});
-  EXPECT_TRUE(captured);
+  Piece captured = game.Move({5, 5}, {5, 6});
+  EXPECT_EQ(captured, B_SOLDIER_1);
   EXPECT_EQ(game.PieceAt({5, 5}), EMPTY);
   EXPECT_EQ(game.PieceAt({5, 6}), R_SOLDIER_1);
 }
@@ -204,8 +204,8 @@ TEST(GameTest, MoveFromEmpty) {
   game.Reset(std::move(empty_map));
 
   // Attempt to move from an empty square.
-  bool captured = game.Move({4, 4}, {3, 4});
-  EXPECT_FALSE(captured);
+  Piece captured = game.Move({4, 4}, {3, 4});
+  EXPECT_EQ(captured, EMPTY);
   EXPECT_EQ(game.PieceAt({4, 4}), EMPTY);
   EXPECT_EQ(game.PieceAt({3, 4}), EMPTY);
 }

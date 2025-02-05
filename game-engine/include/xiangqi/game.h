@@ -38,9 +38,9 @@ class Game {
   // returns a board with all false values.
   Board<bool> PossibleMoves(Position pos) const;
 
-  // Move a piece from a position to another position. Returns true if the new
-  // move caused a piece to be taken.
-  bool Move(Position from, Position to);
+  // Move a piece from a position to another position, returns the captured
+  // piece.
+  Piece Move(Position from, Position to);
 
   // Whether or not the player can perform undo action.
   bool CanUndo() const;

@@ -214,16 +214,16 @@ Piece Game::PieceAt(Position pos) const {
   return history_.back()[pos.row][pos.col];
 }
 
-bool Game::Move(Position from, Position to) {
+Piece Game::Move(Position from, Position to) {
   using enum Player;
   if (from.row == to.row && from.col == to.col) {
-    return false;
+    return Piece::EMPTY;
   }
   const Piece piece = PieceAt(from);
   const auto piece_value = static_cast<std::underlying_type_t<Piece>>(piece);
   if (piece == Piece::EMPTY || (player_ == RED && piece_value < 0) ||
       (player_ == BLACK && piece_value > 0)) {
-    return false;
+    return Piece::EMPTY;
   }
 
   Board<Piece> next = history_.back();
@@ -233,7 +233,7 @@ bool Game::Move(Position from, Position to) {
   moves_.emplace_back(piece, from, to, captured);
   history_.emplace_back(next);
   player_ = player_ == RED ? BLACK : RED;
-  return captured != Piece::EMPTY;
+  return captured;
 }
 
 bool Game::CanUndo() const { return history_.size() > 1; }

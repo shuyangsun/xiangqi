@@ -355,13 +355,13 @@ class GameScene: SKScene {
                 // Selecting an opponent piece, check possible moves.
                 let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
                 if possibleMoves[tappedRow][tappedCol], let destination = snappedPosition(from: tappedPiece.position) {
+                    pieceToNode[xqPiece]?.isHidden = true
                     let moveAction = SKAction.move(to: destination, duration: 0.3)
                     selectedPiece?.run(moveAction)
                     game.Move(
                         xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
                         xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
                     )
-                    tappedPiece.isHidden = true
                 }
                 clearSelection()
             }
