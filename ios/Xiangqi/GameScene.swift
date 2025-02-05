@@ -20,7 +20,8 @@ class GameScene: SKScene {
     let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
     let blackTextColor = SKColor(red: 0.15, green: 0.12, blue: 0.1, alpha: 1.0)
     let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
-    
+    let buttonColor = SKColor(red: 0.35, green: 0.70, blue: 0.35, alpha: 1.0)
+
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
     
@@ -62,24 +63,47 @@ class GameScene: SKScene {
     // MARK: - Add Buttons
     
     func addButtons() {
-        // Undo button.
-        let undoButton = SKLabelNode(text: "悔棋")
-        undoButton.fontName = "AvenirNext-Bold"
-        undoButton.fontSize = 36
-        undoButton.fontColor = .black
+        // Create Undo button (背景 + label)
+        let undoSize = CGSize(width: 120, height: 50)
+        let undoButton = SKShapeNode(rectOf: undoSize, cornerRadius: 10)
+        undoButton.fillColor = buttonColor
+        undoButton.strokeColor = .black
+        undoButton.lineWidth = 2
         undoButton.name = "undoButton"
+        // Position the whole button container.
         undoButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 + 50)
         addChild(undoButton)
         
-        // Reset button.
-        let resetButton = SKLabelNode(text: "重新开始")
-        resetButton.fontName = "AvenirNext-Bold"
-        resetButton.fontSize = 36
-        resetButton.fontColor = .black
+        let undoLabel = SKLabelNode(text: "悔棋")
+        undoLabel.fontName = "AvenirNext-Bold"
+        undoLabel.fontSize = 36
+        undoLabel.fontColor = .black
+        undoLabel.verticalAlignmentMode = .center
+        // Setting the name here as well ensures a tap on the text is also recognized.
+        undoLabel.name = "undoButton"
+        undoLabel.position = CGPoint.zero
+        undoButton.addChild(undoLabel)
+        
+        // Create Reset button (背景 + label)
+        let resetSize = CGSize(width: 160, height: 50)
+        let resetButton = SKShapeNode(rectOf: resetSize, cornerRadius: 10)
+        resetButton.fillColor = buttonColor
+        resetButton.strokeColor = .black
+        resetButton.lineWidth = 2
         resetButton.name = "resetButton"
         resetButton.position = CGPoint(x: boardOrigin.x / 2, y: size.height / 2 - 50)
         addChild(resetButton)
+        
+        let resetLabel = SKLabelNode(text: "重新开始")
+        resetLabel.fontName = "AvenirNext-Bold"
+        resetLabel.fontSize = 36
+        resetLabel.fontColor = .black
+        resetLabel.verticalAlignmentMode = .center
+        resetLabel.name = "resetButton"
+        resetLabel.position = CGPoint.zero
+        resetButton.addChild(resetLabel)
     }
+
     
     func addStatusLabels() {
         winnerLabel.fontName = "AvenirNext-Bold"
@@ -382,15 +406,32 @@ class GameScene: SKScene {
         let tappedNode = atPoint(location)
         
         // Check if the undo or reset buttons were tapped.
-        if let name = tappedNode.name {
-            if name == "undoButton" || tappedNode.parent?.name == "undoButton" {
-                undo()
-                return
-            } else if (name == "resetButton" || tappedNode.parent?.name == "resetButton") && game.MovesCount() > 0 {
-                // Instead of resetting immediately, show a confirmation alert.
-                showResetConfirmation()
-                return
+        // (This covers taps on either the button background or its child label.)
+        if let nodeName = tappedNode.name, nodeName == "undoButton" || tappedNode.parent?.name == "undoButton" {
+            // Get the button container node.
+            let buttonNode = tappedNode.name == "undoButton" ? tappedNode : tappedNode.parent!
+            // Run a quick scale animation to indicate the tap.
+            let scaleAction = SKAction.sequence([
+                SKAction.scale(to: 0.9, duration: 0.1),
+                SKAction.scale(to: 1.0, duration: 0.1)
+            ])
+            buttonNode.run(scaleAction) {
+                self.undo()
             }
+            return
+        } else if let nodeName = tappedNode.name, nodeName == "resetButton" || tappedNode.parent?.name == "resetButton" {
+            let buttonNode = tappedNode.name == "resetButton" ? tappedNode : tappedNode.parent!
+            let scaleAction = SKAction.sequence([
+                SKAction.scale(to: 0.9, duration: 0.1),
+                SKAction.scale(to: 1.0, duration: 0.1)
+            ])
+            buttonNode.run(scaleAction) {
+                // Only prompt for confirmation if moves have been made.
+                if self.game.MovesCount() > 0 {
+                    self.showResetConfirmation()
+                }
+            }
+            return
         }
         
         guard let boardPointMaybe = boardCoordinateForPoint(location) else {
