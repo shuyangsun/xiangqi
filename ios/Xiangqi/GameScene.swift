@@ -87,7 +87,7 @@ class GameScene: SKScene {
         // Create Reset button (背景 + label)
         let resetSize = CGSize(width: 160, height: 50)
         let resetButton = SKShapeNode(rectOf: resetSize, cornerRadius: 10)
-        resetButton.fillColor = buttonColor
+        resetButton.fillColor = .red
         resetButton.strokeColor = .black
         resetButton.lineWidth = 2
         resetButton.name = "resetButton"
