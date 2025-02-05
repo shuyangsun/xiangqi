@@ -13,6 +13,7 @@ class GameScene: SKScene {
     let boardColor = SKColor(red: 0.91, green: 0.82, blue: 0.64, alpha: 1.0)
     let lineColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
     let pieceColor = SKColor(red: 0.80, green: 0.65, blue: 0.57, alpha: 1.0)
+    let pieceColorThreatened = SKColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 0.9)
     let pieceStrokeColor = SKColor(red: 0.64, green: 0.5, blue: 0.38, alpha: 1.0)
     let pieceStrokeSelectedColor = SKColor(red: 0.35, green: 0.22, blue: 0.09, alpha: 1.0)
     let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
@@ -445,6 +446,9 @@ class GameScene: SKScene {
                 undoSingleMove()
             }
         }
+
+        clearPossibleMovesMark()
+        clearSelection()
         updateStatusLabels()
     }
     
@@ -478,12 +482,17 @@ class GameScene: SKScene {
         }
         
         let possibleMoves = self.game.PossibleMoves(xq.Position(row: row, col: col))
-        for row in 0...9 {
-            for col in 0...8 {
+        for row in 0..<totalRows {
+            for col in 0..<totalCols {
                 if (!possibleMoves[row][col]) {
                     continue;
                 }
-                createPossibleMovesMark(row: row, col: col)
+                let capture = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                if capture != .EMPTY {
+                    pieceToNode[capture]?.fillColor = pieceColorThreatened
+                } else {
+                    createPossibleMovesMark(row: row, col: col)
+                }
             }
         }
     }
@@ -493,6 +502,9 @@ class GameScene: SKScene {
             mark.removeFromParent()
         }
         self.possibleMovesMark.removeAll()
+        for node in self.pieceToNode.values {
+            node.fillColor = pieceColor
+        }
     }
     
     func clearSelection() {
