@@ -352,6 +352,10 @@ class GameScene: SKScene {
             label.horizontalAlignmentMode = .center
             node.addChild(label)
             
+            if humanVsHuman && piece.rawValue < 0 {
+                node.zRotation = CGFloat(Double.pi)
+            }
+            
             addChild(node)
             pieceToNode[piece] = node
         }
