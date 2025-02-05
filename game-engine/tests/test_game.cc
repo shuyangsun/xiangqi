@@ -232,7 +232,7 @@ TEST(GameTest, CurrentBoardReturnsCopy) {
 // ---------------------------------------------------------------------
 TEST(GameTest, UndoWithoutMove) {
   Game game;
-  EXPECT_FALSE(game.Undo());
+  EXPECT_FALSE(game.CanUndo());
 }
 
 // ---------------------------------------------------------------------
@@ -247,13 +247,22 @@ TEST(GameTest, UndoAfterOneMove) {
 
   Board<Piece> board_before = game.CurrentBoard();
 
-  // Make a move.
   game.Move({5, 5}, {4, 5});
   EXPECT_EQ(game.PieceAt({5, 5}), EMPTY);
   EXPECT_EQ(game.PieceAt({4, 5}), R_SOLDIER_1);
 
   // Undo the move.
-  EXPECT_TRUE(game.Undo());
+  const MoveAction undo_action = game.Undo();
+  const MoveAction expected{.piece = R_SOLDIER_1,
+                            .from = Position{5, 5},
+                            .to = Position{4, 5},
+                            .captured = EMPTY};
+  EXPECT_EQ(undo_action.piece, expected.piece);
+  EXPECT_EQ(undo_action.from.row, expected.from.row);
+  EXPECT_EQ(undo_action.from.col, expected.from.col);
+  EXPECT_EQ(undo_action.to.row, expected.to.row);
+  EXPECT_EQ(undo_action.to.col, expected.to.col);
+  EXPECT_EQ(undo_action.captured, expected.captured);
   Board<Piece> board_after = game.CurrentBoard();
   EXPECT_EQ(board_before, board_after);
 }
@@ -275,13 +284,14 @@ TEST(GameTest, UndoMultipleMoves) {
   game.Move({3, 4}, {4, 4});
 
   // Undo the second move.
-  EXPECT_TRUE(game.Undo());
+  EXPECT_TRUE(game.CanUndo());
+  game.Undo();
   EXPECT_EQ(game.PieceAt({5, 4}), R_SOLDIER_3);
   EXPECT_EQ(game.PieceAt({4, 4}), EMPTY);
   EXPECT_EQ(game.PieceAt({3, 4}), B_SOLDIER_3);
 
-  // Undo the first move.
-  EXPECT_TRUE(game.Undo());
+  EXPECT_TRUE(game.CanUndo());
+  game.Undo();
   Board<Piece> board_after = game.CurrentBoard();
   EXPECT_EQ(initial_board, board_after);
 }
@@ -302,7 +312,7 @@ TEST(GameTest, ResetClearsHistory) {
   // Now reset to the default board.
   game.Reset();
   // Undo should now fail because history has been cleared.
-  EXPECT_FALSE(game.Undo());
+  EXPECT_FALSE(game.CanUndo());
 }
 
 // ---------------------------------------------------------------------

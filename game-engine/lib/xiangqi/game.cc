@@ -227,26 +227,29 @@ bool Game::Move(Position from, Position to) {
   }
 
   Board<Piece> next = history_.back();
-  const bool taken = next[to.row][to.col] != EMPTY;
+  Piece captured = next[to.row][to.col];
   next[to.row][to.col] = PieceAt(from);
-  next[from.row][from.col] = EMPTY;
-  moves_.emplace_back(piece, from, to);
+  next[from.row][from.col] = Piece::EMPTY;
+  moves_.emplace_back(piece, from, to, captured);
   history_.emplace_back(next);
   player_ = player_ == RED ? BLACK : RED;
-  return taken;
+  return captured != Piece::EMPTY;
 }
 
-bool Game::Undo() {
+bool Game::CanUndo() const { return history_.size() > 1; }
+
+MoveAction Game::Undo() {
   using enum Player;
 
-  if (history_.size() <= 1) {
-    return false;
+  if (!CanUndo()) {
+    // Dummy move action.
+    return {Piece::EMPTY, {1, 0}, {1, 0}, Piece::EMPTY};
   }
-
+  MoveAction result = moves_.back();
   moves_.pop_back();
   history_.pop_back();
   player_ = player_ == RED ? BLACK : RED;
-  return true;
+  return result;
 }
 
 Board<bool> Game::PossibleMoves(Position pos) const {

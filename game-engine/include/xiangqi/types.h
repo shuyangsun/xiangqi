@@ -69,6 +69,7 @@ struct MoveAction {
   Piece piece;
   Position from;
   Position to;
+  Piece captured;
 };
 
 }  // namespace xq

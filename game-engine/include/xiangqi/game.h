@@ -42,9 +42,12 @@ class Game {
   // move caused a piece to be taken.
   bool Move(Position from, Position to);
 
-  // Undo last move. Returns true if succeeded, false otherwise. Cannot undo
+  // Whether or not the player can perform undo action.
+  bool CanUndo() const;
+
+  // Undo last move. Returns the move action that was reversed. Cannot undo
   // if the board is already at its original state when initialized or reset.
-  bool Undo();
+  MoveAction Undo();
 
   // Returns true if it's checkmade for the current player. I.e., if the
   // current player does not take certain actions, the opponent can capture
