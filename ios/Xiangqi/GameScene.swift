@@ -4,10 +4,19 @@ import GameKit
 import XiangqiLib
 import UIKit  // Needed for UIAlertController
 
-struct GameData {
+struct GameData: Codable {
     var board: [[Int8]]
     var moves: [UInt16]
-    var movesTs: [Date]
+    // We can encode Dates as ISO8601 strings or as timestamps.
+    // For simplicity, we encode them as Doubles (time intervals).
+    var movesTs: [TimeInterval]
+    
+    // A custom initializer to convert [Date] to [TimeInterval].
+    init(board: [[Int8]], moves: [UInt16], movesTs: [Date]) {
+        self.board = board
+        self.moves = moves
+        self.movesTs = movesTs.map { $0.timeIntervalSince1970 }
+    }
 }
 
 class GameScene: SKScene {
@@ -532,8 +541,40 @@ class GameScene: SKScene {
     }
     
     func reset() {
+        if game.MovesCount() <= 0 {
+            return
+        }
         let gameData = exportGameData()
-        // TODO: save data for GameKit player.
+        do {
+            let historyKey = "xiangqi_history"
+            let gameKeyPrefix = "game_"
+            var histories: [String] = []
+
+            let encoder = JSONEncoder()
+            // Optionally configure the encoder:
+            // encoder.dateEncodingStrategy = .iso8601   // if you were encoding Dates directly
+            let encodedData = try encoder.encode(gameData)
+
+            // 3. Save to iCloud using NSUbiquitousKeyValueStore.
+            let keyStore = NSUbiquitousKeyValueStore.default
+            // Try to load existing histories
+            if let data = keyStore.data(forKey: historyKey) {
+                do {
+                    histories = try JSONDecoder().decode([String].self, from: data)
+                } catch {
+                    print("Error decoding histories: \(error)")
+                }
+            }
+            let gameName = "\(gameKeyPrefix)\(gameData.movesTs[0])"
+            histories.append(gameName)
+            let encodedHistories = try JSONEncoder().encode(histories)
+            keyStore.set(encodedHistories, forKey: historyKey)
+            keyStore.set(encodedData, forKey: gameName)
+            keyStore.synchronize()
+            print("Game data saved to iCloud.")
+        } catch {
+            print("Error encoding game data: \(error)")
+        }
         
         movesTs.removeAll()
         game.Reset()
