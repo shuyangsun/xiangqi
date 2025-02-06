@@ -51,7 +51,6 @@ class GameScene: SKScene {
     // We will align the board so that its right edge is flush with the scene’s right edge.
     var boardOrigin: CGPoint = .zero
     
-    var humanVsHuman: Bool = true
     var selectedPiece: SKShapeNode?
     var selectedPieceValue: xq.Piece?
     var selectedRow: Int?
@@ -59,10 +58,10 @@ class GameScene: SKScene {
     var possibleMovesMark: [SKShapeNode] = []
     var pieceToNode: [xq.Piece: SKShapeNode] = [:]
     var winnerLabel: SKLabelNode = SKLabelNode(text: "")
+    var humanVsHuman: Bool = true
     var movesTs: [Date] = []
-
-    // MARK: - Scene Setup
     
+    // MARK: - Scene Setup
     override func didMove(to view: SKView) {
         backgroundColor = boardColor
         
@@ -486,16 +485,8 @@ class GameScene: SKScene {
             } else if selectedPiece != nil && ((game.Turn() == .RED && xqPiece.rawValue < 0) || (game.Turn() == .BLACK && xqPiece.rawValue > 0)) {
                 // Selecting an opponent piece, check possible moves.
                 let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
-                if possibleMoves[tappedRow][tappedCol], let destination = snappedPosition(from: tappedPiece!.position) {
-                    let captured = game.Move(
-                        xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
-                        xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
-                    )
-                    if captured != .EMPTY {
-                        pieceToNode[captured]?.isHidden = true
-                    }
-                    let moveAction = SKAction.move(to: destination, duration: 0.25)
-                    selectedPiece?.run(moveAction)
+                if possibleMoves[tappedRow][tappedCol] {
+                    move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                     movesTs.append(Date())
                 }
                 clearSelection()
@@ -504,47 +495,16 @@ class GameScene: SKScene {
         } else if selectedPiece != nil {
             // Move to empty space.
             let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
-            if possibleMoves[tappedRow][tappedCol],  let destination = snappedPosition(from: location) {
-                let moveAction = SKAction.move(to: destination, duration: 0.25)
-                selectedPiece?.run(moveAction)
-                game.Move(
-                    xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
-                    xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
-                )
+            if possibleMoves[tappedRow][tappedCol] {
+                move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                 movesTs.append(Date())
             }
             clearSelection()
             updateStatusLabels()
         }
+        saveGame()
     }
     
-    func undo() {
-        if !game.CanUndo() { return }
-
-        func undoSingleMove() {
-            let undoneMove = game.Undo()
-            let _ = movesTs.popLast()
-            if let original = snappedPosition(from: pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))) {
-                let moveAction = SKAction.move(to: original, duration: 0.25)
-                pieceToNode[undoneMove.piece]?.run(moveAction)
-                if undoneMove.captured != .EMPTY {
-                    pieceToNode[undoneMove.captured]?.isHidden = false
-                }
-            }
-        }
-        if humanVsHuman {
-            undoSingleMove()
-        } else {
-            undoSingleMove()
-            if game.Turn() != .RED && game.CanUndo() {
-                undoSingleMove()
-            }
-        }
-        
-        clearPossibleMovesMark()
-        clearSelection()
-        updateStatusLabels()
-    }
     
     func reset() {
         if game.MovesCount() <= 0 { return }
@@ -614,12 +574,13 @@ class GameScene: SKScene {
     }
     
     func saveGame() {
+        if game.MovesCount() <= 0 { return }
         func exportGameData() -> GameData {
             assert(game.MovesCount() == movesTs.count)
             var moves: [UInt16] = []
             moves.reserveCapacity(game.MovesCount())
-            for move in game.ExportMoves() {
-                moves.append(move)
+            for m in game.ExportMoves() {
+                moves.append(m)
             }
             var startingBoard: [[Int8]] = []
             let startingGame = xq.Game()
@@ -673,6 +634,96 @@ class GameScene: SKScene {
         } catch {
             print("Error encoding game data: \(error)")
         }
+    }
+
+    func loadMostRecentGameIfNotOver() {
+        let historyKey = "xiangqi_history"
+        var histories: [String] = []
+
+        // 3. Save to iCloud using NSUbiquitousKeyValueStore.
+        let keyStore = NSUbiquitousKeyValueStore.default
+        // Try to load existing histories
+        if let data = keyStore.data(forKey: historyKey) {
+            do {
+                histories = try JSONDecoder().decode([String].self, from: data)
+            } catch {
+                print("Error decoding histories: \(error)")
+            }
+        }
+        
+        if histories.isEmpty {
+            return
+        }
+
+        let lastGameName = histories.last!
+        if let data = keyStore.data(forKey: lastGameName) {
+            do {
+                let loadedGame = try JSONDecoder().decode(GameData.self, from: data)
+                if loadedGame.isOver {
+                    return
+                }
+                humanVsHuman = loadedGame.isVsHuman
+                movesTs = loadedGame.movesTs.map {Date(timeIntervalSince1970: $0)}
+                game.Reset() // TODO: should be resetting with loaded board, assuming default board.
+                for m in loadedGame.moves {
+                    move(
+                        fromRow: Int((m & 0xF000) >> 12),
+                        fromCol: Int((m & 0x0F00) >> 8),
+                        toRow: Int((m & 0x00F0) >> 4),
+                        toCol: Int(m & 0x000F),
+                        animated: false
+                    )
+                }
+            } catch {
+                print("Error decoding game data: \(error)")
+            }
+        }
+    }
+    
+    func move(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int, animated: Bool = true) {
+        let dest = pointForBoardCoordinate(col: toCol, row: toRow)
+        let action = SKAction.move(to: dest, duration: animated ? 0.25 : 0.0)
+        let piece = game.PieceAt(xq.Position(row: UInt8(fromRow), col: UInt8(fromCol)))
+        let captured = game.Move(
+            xq.Position(row: UInt8(fromRow), col: UInt8(fromCol)),
+            xq.Position(row: UInt8(toRow), col: UInt8(toCol))
+        )
+        if captured != .EMPTY {
+            let capturedNode = pieceToNode[captured]
+            capturedNode?.zPosition = 0
+            capturedNode?.isHidden = true
+        }
+        let node = pieceToNode[piece]
+        node?.zPosition = 1
+        node?.run(action)
+    }
+
+    func undo() {
+        if !game.CanUndo() { return }
+        
+        func undoSingleMove() {
+            let undoneMove = game.Undo()
+            let _ = movesTs.popLast()
+            let dest = pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))
+            let action = SKAction.move(to: dest, duration: 0.25)
+            pieceToNode[undoneMove.piece]?.run(action)
+            if undoneMove.captured != .EMPTY {
+                pieceToNode[undoneMove.captured]?.isHidden = false
+            }
+        }
+        if humanVsHuman {
+            undoSingleMove()
+        } else {
+            undoSingleMove()
+            if game.Turn() != .RED && game.CanUndo() {
+                undoSingleMove()
+            }
+        }
+        
+        clearPossibleMovesMark()
+        clearSelection()
+        updateStatusLabels()
+        saveGame()
     }
 }
 

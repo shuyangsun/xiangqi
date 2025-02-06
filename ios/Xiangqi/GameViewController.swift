@@ -4,6 +4,8 @@ import GameplayKit
 
 class GameViewController: UIViewController {
     
+    var scene: GameScene?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -11,10 +13,10 @@ class GameViewController: UIViewController {
         if let skView = self.view as? SKView {
             // Create an instance of your custom scene.
             // Using the view's bounds to set the scene size.
-            let scene = GameScene(size: skView.bounds.size)
+            scene = GameScene(size: skView.bounds.size)
             
             // Set the scale mode to scale to fit the window.
-            scene.scaleMode = .aspectFill
+            scene?.scaleMode = .aspectFill
             
             // Present the scene.
             skView.presentScene(scene)
@@ -23,6 +25,8 @@ class GameViewController: UIViewController {
             skView.ignoresSiblingOrder = true
             skView.showsFPS = true
             skView.showsNodeCount = true
+
+            scene?.loadMostRecentGameIfNotOver()
         }
     }
     
