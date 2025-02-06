@@ -549,7 +549,7 @@ class GameScene: SKScene {
     func reset() {
         if game.MovesCount() <= 0 { return }
 
-        saveGameDataToCloud()
+        saveGame()
         movesTs.removeAll()
         game.Reset()
         
@@ -613,7 +613,33 @@ class GameScene: SKScene {
         self.selectedPieceValue = nil
     }
     
-    func saveGameDataToCloud() {
+    func saveGame() {
+        func exportGameData() -> GameData {
+            assert(game.MovesCount() == movesTs.count)
+            var moves: [UInt16] = []
+            moves.reserveCapacity(game.MovesCount())
+            for move in game.ExportMoves() {
+                moves.append(move)
+            }
+            var startingBoard: [[Int8]] = []
+            let startingGame = xq.Game()
+            startingBoard.reserveCapacity(totalRows)
+            for row in 0..<totalRows {
+                startingBoard.append(Array(repeating: 0, count: totalCols))
+                for col in 0..<totalCols {
+                    startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col))).rawValue)
+                }
+            }
+            return GameData(
+                board: startingBoard,
+                moves: moves,
+                movesTs: movesTs,
+                isOver: game.IsGameOver(),
+                isVsHuman: humanVsHuman,
+                winner: game.GetWinner().rawValue
+            )
+        }
+
         let gameData = exportGameData()
         do {
             let historyKey = "xiangqi_history"
@@ -644,36 +670,9 @@ class GameScene: SKScene {
             }
             keyStore.set(encodedData, forKey: gameName)
             keyStore.synchronize()
-            print("Game data saved to iCloud.")
         } catch {
             print("Error encoding game data: \(error)")
         }
-    }
-
-    func exportGameData() -> GameData {
-        assert(game.MovesCount() == movesTs.count)
-        var moves: [UInt16] = []
-        moves.reserveCapacity(game.MovesCount())
-        for move in game.ExportMoves() {
-            moves.append(move)
-        }
-        var startingBoard: [[Int8]] = []
-        let startingGame = xq.Game()
-        startingBoard.reserveCapacity(totalRows)
-        for row in 0..<totalRows {
-            startingBoard.append(Array(repeating: 0, count: totalCols))
-            for col in 0..<totalCols {
-                startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col))).rawValue)
-            }
-        }
-        return GameData(
-            board: startingBoard,
-            moves: moves,
-            movesTs: movesTs,
-            isOver: game.IsGameOver(),
-            isVsHuman: humanVsHuman,
-            winner: game.GetWinner().rawValue
-        )
     }
 }
 
