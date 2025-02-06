@@ -10,12 +10,18 @@ struct GameData: Codable {
     // We can encode Dates as ISO8601 strings or as timestamps.
     // For simplicity, we encode them as Doubles (time intervals).
     var movesTs: [TimeInterval]
+    var isOver: Bool
+    var isVsHuman: Bool
+    var winner: Int8
     
     // A custom initializer to convert [Date] to [TimeInterval].
-    init(board: [[Int8]], moves: [UInt16], movesTs: [Date]) {
+    init(board: [[Int8]], moves: [UInt16], movesTs: [Date], isOver: Bool, isVsHuman: Bool, winner: Int8) {
         self.board = board
         self.moves = moves
         self.movesTs = movesTs.map { $0.timeIntervalSince1970 }
+        self.isOver = isOver
+        self.isVsHuman = isVsHuman
+        self.winner = winner
     }
 }
 
@@ -514,6 +520,7 @@ class GameScene: SKScene {
     
     func undo() {
         if !game.CanUndo() { return }
+        saveGameDataToCloud()
         
         func undoSingleMove() {
             let undoneMove = game.Undo()
@@ -541,41 +548,9 @@ class GameScene: SKScene {
     }
     
     func reset() {
-        if game.MovesCount() <= 0 {
-            return
-        }
-        let gameData = exportGameData()
-        do {
-            let historyKey = "xiangqi_history"
-            let gameKeyPrefix = "game_"
-            var histories: [String] = []
+        if game.MovesCount() <= 0 { return }
 
-            let encoder = JSONEncoder()
-            // Optionally configure the encoder:
-            // encoder.dateEncodingStrategy = .iso8601   // if you were encoding Dates directly
-            let encodedData = try encoder.encode(gameData)
-
-            // 3. Save to iCloud using NSUbiquitousKeyValueStore.
-            let keyStore = NSUbiquitousKeyValueStore.default
-            // Try to load existing histories
-            if let data = keyStore.data(forKey: historyKey) {
-                do {
-                    histories = try JSONDecoder().decode([String].self, from: data)
-                } catch {
-                    print("Error decoding histories: \(error)")
-                }
-            }
-            let gameName = "\(gameKeyPrefix)\(gameData.movesTs[0])"
-            histories.append(gameName)
-            let encodedHistories = try JSONEncoder().encode(histories)
-            keyStore.set(encodedHistories, forKey: historyKey)
-            keyStore.set(encodedData, forKey: gameName)
-            keyStore.synchronize()
-            print("Game data saved to iCloud.")
-        } catch {
-            print("Error encoding game data: \(error)")
-        }
-        
+        saveGameDataToCloud()
         movesTs.removeAll()
         game.Reset()
         
@@ -638,6 +613,44 @@ class GameScene: SKScene {
         self.selectedPiece = nil
         self.selectedPieceValue = nil
     }
+    
+    func saveGameDataToCloud() {
+        let gameData = exportGameData()
+        do {
+            let historyKey = "xiangqi_history"
+            let gameKeyPrefix = "game_"
+            var histories: [String] = []
+            
+            // 3. Save to iCloud using NSUbiquitousKeyValueStore.
+            let keyStore = NSUbiquitousKeyValueStore.default
+            // Try to load existing histories
+            if let data = keyStore.data(forKey: historyKey) {
+                do {
+                    histories = try JSONDecoder().decode([String].self, from: data)
+                } catch {
+                    print("Error decoding histories: \(error)")
+                }
+            }
+            
+            let encoder = JSONEncoder()
+            // Optionally configure the encoder:
+            // encoder.dateEncodingStrategy = .iso8601   // if you were encoding Dates directly
+            let encodedData = try encoder.encode(gameData)
+            
+            let gameName = "\(gameKeyPrefix)\(gameData.movesTs[0])"
+            if histories.last != gameName {
+                histories.append(gameName)
+                histories.append(gameName)
+                let encodedHistories = try JSONEncoder().encode(histories)
+                keyStore.set(encodedHistories, forKey: historyKey)
+            }
+            keyStore.set(encodedData, forKey: gameName)
+            keyStore.synchronize()
+            print("Game data saved to iCloud.")
+        } catch {
+            print("Error encoding game data: \(error)")
+        }
+    }
 
     func exportGameData() -> GameData {
         assert(game.MovesCount() == movesTs.count)
@@ -658,7 +671,10 @@ class GameScene: SKScene {
         return GameData(
             board: startingBoard,
             moves: moves,
-            movesTs: movesTs
+            movesTs: movesTs,
+            isOver: game.IsGameOver(),
+            isVsHuman: humanVsHuman,
+            winner: game.GetWinner().rawValue
         )
     }
 }

@@ -22,7 +22,7 @@ template <typename T>
 using Board = std::array<std::array<T, kTotalCol>, kTotalRow>;
 
 enum class Player : bool { RED = true, BLACK = false };
-enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1 };
+enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1, NONE = -2 };
 
 enum class Piece : int8_t {
   EMPTY = 0,

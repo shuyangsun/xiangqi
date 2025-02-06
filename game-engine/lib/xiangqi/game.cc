@@ -407,7 +407,7 @@ bool Game::IsGameOver() const {
 
 Winner Game::GetWinner() const {
   if (!IsGameOver()) {
-    return Winner::DRAW;  // Default when game is not over.
+    return Winner::NONE;
   }
 
   const Board<Piece>& board = history_.back();

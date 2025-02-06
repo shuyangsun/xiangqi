@@ -62,7 +62,7 @@ class Game {
   // general to not be captured.
   bool IsGameOver() const;
 
-  // Returns the winner if the game is over. Returns DRAW if the game is not
+  // Returns the winner if the game is over. Returns NONE if the game is not
   // over.
   Winner GetWinner() const;
 
