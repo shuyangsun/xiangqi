@@ -1,7 +1,14 @@
 import Foundation
 import SpriteKit
+import GameKit
 import XiangqiLib
 import UIKit  // Needed for UIAlertController
+
+struct GameData {
+    var board: [[Int8]]
+    var moves: [UInt16]
+    var movesTs: [Date]
+}
 
 class GameScene: SKScene {
     
@@ -37,7 +44,8 @@ class GameScene: SKScene {
     var possibleMovesMark: [SKShapeNode] = []
     var pieceToNode: [xq.Piece: SKShapeNode] = [:]
     var winnerLabel: SKLabelNode = SKLabelNode(text: "")
-    
+    var movesTs: [Date] = []
+
     // MARK: - Scene Setup
     
     override func didMove(to view: SKView) {
@@ -473,6 +481,7 @@ class GameScene: SKScene {
                     }
                     let moveAction = SKAction.move(to: destination, duration: 0.25)
                     selectedPiece?.run(moveAction)
+                    movesTs.append(Date())
                 }
                 clearSelection()
                 updateStatusLabels()
@@ -487,6 +496,7 @@ class GameScene: SKScene {
                     xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)),
                     xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol))
                 )
+                movesTs.append(Date())
             }
             clearSelection()
             updateStatusLabels()
@@ -498,6 +508,7 @@ class GameScene: SKScene {
         
         func undoSingleMove() {
             let undoneMove = game.Undo()
+            let _ = movesTs.popLast()
             if let original = snappedPosition(from: pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))) {
                 let moveAction = SKAction.move(to: original, duration: 0.25)
                 pieceToNode[undoneMove.piece]?.run(moveAction)
@@ -521,6 +532,10 @@ class GameScene: SKScene {
     }
     
     func reset() {
+        let gameData = exportGameData()
+        // TODO: save data for GameKit player.
+        
+        movesTs.removeAll()
         game.Reset()
         
         clearSelection()
@@ -581,6 +596,29 @@ class GameScene: SKScene {
         self.selectedCol = nil
         self.selectedPiece = nil
         self.selectedPieceValue = nil
+    }
+
+    func exportGameData() -> GameData {
+        assert(game.MovesCount() == movesTs.count)
+        var moves: [UInt16] = []
+        moves.reserveCapacity(game.MovesCount())
+        for move in game.ExportMoves() {
+            moves.append(move)
+        }
+        var startingBoard: [[Int8]] = []
+        let startingGame = xq.Game()
+        startingBoard.reserveCapacity(totalRows)
+        for row in 0..<totalRows {
+            startingBoard.append(Array(repeating: 0, count: totalCols))
+            for col in 0..<totalCols {
+                startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col))).rawValue)
+            }
+        }
+        return GameData(
+            board: startingBoard,
+            moves: moves,
+            movesTs: movesTs
+        )
     }
 }
 
