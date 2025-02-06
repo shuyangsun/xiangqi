@@ -520,8 +520,7 @@ class GameScene: SKScene {
     
     func undo() {
         if !game.CanUndo() { return }
-        saveGameDataToCloud()
-        
+
         func undoSingleMove() {
             let undoneMove = game.Undo()
             let _ = movesTs.popLast()
@@ -637,9 +636,8 @@ class GameScene: SKScene {
             // encoder.dateEncodingStrategy = .iso8601   // if you were encoding Dates directly
             let encodedData = try encoder.encode(gameData)
             
-            let gameName = "\(gameKeyPrefix)\(gameData.movesTs[0])"
+            let gameName = "\(gameKeyPrefix)\(Int(gameData.movesTs[0]))"
             if histories.last != gameName {
-                histories.append(gameName)
                 histories.append(gameName)
                 let encodedHistories = try JSONEncoder().encode(histories)
                 keyStore.set(encodedHistories, forKey: historyKey)
