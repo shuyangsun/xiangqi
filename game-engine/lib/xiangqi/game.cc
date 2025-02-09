@@ -459,4 +459,22 @@ void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
   }
 }
 
+Board<Piece> FlipBoard(const Board<Piece>& board) {
+  Board<Piece> flipped;
+  // Iterate through every cell in the board.
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      // Get the original piece.
+      Piece orig = board[r][c];
+      int8_t orig_val = static_cast<int8_t>(orig);
+      // If not empty, flip its sign. EMPTY remains unchanged.
+      int8_t new_val = (orig_val == 0) ? 0 : -orig_val;
+      // Place the new piece into the rotated position.
+      flipped[kTotalRow - 1 - r][kTotalCol - 1 - c] =
+          static_cast<Piece>(new_val);
+    }
+  }
+  return flipped;
+}
+
 }  // namespace xq

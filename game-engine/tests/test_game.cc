@@ -543,4 +543,128 @@ TEST(GameHistory, ExportAndRestoreMoves) {
   }
 }
 
+// ---------------------------------------------------------------------
+// Test that flipping an empty board results in an empty board.
+// ---------------------------------------------------------------------
+TEST(FlipBoardTest, EmptyBoard) {
+  Board<Piece> board;
+  // Initialize board to be completely EMPTY.
+  for (auto& row : board) {
+    row.fill(EMPTY);
+  }
+  Board<Piece> flipped = FlipBoard(board);
+
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      EXPECT_EQ(flipped[r][c], EMPTY) << "Expected cell (" << unsigned(r)
+                                      << ", " << unsigned(c) << ") to be EMPTY";
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Test that a board with a single piece is correctly flipped.
+// The piece’s position should be rotated 180° and its sign flipped.
+// For example, placing R_GENERAL (value +1) should become B_GENERAL (-1).
+// ---------------------------------------------------------------------
+TEST(FlipBoardTest, SinglePiece) {
+  Board<Piece> board;
+  for (auto& row : board) {
+    row.fill(EMPTY);
+  }
+  // Place a red general at position (2,3)
+  board[2][3] = R_GENERAL;
+  Board<Piece> flipped = FlipBoard(board);
+
+  // New row = kTotalRow - 1 - 2, new col = kTotalCol - 1 - 3.
+  uint8_t newRow = kTotalRow - 1 - 2;  // 10 - 1 - 2 = 7
+  uint8_t newCol = kTotalCol - 1 - 3;  // 9 - 1 - 3 = 5
+
+  // Since R_GENERAL is positive, after flipping it should become -R_GENERAL,
+  // i.e. B_GENERAL.
+  EXPECT_EQ(flipped[newRow][newCol], B_GENERAL);
+  // Also, ensure that no other cell accidentally contains a piece.
+  EXPECT_EQ(flipped[2][3], EMPTY);
+}
+
+// ---------------------------------------------------------------------
+// Test that flipping a board twice returns the original board.
+// ---------------------------------------------------------------------
+TEST(FlipBoardTest, DoubleFlipReturnsOriginal) {
+  Board<Piece> board;
+  for (auto& row : board) {
+    row.fill(EMPTY);
+  }
+  // Set up a few pieces.
+  board[1][2] = R_HORSE_1;    // R_HORSE_1 has a positive value.
+  board[8][3] = B_CANNON_1;   // B_CANNON_1 is negative.
+  board[4][4] = R_SOLDIER_3;  // R_SOLDIER_3 is positive.
+
+  Board<Piece> flipped = FlipBoard(board);
+  Board<Piece> doubleFlipped = FlipBoard(flipped);
+
+  // Flipping twice should return the board to its original configuration.
+  EXPECT_EQ(doubleFlipped, board);
+}
+
+// ---------------------------------------------------------------------
+// Test a board with multiple pieces placed in known locations.
+// Verify that each piece is moved to the rotated position and its value
+// (if non-zero) is negated.
+// ---------------------------------------------------------------------
+TEST(FlipBoardTest, MultiplePieces) {
+  Board<Piece> board;
+  for (auto& row : board) {
+    row.fill(EMPTY);
+  }
+  // Place several pieces.
+  // 1. Place a red soldier at (0,0). R_SOLDIER_1 is defined as 12.
+  board[0][0] = R_SOLDIER_1;
+  // 2. Place a black horse at (5,4). B_HORSE_1 is defined as -6.
+  board[5][4] = B_HORSE_1;
+  // 3. Place a black chariot at (9,8). B_CHARIOT_2 is defined as -9.
+  board[9][8] = B_CHARIOT_2;
+
+  Board<Piece> flipped = FlipBoard(board);
+
+  // For (0,0) = R_SOLDIER_1, the new location is:
+  // row: kTotalRow - 1 - 0 = 9, col: kTotalCol - 1 - 0 = 8.
+  // And R_SOLDIER_1 (12) should become -12, i.e. B_SOLDIER_1.
+  EXPECT_EQ(flipped[9][8], B_SOLDIER_1);
+
+  // For (5,4) = B_HORSE_1, the new location is:
+  // row: 10 - 1 - 5 = 4, col: 9 - 1 - 4 = 4.
+  // And B_HORSE_1 (-6) should become 6, i.e. R_HORSE_1.
+  EXPECT_EQ(flipped[4][4], R_HORSE_1);
+
+  // For (9,8) = B_CHARIOT_2, the new location is:
+  // row: 10 - 1 - 9 = 0, col: 9 - 1 - 8 = 0.
+  // And B_CHARIOT_2 (-9) should become 9, i.e. R_CHARIOT_2.
+  EXPECT_EQ(flipped[0][0], R_CHARIOT_2);
+}
+
+// ---------------------------------------------------------------------
+// Test flipping the default board from a Game instance.
+// Verify that pieces originally at the bottom appear at the top with
+// their sign reversed, and vice versa.
+// ---------------------------------------------------------------------
+TEST(FlipBoardTest, FlipDefaultBoard) {
+  Game game;
+  Board<Piece> defaultBoard = game.CurrentBoard();
+  Board<Piece> flipped = FlipBoard(defaultBoard);
+
+  // In the default board (kInitState), the red general (R_GENERAL) is at (9,4)
+  // and the black general (B_GENERAL) is at (0,4).
+  // After flipping:
+  //   - The red general should move to (0,4) and become B_GENERAL.
+  //   - The black general should move to (9,4) and become R_GENERAL.
+  EXPECT_EQ(flipped[0][4], B_GENERAL);
+  EXPECT_EQ(flipped[9][4], R_GENERAL);
+
+  // Similarly, check one more pair:
+  // The default board has B_CHARIOT_2 at (0,0), so after flipping it should
+  // appear at (9,8) as R_CHARIOT_2.
+  EXPECT_EQ(flipped[9][8], R_CHARIOT_2);
+}
+
 }  // namespace
