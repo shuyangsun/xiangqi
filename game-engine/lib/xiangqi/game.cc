@@ -183,7 +183,7 @@ bool threatensByCannon(const Board<Piece>& board, const Position& cannonPos,
 
 Game::Game() : history_{kInitState} {}
 
-void Game::Reset(Board<Piece>&& board) {
+void Game::ResetFromBoard(Board<Piece>&& board) {
   using enum Player;
   moves_.clear();
   history_.clear();
@@ -193,11 +193,11 @@ void Game::Reset(Board<Piece>&& board) {
 
 void Game::Reset() {
   Board<Piece> board = kInitState;
-  Reset(std::move(board));
+  ResetFromBoard(std::move(board));
 }
 
-void Game::Reset(std::unordered_map<Piece, Position>&& piece_pos) {
-  Reset(pieceMapToBoard(std::move(piece_pos)));
+void Game::ResetFromPos(std::unordered_map<Piece, Position>&& piece_pos) {
+  ResetFromBoard(pieceMapToBoard(std::move(piece_pos)));
 }
 
 Player Game::Turn() const { return player_; }

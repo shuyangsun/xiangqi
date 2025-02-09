@@ -81,7 +81,7 @@ TEST(GameTest, DefaultBoardPieces) {
 }
 
 // ---------------------------------------------------------------------
-// Test Reset() using an unordered_map (custom configuration) by
+// Test ResetFromPos() using an unordered_map (custom configuration) by
 // providing a piece map and verifying that only those pieces appear in
 // the expected positions.
 // ---------------------------------------------------------------------
@@ -92,7 +92,7 @@ TEST(GameTest, ResetWithCustomPieceMap) {
   piece_map[B_GENERAL] = {4, 4};
   piece_map[R_SOLDIER_1] = {0, 0};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
   Board<Piece> current_board = game.CurrentBoard();
 
   EXPECT_EQ(current_board[5][5], R_GENERAL);
@@ -109,7 +109,7 @@ TEST(GameTest, ResetWithCustomPieceMap) {
 }
 
 // ---------------------------------------------------------------------
-// Test Reset() with another piece map configuration.
+// Test ResetFromPos() with another piece map configuration.
 // ---------------------------------------------------------------------
 TEST(GameTest, ResetWithPieceMap) {
   Game game;
@@ -118,7 +118,7 @@ TEST(GameTest, ResetWithPieceMap) {
   piece_map[B_GENERAL] = {4, 4};
   piece_map[R_CHARIOT_L] = {8, 0};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
   Board<Piece> current_board = game.CurrentBoard();
 
   EXPECT_EQ(current_board[5][5], R_GENERAL);
@@ -154,7 +154,7 @@ TEST(GameTest, PieceAtCustomPosition) {
   std::unordered_map<Piece, Position> piece_map;
   piece_map[B_GENERAL] = {2, 3};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
   EXPECT_EQ(game.PieceAt({2, 3}), B_GENERAL);
   EXPECT_EQ(game.PieceAt({0, 0}), EMPTY);
 }
@@ -167,7 +167,7 @@ TEST(GameTest, MoveNonCapture) {
   std::unordered_map<Piece, Position> piece_map;
   piece_map[R_SOLDIER_1] = {5, 5};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
 
   // Move red soldier from (5,5) to an empty square (4,5).
   Piece captured = game.Move({5, 5}, {4, 5});
@@ -185,7 +185,7 @@ TEST(GameTest, MoveCapture) {
   piece_map[R_SOLDIER_1] = {5, 5};
   piece_map[B_SOLDIER_1] = {5, 6};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
 
   // Move red soldier from (5,5) to (5,6), capturing the black soldier.
   Piece captured = game.Move({5, 5}, {5, 6});
@@ -201,7 +201,7 @@ TEST(GameTest, MoveCapture) {
 TEST(GameTest, MoveFromEmpty) {
   Game game;
   std::unordered_map<Piece, Position> empty_map;  // No pieces set.
-  game.Reset(std::move(empty_map));
+  game.ResetFromPos(std::move(empty_map));
 
   // Attempt to move from an empty square.
   Piece captured = game.Move({4, 4}, {3, 4});
@@ -243,7 +243,7 @@ TEST(GameTest, UndoAfterOneMove) {
   std::unordered_map<Piece, Position> piece_map;
   piece_map[R_SOLDIER_1] = {5, 5};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
 
   Board<Piece> board_before = game.CurrentBoard();
 
@@ -276,7 +276,7 @@ TEST(GameTest, UndoMultipleMoves) {
   piece_map[R_SOLDIER_3] = {6, 4};
   piece_map[B_SOLDIER_3] = {3, 4};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
 
   Board<Piece> initial_board = game.CurrentBoard();
 
@@ -297,7 +297,7 @@ TEST(GameTest, UndoMultipleMoves) {
 }
 
 // ---------------------------------------------------------------------
-// Test that calling Reset() clears the move history.
+// Test that calling ResetFromPos() clears the move history.
 // After a Reset, Undo() should not succeed.
 // ---------------------------------------------------------------------
 TEST(GameTest, ResetClearsHistory) {
@@ -305,7 +305,7 @@ TEST(GameTest, ResetClearsHistory) {
   std::unordered_map<Piece, Position> piece_map;
   piece_map[R_SOLDIER_1] = {5, 5};
 
-  game.Reset(std::move(piece_map));
+  game.ResetFromPos(std::move(piece_map));
 
   // Make a move.
   game.Move({5, 5}, {4, 5});
@@ -326,7 +326,7 @@ TEST(IsCheckMadeTest, RedNotInCheck) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_FALSE(game.IsCheckMade());
 }
 
@@ -340,7 +340,7 @@ TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -357,7 +357,7 @@ TEST(IsCheckMadeTest, RedInCheckByChariot) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -372,7 +372,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_FALSE(game.IsCheckMade());
 }
 
@@ -388,7 +388,7 @@ TEST(IsCheckMadeTest, RedInCheckBySoldier) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -405,7 +405,7 @@ TEST(IsCheckMadeTest, RedInCheckByHorse) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -420,7 +420,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_FALSE(game.IsCheckMade());
 }
 
@@ -437,7 +437,7 @@ TEST(IsCheckMadeTest, RedInCheckByElephant) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -451,7 +451,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_FALSE(game.IsCheckMade());
 }
 
@@ -469,7 +469,7 @@ TEST(IsCheckMadeTest, RedInCheckByCannon) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -483,7 +483,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_FALSE(game.IsCheckMade());
 }
 
@@ -502,7 +502,7 @@ TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   EXPECT_TRUE(game.IsCheckMade());
 }
 
@@ -522,7 +522,7 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
   };
 
   Game game;
-  game.Reset(std::move(board_setup));
+  game.ResetFromPos(std::move(board_setup));
   game.MakeBlackMoveFirst();
   EXPECT_TRUE(game.IsCheckMade());
 }
