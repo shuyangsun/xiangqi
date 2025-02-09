@@ -79,6 +79,21 @@ class Game {
   std::vector<MoveAction> moves_;
 };
 
+// Rotate the board so that it's from the opponent's perspective.
+Board<Piece> FlipBoard(const Board<Piece>& board);
+
+// Encode the board state using a small number of bytes, mainly used for the
+// game AI to identify a unique board state. The board state does not
+// distinguish the same piece for the same player, i.e., R_ADVISOR_1 is the same
+// as R_ADVISOR_2.
+//
+// There are a total of 32 pieces on the board, so the encoded board state is
+// 32 bytes, with each byte representing the row and column of that piece
+// (4 bits for each). If the piece is not present, use 0xF to represent it.
+// To make sure the same piece for the same player is treated in the same way,
+// all byte representations of a group of piece is sorted.
+std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board);
+
 }  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__

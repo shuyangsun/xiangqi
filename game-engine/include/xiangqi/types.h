@@ -72,9 +72,6 @@ struct MoveAction {
   Piece captured;
 };
 
-// Rotate the board so that it's from the opponent's perspective.
-Board<Piece> FlipBoard(const Board<Piece>& board);
-
 }  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__
