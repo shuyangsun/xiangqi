@@ -35,42 +35,42 @@ TEST(GameTest, DefaultBoardPieces) {
 
   // --- Black side ---
   // Row 0: major pieces.
-  EXPECT_EQ(game.PieceAt({0, 0}), B_CHARIOT_L);
-  EXPECT_EQ(game.PieceAt({0, 1}), B_HORSE_L);
-  EXPECT_EQ(game.PieceAt({0, 2}), B_ELEPHANT_L);
-  EXPECT_EQ(game.PieceAt({0, 3}), B_ADVISOR_L);
+  EXPECT_EQ(game.PieceAt({0, 0}), B_CHARIOT_2);
+  EXPECT_EQ(game.PieceAt({0, 1}), B_HORSE_2);
+  EXPECT_EQ(game.PieceAt({0, 2}), B_ELEPHANT_2);
+  EXPECT_EQ(game.PieceAt({0, 3}), B_ADVISOR_2);
   EXPECT_EQ(game.PieceAt({0, 4}), B_GENERAL);
-  EXPECT_EQ(game.PieceAt({0, 5}), B_ADVISOR_R);
-  EXPECT_EQ(game.PieceAt({0, 6}), B_ELEPHANT_R);
-  EXPECT_EQ(game.PieceAt({0, 7}), B_HORSE_R);
-  EXPECT_EQ(game.PieceAt({0, 8}), B_CHARIOT_R);
+  EXPECT_EQ(game.PieceAt({0, 5}), B_ADVISOR_1);
+  EXPECT_EQ(game.PieceAt({0, 6}), B_ELEPHANT_1);
+  EXPECT_EQ(game.PieceAt({0, 7}), B_HORSE_1);
+  EXPECT_EQ(game.PieceAt({0, 8}), B_CHARIOT_1);
 
   // Row 2: Cannons.
-  EXPECT_EQ(game.PieceAt({2, 1}), B_CANNON_L);
-  EXPECT_EQ(game.PieceAt({2, 7}), B_CANNON_R);
+  EXPECT_EQ(game.PieceAt({2, 1}), B_CANNON_2);
+  EXPECT_EQ(game.PieceAt({2, 7}), B_CANNON_1);
 
   // Row 3: Soldiers.
-  EXPECT_EQ(game.PieceAt({3, 0}), B_SOLDIER_1);
-  EXPECT_EQ(game.PieceAt({3, 2}), B_SOLDIER_2);
+  EXPECT_EQ(game.PieceAt({3, 0}), B_SOLDIER_5);
+  EXPECT_EQ(game.PieceAt({3, 2}), B_SOLDIER_4);
   EXPECT_EQ(game.PieceAt({3, 4}), B_SOLDIER_3);
-  EXPECT_EQ(game.PieceAt({3, 6}), B_SOLDIER_4);
-  EXPECT_EQ(game.PieceAt({3, 8}), B_SOLDIER_5);
+  EXPECT_EQ(game.PieceAt({3, 6}), B_SOLDIER_2);
+  EXPECT_EQ(game.PieceAt({3, 8}), B_SOLDIER_1);
 
   // --- Red side ---
   // Row 9: major pieces.
-  EXPECT_EQ(game.PieceAt({9, 0}), R_CHARIOT_L);
-  EXPECT_EQ(game.PieceAt({9, 1}), R_HORSE_L);
-  EXPECT_EQ(game.PieceAt({9, 2}), R_ELEPHANT_L);
-  EXPECT_EQ(game.PieceAt({9, 3}), R_ADVISOR_L);
+  EXPECT_EQ(game.PieceAt({9, 0}), R_CHARIOT_1);
+  EXPECT_EQ(game.PieceAt({9, 1}), R_HORSE_1);
+  EXPECT_EQ(game.PieceAt({9, 2}), R_ELEPHANT_1);
+  EXPECT_EQ(game.PieceAt({9, 3}), R_ADVISOR_1);
   EXPECT_EQ(game.PieceAt({9, 4}), R_GENERAL);
-  EXPECT_EQ(game.PieceAt({9, 5}), R_ADVISOR_R);
-  EXPECT_EQ(game.PieceAt({9, 6}), R_ELEPHANT_R);
-  EXPECT_EQ(game.PieceAt({9, 7}), R_HORSE_R);
-  EXPECT_EQ(game.PieceAt({9, 8}), R_CHARIOT_R);
+  EXPECT_EQ(game.PieceAt({9, 5}), R_ADVISOR_2);
+  EXPECT_EQ(game.PieceAt({9, 6}), R_ELEPHANT_2);
+  EXPECT_EQ(game.PieceAt({9, 7}), R_HORSE_2);
+  EXPECT_EQ(game.PieceAt({9, 8}), R_CHARIOT_2);
 
   // Row 7: Cannons.
-  EXPECT_EQ(game.PieceAt({7, 1}), R_CANNON_L);
-  EXPECT_EQ(game.PieceAt({7, 7}), R_CANNON_R);
+  EXPECT_EQ(game.PieceAt({7, 1}), R_CANNON_1);
+  EXPECT_EQ(game.PieceAt({7, 7}), R_CANNON_2);
 
   // Row 6: Soldiers.
   EXPECT_EQ(game.PieceAt({6, 0}), R_SOLDIER_1);
@@ -116,14 +116,14 @@ TEST(GameTest, ResetWithPieceMap) {
   std::unordered_map<Piece, Position> piece_map;
   piece_map[R_GENERAL] = {5, 5};
   piece_map[B_GENERAL] = {4, 4};
-  piece_map[R_CHARIOT_L] = {8, 0};
+  piece_map[R_CHARIOT_1] = {8, 0};
 
   game.ResetFromPos(std::move(piece_map));
   Board<Piece> current_board = game.CurrentBoard();
 
   EXPECT_EQ(current_board[5][5], R_GENERAL);
   EXPECT_EQ(current_board[4][4], B_GENERAL);
-  EXPECT_EQ(current_board[8][0], R_CHARIOT_L);
+  EXPECT_EQ(current_board[8][0], R_CHARIOT_1);
   // Ensure all other positions are EMPTY.
   for (uint8_t i = 0; i < kTotalRow; ++i) {
     for (uint8_t j = 0; j < kTotalCol; ++j) {
@@ -353,7 +353,7 @@ TEST(IsCheckMadeTest, RedInCheckByChariot) {
       {Piece::B_GENERAL,
        {0,
         3}},  // placed away from column 4 to avoid interfering with other rules
-      {Piece::B_CHARIOT_L, {5, 4}},
+      {Piece::B_CHARIOT_1, {5, 4}},
   };
 
   Game game;
@@ -367,7 +367,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_CHARIOT_L, {5, 4}},
+      {Piece::B_CHARIOT_1, {5, 4}},
       {Piece::R_SOLDIER_1, {7, 4}},  // blocks the chariot's path to the general
   };
 
@@ -401,7 +401,7 @@ TEST(IsCheckMadeTest, RedInCheckByHorse) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_HORSE_L, {7, 3}},
+      {Piece::B_HORSE_1, {7, 3}},
   };
 
   Game game;
@@ -415,7 +415,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_HORSE_L, {7, 3}},
+      {Piece::B_HORSE_1, {7, 3}},
       {Piece::R_SOLDIER_1, {8, 3}},  // blocking the horse’s move
   };
 
@@ -433,7 +433,7 @@ TEST(IsCheckMadeTest, RedInCheckByElephant) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_ELEPHANT_L, {7, 2}},
+      {Piece::B_ELEPHANT_1, {7, 2}},
   };
 
   Game game;
@@ -446,7 +446,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_ELEPHANT_L, {7, 2}},
+      {Piece::B_ELEPHANT_1, {7, 2}},
       {Piece::R_SOLDIER_1, {8, 3}},  // blocks the elephant’s diagonal move
   };
 
@@ -464,7 +464,7 @@ TEST(IsCheckMadeTest, RedInCheckByCannon) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_CANNON_L, {7, 4}},
+      {Piece::B_CANNON_1, {7, 4}},
       {Piece::R_SOLDIER_1, {8, 4}},  // screen piece for the cannon
   };
 
@@ -478,7 +478,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},
       {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_CANNON_L, {7, 4}},
+      {Piece::B_CANNON_1, {7, 4}},
       // No piece at (8,4)
   };
 
@@ -497,8 +497,8 @@ TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
   // acting as a screen.
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::R_GENERAL, {9, 4}},   {Piece::B_GENERAL, {0, 3}},
-      {Piece::B_SOLDIER_1, {8, 4}}, {Piece::B_HORSE_L, {7, 3}},
-      {Piece::B_CANNON_L, {7, 4}},
+      {Piece::B_SOLDIER_1, {8, 4}}, {Piece::B_HORSE_1, {7, 3}},
+      {Piece::B_CANNON_1, {7, 4}},
   };
 
   Game game;
@@ -517,8 +517,8 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
   // (1,4) as a screen.
   std::unordered_map<Piece, Position> board_setup = {
       {Piece::B_GENERAL, {0, 4}},   {Piece::R_GENERAL, {9, 4}},
-      {Piece::R_SOLDIER_1, {1, 4}}, {Piece::R_HORSE_L, {2, 3}},
-      {Piece::R_CANNON_L, {2, 4}},
+      {Piece::R_SOLDIER_1, {1, 4}}, {Piece::R_HORSE_1, {2, 3}},
+      {Piece::R_CANNON_1, {2, 4}},
   };
 
   Game game;

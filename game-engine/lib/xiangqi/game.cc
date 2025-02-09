@@ -16,26 +16,26 @@ namespace {
 using enum Piece;
 
 constexpr Board<Piece> kInitState = {
-    B_CHARIOT_L, B_HORSE_L,    B_ELEPHANT_L, B_ADVISOR_L, B_GENERAL,
-    B_ADVISOR_R, B_ELEPHANT_R, B_HORSE_R,    B_CHARIOT_R,  // Row 0
+    B_CHARIOT_2, B_HORSE_2,    B_ELEPHANT_2, B_ADVISOR_2, B_GENERAL,
+    B_ADVISOR_1, B_ELEPHANT_1, B_HORSE_1,    B_CHARIOT_1,  // Row 0
     EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
     EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 1
-    EMPTY,       B_CANNON_L,   EMPTY,        EMPTY,       EMPTY,
-    EMPTY,       EMPTY,        B_CANNON_R,   EMPTY,  // Row 2
-    B_SOLDIER_1, EMPTY,        B_SOLDIER_2,  EMPTY,       B_SOLDIER_3,
-    EMPTY,       B_SOLDIER_4,  EMPTY,        B_SOLDIER_5,  // Row 3
+    EMPTY,       B_CANNON_2,   EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        B_CANNON_1,   EMPTY,  // Row 2
+    B_SOLDIER_5, EMPTY,        B_SOLDIER_4,  EMPTY,       B_SOLDIER_3,
+    EMPTY,       B_SOLDIER_2,  EMPTY,        B_SOLDIER_1,  // Row 3
     EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
     EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 4
     EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
     EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 5
     R_SOLDIER_1, EMPTY,        R_SOLDIER_2,  EMPTY,       R_SOLDIER_3,
     EMPTY,       R_SOLDIER_4,  EMPTY,        R_SOLDIER_5,  // Row 6
-    EMPTY,       R_CANNON_L,   EMPTY,        EMPTY,       EMPTY,
-    EMPTY,       EMPTY,        R_CANNON_R,   EMPTY,  // Row 7
+    EMPTY,       R_CANNON_1,   EMPTY,        EMPTY,       EMPTY,
+    EMPTY,       EMPTY,        R_CANNON_2,   EMPTY,  // Row 7
     EMPTY,       EMPTY,        EMPTY,        EMPTY,       EMPTY,
     EMPTY,       EMPTY,        EMPTY,        EMPTY,  // Row 8
-    R_CHARIOT_L, R_HORSE_L,    R_ELEPHANT_L, R_ADVISOR_L, R_GENERAL,
-    R_ADVISOR_R, R_ELEPHANT_R, R_HORSE_R,    R_CHARIOT_R,  // Row 9
+    R_CHARIOT_1, R_HORSE_1,    R_ELEPHANT_1, R_ADVISOR_1, R_GENERAL,
+    R_ADVISOR_2, R_ELEPHANT_2, R_HORSE_2,    R_CHARIOT_2,  // Row 9
 };
 
 // Converts a piece map to a board. The resulting board will be completely empty
@@ -266,30 +266,30 @@ Board<bool> Game::PossibleMoves(Position pos) const {
     case R_GENERAL:
     case B_GENERAL:
       return PossibleMovesGeneral(board, pos);
-    case R_ADVISOR_L:
-    case R_ADVISOR_R:
-    case B_ADVISOR_L:
-    case B_ADVISOR_R:
+    case R_ADVISOR_1:
+    case R_ADVISOR_2:
+    case B_ADVISOR_1:
+    case B_ADVISOR_2:
       return PossibleMovesAdvisor(board, pos);
-    case R_ELEPHANT_L:
-    case R_ELEPHANT_R:
-    case B_ELEPHANT_L:
-    case B_ELEPHANT_R:
+    case R_ELEPHANT_1:
+    case R_ELEPHANT_2:
+    case B_ELEPHANT_1:
+    case B_ELEPHANT_2:
       return PossibleMovesElephant(board, pos);
-    case R_HORSE_L:
-    case R_HORSE_R:
-    case B_HORSE_L:
-    case B_HORSE_R:
+    case R_HORSE_1:
+    case R_HORSE_2:
+    case B_HORSE_1:
+    case B_HORSE_2:
       return PossibleMovesHorse(board, pos);
-    case R_CHARIOT_L:
-    case R_CHARIOT_R:
-    case B_CHARIOT_L:
-    case B_CHARIOT_R:
+    case R_CHARIOT_1:
+    case R_CHARIOT_2:
+    case B_CHARIOT_1:
+    case B_CHARIOT_2:
       return PossibleMovesChariot(board, pos);
-    case R_CANNON_L:
-    case R_CANNON_R:
-    case B_CANNON_L:
-    case B_CANNON_R:
+    case R_CANNON_1:
+    case R_CANNON_2:
+    case B_CANNON_1:
+    case B_CANNON_2:
       return PossibleMovesCannon(board, pos);
     case R_SOLDIER_1:
     case R_SOLDIER_2:

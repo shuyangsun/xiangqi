@@ -58,8 +58,8 @@ TEST(PossibleMovesTest, RedGeneralStarting) {
   Game game;
   game.ResetFromPos({
       {R_GENERAL, {9, 4}},
-      {R_ADVISOR_L, {9, 3}},
-      {R_ADVISOR_R, {9, 5}},
+      {R_ADVISOR_1, {9, 3}},
+      {R_ADVISOR_2, {9, 5}},
   });
   Board<bool> moves = game.PossibleMoves({9, 4});
   EXPECT_TRUE(moves[8][4]);
@@ -99,8 +99,8 @@ TEST(PossibleMovesTest, BlackGeneralStarting) {
   Game game;
   game.ResetFromPos({
       {R_GENERAL, {0, 4}},
-      {R_ADVISOR_L, {0, 3}},
-      {R_ADVISOR_R, {0, 5}},
+      {R_ADVISOR_1, {0, 3}},
+      {R_ADVISOR_2, {0, 5}},
   });
   Board<bool> moves = game.PossibleMoves({0, 4});
   EXPECT_TRUE(moves[1][4]);
@@ -195,7 +195,7 @@ TEST(PossibleMovesTest, FlyingGeneralNotTriggeredDifferentColumn) {
 TEST(PossibleMovesTest, RedAdvisorEdge) {
   Game game;
   // Place a red advisor at (9,3) (red palace: rows 7-9, cols 3-5).
-  game.ResetFromPos({{R_ADVISOR_L, {9, 3}}});
+  game.ResetFromPos({{R_ADVISOR_1, {9, 3}}});
   Board<bool> moves = game.PossibleMoves({9, 3});
   // Advisors move one square diagonally inside the palace.
   // For (9,3), only (8,4) is valid (since (8,2) is outside the palace and moves
@@ -208,7 +208,7 @@ TEST(PossibleMovesTest, RedAdvisorEdge) {
 TEST(PossibleMovesTest, BlackAdvisorCenter) {
   Game game;
   // Place a black advisor at (0,4) (black palace: rows 0-2, cols 3-5).
-  game.ResetFromPos({{Piece::B_ADVISOR_R, {0, 4}}});
+  game.ResetFromPos({{Piece::B_ADVISOR_2, {0, 4}}});
   Board<bool> moves = game.PossibleMoves({0, 4});
   // For (0,4), the only valid diagonal moves are downward: (1,3) and (1,5).
   EXPECT_TRUE(moves[1][3]);
@@ -226,7 +226,7 @@ TEST(PossibleMovesTest, RedElephantNormal) {
   Game game;
   // For red elephants, allowed rows: 5 to 9.
   // Place a red elephant at (7,2).
-  game.ResetFromPos({{R_ELEPHANT_L, {7, 2}}});
+  game.ResetFromPos({{R_ELEPHANT_1, {7, 2}}});
   Board<bool> moves = game.PossibleMoves({7, 2});
   // Expected moves from (7,2):
   // Up-right: (5,4), Up-left: (5,0), Down-right: (9,4), Down-left: (9,0)
@@ -241,7 +241,7 @@ TEST(PossibleMovesTest, RedElephantBlocked) {
   Game game;
   // Block the "up-right" move by placing a red soldier at the intermediate
   // square (6,3).
-  game.ResetFromPos({{R_ELEPHANT_L, {7, 2}}, {R_SOLDIER_1, {6, 3}}});
+  game.ResetFromPos({{R_ELEPHANT_1, {7, 2}}, {R_SOLDIER_1, {6, 3}}});
   Board<bool> moves = game.PossibleMoves({7, 2});
   // The up-right move to (5,4) should be disallowed.
   EXPECT_FALSE(moves[5][4]);
@@ -259,7 +259,7 @@ TEST(PossibleMovesTest, RedElephantBlocked) {
 TEST(PossibleMovesTest, RedHorseNormal) {
   Game game;
   // Place a red horse at (5,5).
-  game.ResetFromPos({{R_HORSE_L, {5, 5}}});
+  game.ResetFromPos({{R_HORSE_1, {5, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // A horse moves one square orthogonally and then one square diagonally
   // outward. Expected moves (if all legs are clear):
@@ -281,7 +281,7 @@ TEST(PossibleMovesTest, RedHorseNormal) {
 TEST(PossibleMovesTest, RedHorseBlockedUp) {
   Game game;
   // Block the upward leg by placing a red soldier at (4,5).
-  game.ResetFromPos({{R_HORSE_L, {5, 5}}, {R_SOLDIER_1, {4, 5}}});
+  game.ResetFromPos({{R_HORSE_1, {5, 5}}, {R_SOLDIER_1, {4, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // With the upward leg blocked, moves that depend on it ((3,4) and (3,6)) must
   // not be allowed.
@@ -304,7 +304,7 @@ TEST(PossibleMovesTest, RedHorseBlockedUp) {
 TEST(PossibleMovesTest, RedChariotEmptyBoard) {
   Game game;
   // Place a red chariot at (5,5).
-  game.ResetFromPos({{R_CHARIOT_L, {5, 5}}});
+  game.ResetFromPos({{R_CHARIOT_1, {5, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // The chariot moves straight along rows and columns until an obstruction.
   // Upward (row 4 to 0, col 5):
@@ -330,7 +330,7 @@ TEST(PossibleMovesTest, RedChariotBlockedByAlly) {
   Game game;
   // Place a red chariot at (5,5) and a red soldier at (3,5) to block upward
   // movement.
-  game.ResetFromPos({{R_CHARIOT_L, {5, 5}}, {R_SOLDIER_1, {3, 5}}});
+  game.ResetFromPos({{R_CHARIOT_1, {5, 5}}, {R_SOLDIER_1, {3, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // Upward: (4,5) should be available (empty), but (3,5) should not be (blocked
   // by ally), and no moves beyond.
@@ -342,7 +342,7 @@ TEST(PossibleMovesTest, RedChariotBlockedByAlly) {
 TEST(PossibleMovesTest, RedChariotCapturingEnemy) {
   Game game;
   // Place a red chariot at (5,5) and an enemy (black) soldier at (3,5).
-  game.ResetFromPos({{R_CHARIOT_L, {5, 5}}, {Piece::B_SOLDIER_1, {3, 5}}});
+  game.ResetFromPos({{R_CHARIOT_1, {5, 5}}, {Piece::B_SOLDIER_1, {3, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // Upward: It should mark (4,5) as a normal move and (3,5) as a capturing
   // move.
@@ -360,7 +360,7 @@ TEST(PossibleMovesTest, RedChariotCapturingEnemy) {
 TEST(PossibleMovesTest, RedCannonEmptyBoard) {
   Game game;
   // Place a red cannon at (5,5).
-  game.ResetFromPos({{R_CANNON_L, {5, 5}}});
+  game.ResetFromPos({{R_CANNON_1, {5, 5}}});
   Board<bool> moves = game.PossibleMoves({5, 5});
   // With no intervening pieces, a cannon moves like a chariot.
   // Upward:
@@ -386,7 +386,7 @@ TEST(PossibleMovesTest, RedCannonCapturing) {
   Game game;
   // Place a red cannon at (5,5), a blocking (screen) piece at (5,4), and an
   // enemy piece at (5,3).
-  game.ResetFromPos({{R_CANNON_L, {5, 5}},
+  game.ResetFromPos({{R_CANNON_1, {5, 5}},
                      {R_SOLDIER_1, {5, 4}},
                      {Piece::B_SOLDIER_1, {5, 3}}});
   Board<bool> moves = game.PossibleMoves({5, 5});

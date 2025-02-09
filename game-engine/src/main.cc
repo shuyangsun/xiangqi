@@ -32,43 +32,43 @@ char PieceToChar(Piece piece) {
       return 'g';
 
     // Advisors
-    case Piece::R_ADVISOR_L:
-    case Piece::R_ADVISOR_R:
+    case Piece::R_ADVISOR_1:
+    case Piece::R_ADVISOR_2:
       return 'A';
-    case Piece::B_ADVISOR_L:
-    case Piece::B_ADVISOR_R:
+    case Piece::B_ADVISOR_1:
+    case Piece::B_ADVISOR_2:
       return 'a';
 
     // Elephants
-    case Piece::R_ELEPHANT_L:
-    case Piece::R_ELEPHANT_R:
+    case Piece::R_ELEPHANT_1:
+    case Piece::R_ELEPHANT_2:
       return 'E';
-    case Piece::B_ELEPHANT_L:
-    case Piece::B_ELEPHANT_R:
+    case Piece::B_ELEPHANT_1:
+    case Piece::B_ELEPHANT_2:
       return 'e';
 
     // Horses
-    case Piece::R_HORSE_L:
-    case Piece::R_HORSE_R:
+    case Piece::R_HORSE_1:
+    case Piece::R_HORSE_2:
       return 'H';
-    case Piece::B_HORSE_L:
-    case Piece::B_HORSE_R:
+    case Piece::B_HORSE_1:
+    case Piece::B_HORSE_2:
       return 'h';
 
     // Chariots
-    case Piece::R_CHARIOT_L:
-    case Piece::R_CHARIOT_R:
+    case Piece::R_CHARIOT_1:
+    case Piece::R_CHARIOT_2:
       return 'R';
-    case Piece::B_CHARIOT_L:
-    case Piece::B_CHARIOT_R:
+    case Piece::B_CHARIOT_1:
+    case Piece::B_CHARIOT_2:
       return 'r';
 
     // Cannons
-    case Piece::R_CANNON_L:
-    case Piece::R_CANNON_R:
+    case Piece::R_CANNON_1:
+    case Piece::R_CANNON_2:
       return 'C';
-    case Piece::B_CANNON_L:
-    case Piece::B_CANNON_R:
+    case Piece::B_CANNON_1:
+    case Piece::B_CANNON_2:
       return 'c';
 
     // Soldiers
