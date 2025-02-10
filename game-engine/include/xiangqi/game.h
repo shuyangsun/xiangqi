@@ -94,6 +94,11 @@ Board<Piece> FlipBoard(const Board<Piece>& board);
 // all byte representations of a group of piece is sorted.
 std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board);
 
+// Decode the encoded board state back to its original state, but ignores
+// differences in pieces in the same type. All pieces (except for general) are
+// decoded to the "_1" varaint.
+Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state);
+
 }  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__

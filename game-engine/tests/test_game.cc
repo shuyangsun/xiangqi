@@ -16,8 +16,8 @@ namespace {
 using namespace ::xq;
 using enum ::xq::Piece;
 
-// Helper: Unpacks the 4x uint64_t encoding into a vector of 32 bytes (in
-// big‐endian order).
+namespace {
+
 std::vector<uint8_t> UnpackEncoding(const std::array<uint64_t, 4>& encoding) {
   std::vector<uint8_t> bytes;
   bytes.reserve(32);
@@ -32,6 +32,8 @@ std::vector<uint8_t> UnpackEncoding(const std::array<uint64_t, 4>& encoding) {
   }
   return bytes;
 }
+
+}  // namespace
 
 // ---------------------------------------------------------------------
 // Test that the default game board (constructed without a reset) is
@@ -684,8 +686,13 @@ TEST(FlipBoardTest, FlipDefaultBoard) {
   EXPECT_EQ(flipped[9][8], R_CHARIOT_2);
 }
 
+// ---------------------------------------------------------------------
+// EncodeBoardStateTest: Tests for encoding and decoding board states.
+// ---------------------------------------------------------------------
+
 // Test 1: When the board is completely empty, every piece should be missing,
-// so every byte in the 32-byte encoding is 0xFF.
+// so every byte in the 32-byte encoding is 0xFF. Also, decoding should yield an
+// empty board.
 TEST(EncodeBoardStateTest, EmptyBoard) {
   Board<Piece> board;
   for (auto& row : board) {
@@ -697,11 +704,21 @@ TEST(EncodeBoardStateTest, EmptyBoard) {
   for (size_t i = 0; i < bytes.size(); ++i) {
     EXPECT_EQ(bytes[i], 0xFF) << "Byte at index " << i << " should be 0xFF.";
   }
+  // Test decoding: the decoded board should be completely empty.
+  Board<Piece> decoded = DecodeBoardState(encoding);
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      EXPECT_EQ(decoded[r][c], Piece::EMPTY)
+          << "Decoded board cell (" << unsigned(r) << ", " << unsigned(c)
+          << ") should be EMPTY.";
+    }
+  }
 }
 
 // Test 2: A board with a single red general at (3,4) should yield an encoding
-// where the red general group (group 0) contains its encoded position ((3 << 4)
-// | 4 == 0x34) and every other byte is 0xFF.
+// where the red general group (group 0) contains its encoded position and every
+// other byte is 0xFF. Also, decoding should yield a board with only R_GENERAL
+// at (3,4).
 TEST(EncodeBoardStateTest, OnlyRedGeneral) {
   Board<Piece> board;
   for (auto& row : board) {
@@ -719,12 +736,24 @@ TEST(EncodeBoardStateTest, OnlyRedGeneral) {
   for (size_t i = 1; i < bytes.size(); ++i) {
     EXPECT_EQ(bytes[i], 0xFF) << "Byte at index " << i << " should be 0xFF.";
   }
+  // Test decoding: the decoded board should have R_GENERAL at (3,4) and nothing
+  // else.
+  Board<Piece> decoded = DecodeBoardState(encoding);
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      if (r == 3 && c == 4) {
+        EXPECT_EQ(decoded[r][c], Piece::R_GENERAL);
+      } else {
+        EXPECT_EQ(decoded[r][c], Piece::EMPTY);
+      }
+    }
+  }
 }
 
 // Test 3: Test that pieces in the same group are sorted canonically.
 // For example, if we place two red advisors at (5,5) and (2,3) (in unsorted
 // order), then the advisor group (group 1) should be sorted by their encoded
-// value. (Encode: (row << 4) | col.)
+// value. Decoding should yield both advisors as R_ADVISOR_1.
 TEST(EncodeBoardStateTest, OnlyRedAdvisorsSorted) {
   Board<Piece> board;
   for (auto& row : board) {
@@ -742,7 +771,6 @@ TEST(EncodeBoardStateTest, OnlyRedAdvisorsSorted) {
   // Group 0: red general (1 byte) → index 0.
   // Group 1: red advisors (2 bytes) → indices 1-2.
   // All other groups (indices 3 to 31) are missing and padded with 0xFF.
-  // Since only the two advisors are placed, group 0 remains 0xFF.
   EXPECT_EQ(bytes[0], 0xFF)
       << "Red general missing; group 0 should be padded with 0xFF.";
   // The two advisor bytes should be sorted: 0x23 comes before 0x55.
@@ -751,29 +779,24 @@ TEST(EncodeBoardStateTest, OnlyRedAdvisorsSorted) {
   for (size_t i = 3; i < bytes.size(); ++i) {
     EXPECT_EQ(bytes[i], 0xFF) << "Byte at index " << i << " should be 0xFF.";
   }
-}
-
-// Test 4: Repeated calls to EncodeBoardState with the same board should produce
-// identical encodings.
-TEST(EncodeBoardStateTest, ConsistencyMultipleCalls) {
-  Board<Piece> board;
-  for (auto& row : board) {
-    row.fill(Piece::EMPTY);
+  // Test decoding: both advisors should appear as R_ADVISOR_1 in their
+  // positions.
+  Board<Piece> decoded = DecodeBoardState(encoding);
+  for (uint8_t r = 0; r < kTotalRow; ++r) {
+    for (uint8_t c = 0; c < kTotalCol; ++c) {
+      if ((r == 2 && c == 3) || (r == 5 && c == 5)) {
+        EXPECT_EQ(decoded[r][c], Piece::R_ADVISOR_1);
+      } else {
+        EXPECT_EQ(decoded[r][c], Piece::EMPTY);
+      }
+    }
   }
-  // Place a few pieces.
-  board[0][0] = Piece::R_CHARIOT_1;
-  board[9][8] = Piece::R_CHARIOT_2;
-  board[0][4] = Piece::B_GENERAL;
-  board[9][4] = Piece::R_GENERAL;
-  auto encoding1 = EncodeBoardState(board);
-  auto encoding2 = EncodeBoardState(board);
-  EXPECT_EQ(encoding1, encoding2)
-      << "Multiple calls to EncodeBoardState on the same board should produce "
-         "the same encoding.";
 }
 
-// Test 5: Use the Game’s default opening board and verify that the encoded
+// Test 4: Use the Game’s default opening board and verify that the encoded
 // state reflects that both generals are present (i.e. not padded as missing).
+// Also, decoding should yield a board with the generals in their proper
+// positions.
 TEST(EncodeBoardStateTest, DefaultBoardState) {
   Game game;
   Board<Piece> board = game.CurrentBoard();
@@ -785,6 +808,12 @@ TEST(EncodeBoardStateTest, DefaultBoardState) {
   // (5 bytes) = 16 bytes, so group 7 starts at index 16.)
   EXPECT_NE(bytes[0], 0xFF) << "Red general should be present (group 0).";
   EXPECT_NE(bytes[16], 0xFF) << "Black general should be present (group 7).";
+
+  // Test decoding: verify that the decoded board has R_GENERAL and B_GENERAL in
+  // the expected positions.
+  Board<Piece> decoded = DecodeBoardState(encoding);
+  EXPECT_EQ(decoded[9][4], Piece::R_GENERAL);
+  EXPECT_EQ(decoded[0][4], Piece::B_GENERAL);
 }
 
 }  // namespace

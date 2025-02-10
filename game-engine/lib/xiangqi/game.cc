@@ -179,6 +179,11 @@ bool threatensByCannon(const Board<Piece>& board, const Position& cannonPos,
   return false;
 }
 
+Position DecodePos(uint8_t posByte) {
+  return Position{static_cast<uint8_t>(posByte >> 4),
+                  static_cast<uint8_t>(posByte & 0x0F)};
+};
+
 }  // namespace
 
 Game::Game() : history_{kInitState} {}
@@ -703,6 +708,196 @@ std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
           (static_cast<uint64_t>(black_soldier_pos[3]) << 8) |
           (static_cast<uint64_t>(black_soldier_pos[4]));
   return {res1, res2, res3, res4};
+}
+
+Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
+  // Initialize an empty board.
+  Board<Piece> board;
+  for (auto& row : board) {
+    row.fill(Piece::EMPTY);
+  }
+
+  // For red pieces, the encoded state is split between state[0] (res1) and
+  // state[1] (res2).
+  uint64_t res1 = state[0];
+  uint64_t res2 = state[1];
+
+  // --- Red Pieces ---
+
+  // Red General: bits 56-63 of res1.
+  uint8_t r_general = (res1 >> 56) & 0xFF;
+  if (r_general != 0xFF) {
+    Position pos = DecodePos(r_general);
+    board[pos.row][pos.col] = Piece::R_GENERAL;
+  }
+
+  // Red Advisors: bits 48-55 and 40-47 of res1.
+  uint8_t r_adv1 = (res1 >> 48) & 0xFF;
+  if (r_adv1 != 0xFF) {
+    Position pos = DecodePos(r_adv1);
+    board[pos.row][pos.col] = Piece::R_ADVISOR_1;
+  }
+  uint8_t r_adv2 = (res1 >> 40) & 0xFF;
+  if (r_adv2 != 0xFF) {
+    Position pos = DecodePos(r_adv2);
+    board[pos.row][pos.col] = Piece::R_ADVISOR_1;
+  }
+
+  // Red Elephants: bits 32-39 and 24-31 of res1.
+  uint8_t r_ele1 = (res1 >> 32) & 0xFF;
+  if (r_ele1 != 0xFF) {
+    Position pos = DecodePos(r_ele1);
+    board[pos.row][pos.col] = Piece::R_ELEPHANT_1;
+  }
+  uint8_t r_ele2 = (res1 >> 24) & 0xFF;
+  if (r_ele2 != 0xFF) {
+    Position pos = DecodePos(r_ele2);
+    board[pos.row][pos.col] = Piece::R_ELEPHANT_1;
+  }
+
+  // Red Horses: bits 16-23 and 8-15 of res1.
+  uint8_t r_horse1 = (res1 >> 16) & 0xFF;
+  if (r_horse1 != 0xFF) {
+    Position pos = DecodePos(r_horse1);
+    board[pos.row][pos.col] = Piece::R_HORSE_1;
+  }
+  uint8_t r_horse2 = (res1 >> 8) & 0xFF;
+  if (r_horse2 != 0xFF) {
+    Position pos = DecodePos(r_horse2);
+    board[pos.row][pos.col] = Piece::R_HORSE_1;
+  }
+
+  // Red Chariots:
+  //   - One chariot: bits 0-7 of res1.
+  uint8_t r_chariot1 = res1 & 0xFF;
+  if (r_chariot1 != 0xFF) {
+    Position pos = DecodePos(r_chariot1);
+    board[pos.row][pos.col] = Piece::R_CHARIOT_1;
+  }
+  //   - The other chariot: bits 56-63 of res2.
+  uint8_t r_chariot2 = (res2 >> 56) & 0xFF;
+  if (r_chariot2 != 0xFF) {
+    Position pos = DecodePos(r_chariot2);
+    board[pos.row][pos.col] = Piece::R_CHARIOT_1;
+  }
+
+  // Red Cannons: bits 48-55 and 40-47 of res2.
+  uint8_t r_cannon1 = (res2 >> 48) & 0xFF;
+  if (r_cannon1 != 0xFF) {
+    Position pos = DecodePos(r_cannon1);
+    board[pos.row][pos.col] = Piece::R_CANNON_1;
+  }
+  uint8_t r_cannon2 = (res2 >> 40) & 0xFF;
+  if (r_cannon2 != 0xFF) {
+    Position pos = DecodePos(r_cannon2);
+    board[pos.row][pos.col] = Piece::R_CANNON_1;
+  }
+
+  // Red Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res2.
+  uint8_t r_soldier[5];
+  r_soldier[0] = (res2 >> 32) & 0xFF;
+  r_soldier[1] = (res2 >> 24) & 0xFF;
+  r_soldier[2] = (res2 >> 16) & 0xFF;
+  r_soldier[3] = (res2 >> 8) & 0xFF;
+  r_soldier[4] = res2 & 0xFF;
+  for (int i = 0; i < 5; ++i) {
+    if (r_soldier[i] != 0xFF) {
+      Position pos = DecodePos(r_soldier[i]);
+      board[pos.row][pos.col] = Piece::R_SOLDIER_1;
+    }
+  }
+
+  // For black pieces, the encoded state is in state[2] (res3) and state[3]
+  // (res4).
+  uint64_t res3 = state[2];
+  uint64_t res4 = state[3];
+
+  // --- Black Pieces ---
+
+  // Black General: bits 56-63 of res3.
+  uint8_t b_general = (res3 >> 56) & 0xFF;
+  if (b_general != 0xFF) {
+    Position pos = DecodePos(b_general);
+    board[pos.row][pos.col] = Piece::B_GENERAL;
+  }
+
+  // Black Advisors: bits 48-55 and 40-47 of res3.
+  uint8_t b_adv1 = (res3 >> 48) & 0xFF;
+  if (b_adv1 != 0xFF) {
+    Position pos = DecodePos(b_adv1);
+    board[pos.row][pos.col] = Piece::B_ADVISOR_1;
+  }
+  uint8_t b_adv2 = (res3 >> 40) & 0xFF;
+  if (b_adv2 != 0xFF) {
+    Position pos = DecodePos(b_adv2);
+    board[pos.row][pos.col] = Piece::B_ADVISOR_1;
+  }
+
+  // Black Elephants: bits 32-39 and 24-31 of res3.
+  uint8_t b_ele1 = (res3 >> 32) & 0xFF;
+  if (b_ele1 != 0xFF) {
+    Position pos = DecodePos(b_ele1);
+    board[pos.row][pos.col] = Piece::B_ELEPHANT_1;
+  }
+  uint8_t b_ele2 = (res3 >> 24) & 0xFF;
+  if (b_ele2 != 0xFF) {
+    Position pos = DecodePos(b_ele2);
+    board[pos.row][pos.col] = Piece::B_ELEPHANT_1;
+  }
+
+  // Black Horses: bits 16-23 and 8-15 of res3.
+  uint8_t b_horse1 = (res3 >> 16) & 0xFF;
+  if (b_horse1 != 0xFF) {
+    Position pos = DecodePos(b_horse1);
+    board[pos.row][pos.col] = Piece::B_HORSE_1;
+  }
+  uint8_t b_horse2 = (res3 >> 8) & 0xFF;
+  if (b_horse2 != 0xFF) {
+    Position pos = DecodePos(b_horse2);
+    board[pos.row][pos.col] = Piece::B_HORSE_1;
+  }
+
+  // Black Chariots:
+  //   - One from res3: bits 0-7.
+  uint8_t b_chariot1 = res3 & 0xFF;
+  if (b_chariot1 != 0xFF) {
+    Position pos = DecodePos(b_chariot1);
+    board[pos.row][pos.col] = Piece::B_CHARIOT_1;
+  }
+  //   - The other from res4: bits 56-63.
+  uint8_t b_chariot2 = (res4 >> 56) & 0xFF;
+  if (b_chariot2 != 0xFF) {
+    Position pos = DecodePos(b_chariot2);
+    board[pos.row][pos.col] = Piece::B_CHARIOT_1;
+  }
+
+  // Black Cannons: bits 48-55 and 40-47 of res4.
+  uint8_t b_cannon1 = (res4 >> 48) & 0xFF;
+  if (b_cannon1 != 0xFF) {
+    Position pos = DecodePos(b_cannon1);
+    board[pos.row][pos.col] = Piece::B_CANNON_1;
+  }
+  uint8_t b_cannon2 = (res4 >> 40) & 0xFF;
+  if (b_cannon2 != 0xFF) {
+    Position pos = DecodePos(b_cannon2);
+    board[pos.row][pos.col] = Piece::B_CANNON_1;
+  }
+
+  // Black Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res4.
+  uint8_t b_soldier[5];
+  b_soldier[0] = (res4 >> 32) & 0xFF;
+  b_soldier[1] = (res4 >> 24) & 0xFF;
+  b_soldier[2] = (res4 >> 16) & 0xFF;
+  b_soldier[3] = (res4 >> 8) & 0xFF;
+  b_soldier[4] = res4 & 0xFF;
+  for (int i = 0; i < 5; ++i) {
+    if (b_soldier[i] != 0xFF) {
+      Position pos = DecodePos(b_soldier[i]);
+      board[pos.row][pos.col] = Piece::B_SOLDIER_1;
+    }
+  }
+
+  return board;
 }
 
 }  // namespace xq
