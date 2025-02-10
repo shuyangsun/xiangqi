@@ -218,13 +218,11 @@ Piece Game::PieceAt(Position pos) const {
 
 Piece Game::Move(Position from, Position to) {
   using enum Player;
-  if (Row(from) == Row(to) && Col(from) == Col(to)) {
+  if (from == to) {
     return Piece::EMPTY;
   }
   const Piece piece = PieceAt(from);
-  const auto piece_value = static_cast<std::underlying_type_t<Piece>>(piece);
-  if (piece == Piece::EMPTY || (player_ == RED && piece_value < 0) ||
-      (player_ == BLACK && piece_value > 0)) {
+  if (piece == Piece::EMPTY) {
     return Piece::EMPTY;
   }
 
@@ -245,7 +243,7 @@ MoveAction Game::Undo() {
 
   if (!CanUndo()) {
     // Dummy move action.
-    return {Piece::EMPTY, Pos(1, 0), Pos(1, 0), Piece::EMPTY};
+    return {Piece::EMPTY, kNoPosition, kNoPosition, Piece::EMPTY};
   }
   MoveAction result = moves_.back();
   moves_.pop_back();
@@ -414,7 +412,7 @@ std::vector<uint16_t> Game::ExportMoves() const {
 
 void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
   for (const uint16_t move : moves) {
-    Move(static_cast<Position>(move & 0xFF00 >> 8),
+    Move(static_cast<Position>((move & 0xFF00) >> 8),
          static_cast<Position>(move & 0x00FF));
   }
 }
