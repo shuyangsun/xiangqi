@@ -25,13 +25,122 @@ struct GameData: Codable {
     }
 }
 
+enum UniquePiece {
+    case empty
+    case rGeneral
+    case rAdvisor1
+    case rAdvisor2
+    case rElephant1
+    case rElephant2
+    case rHorse1
+    case rHorse2
+    case rChariot1
+    case rChariot2
+    case rCannon1
+    case rCannon2
+    case rSoldier1
+    case rSoldier2
+    case rSoldier3
+    case rSoldier4
+    case rSoldier5
+    case bGeneral
+    case bAdvisor1
+    case bAdvisor2
+    case bElephant1
+    case bElephant2
+    case bHorse1
+    case bHorse2
+    case bChariot1
+    case bChariot2
+    case bCannon1
+    case bCannon2
+    case bSoldier1
+    case bSoldier2
+    case bSoldier3
+    case bSoldier4
+    case bSoldier5
+}
+
+func pieceAndCountToUniquePiece(_ piece: xq.Piece, _ pieceCount: UInt8) -> UniquePiece {
+    switch (piece, pieceCount) {
+    case (.EMPTY, _):
+        return .empty;
+    case (.R_GENERAL, _):
+        return .rGeneral;
+    case (.R_ADVISOR, 0):
+        return .rAdvisor1;
+    case (.R_ADVISOR, 1):
+        return .rAdvisor2;
+    case (.R_ELEPHANT, 0):
+        return .rElephant1;
+    case (.R_ELEPHANT, 1):
+        return .rElephant2;
+    case (.R_HORSE, 0):
+        return .rHorse1;
+    case (.R_HORSE, 1):
+        return .rHorse2;
+    case (.R_CHARIOT, 0):
+        return .rChariot1;
+    case (.R_CHARIOT, 1):
+        return .rChariot2;
+    case (.R_CANNON, 0):
+        return .rCannon1;
+    case (.R_CANNON, 1):
+        return .rCannon1;
+    case (.R_SOLDIER, 0):
+        return .rSoldier1;
+    case (.R_SOLDIER, 1):
+        return .rSoldier2;
+    case (.R_SOLDIER, 2):
+        return .rSoldier3;
+    case (.R_SOLDIER, 3):
+        return .rSoldier4;
+    case (.R_SOLDIER, 4):
+        return .rSoldier5;
+    case (.B_GENERAL, _):
+        return .bGeneral;
+    case (.B_ADVISOR, 0):
+        return .bAdvisor1;
+    case (.B_ADVISOR, 1):
+        return .bAdvisor2;
+    case (.B_ELEPHANT, 0):
+        return .bElephant1;
+    case (.B_ELEPHANT, 1):
+        return .bElephant2;
+    case (.B_HORSE, 0):
+        return .bHorse1;
+    case (.B_HORSE, 1):
+        return .bHorse2;
+    case (.B_CHARIOT, 0):
+        return .bChariot1;
+    case (.B_CHARIOT, 1):
+        return .bChariot2;
+    case (.B_CANNON, 0):
+        return .bCannon1;
+    case (.B_CANNON, 1):
+        return .bCannon1;
+    case (.B_SOLDIER, 0):
+        return .bSoldier1;
+    case (.B_SOLDIER, 1):
+        return .bSoldier2;
+    case (.B_SOLDIER, 2):
+        return .bSoldier3;
+    case (.B_SOLDIER, 3):
+        return .bSoldier4;
+    case (.B_SOLDIER, 4):
+        return .bSoldier5;
+    default:
+        return .empty;
+    }
+}
+
 class GameScene: SKScene {
 
     var game = xq.Game()
 
     // Board dimensions (number of columns and rows in our data structure)
-    let totalRows = 10
-    let totalCols = 9
+    let totalRows = UInt8(10)
+    let totalCols = UInt8(9)
 
     let boardColor = SKColor(red: 0.91, green: 0.82, blue: 0.64, alpha: 1.0)
     let lineColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
@@ -53,10 +162,10 @@ class GameScene: SKScene {
 
     var selectedPiece: SKShapeNode?
     var selectedPieceValue: xq.Piece?
-    var selectedRow: Int?
-    var selectedCol: Int?
+    var selectedRow: UInt8?
+    var selectedCol: UInt8?
     var possibleMovesMark: [SKShapeNode] = []
-    var pieceToNode: [xq.Piece: SKShapeNode] = [:]
+    var pieceToNode: [UniquePiece: SKShapeNode] = [:]
     var winnerLabel: SKLabelNode = SKLabelNode(text: "")
     var humanVsHuman: Bool = true
     var movesTs: [Date] = []
@@ -176,17 +285,17 @@ class GameScene: SKScene {
     // MARK: - Coordinate Transformation
 
     /// Given board coordinates (with (0,0) at the top‑left), return the scene coordinate.
-    func pointForBoardCoordinate(col: Int, row: Int) -> CGPoint {
+    func pointForBoardCoordinate(col: UInt8, row: UInt8) -> CGPoint {
         // Our board data is in row‑major order with (0,0) at the top.
         // In the scene, boardOrigin is the bottom‑left.
         let x = boardOrigin.x + CGFloat(col) * tileSize
-        let y = boardOrigin.y + CGFloat((totalRows - 1) - row) * tileSize
+        let y = boardOrigin.y + CGFloat(totalRows - 1 - row) * tileSize
         return CGPoint(x: x, y: y)
     }
 
     /// Converts a scene point to a board coordinate (col, row) by snapping to the grid.
     /// Returns nil if the point is outside the board’s bounds.
-    func boardCoordinateForPoint(_ point: CGPoint) -> (col: Int, row: Int)? {
+    func boardCoordinateForPoint(_ point: CGPoint) -> (col: UInt8, row: UInt8)? {
         let boardWidth = CGFloat(totalCols - 1) * tileSize
         let boardHeight = CGFloat(totalRows - 1) * tileSize
 
@@ -200,10 +309,10 @@ class GameScene: SKScene {
         }
 
         // Snap by rounding to the nearest grid index.
-        let col = Int(round(relativeX / tileSize))
+        let col = UInt8(round(relativeX / tileSize))
         // Our board rows are counted from the top. Since our origin is at the bottom,
         // compute row by flipping the relative Y.
-        let row = (totalRows - 1) - Int(round(relativeY / tileSize))
+        let row = UInt8(Int(totalRows - 1) - Int(round(relativeY / tileSize)))
         return (col, row)
     }
 
@@ -229,7 +338,7 @@ class GameScene: SKScene {
         }
 
         // 2. Draw vertical lines.
-        for c in 0..<totalCols {
+        for c in 0..<UInt8(totalCols) {
             if c == 0 || c == totalCols - 1 {
                 let path = CGMutablePath()
                 let start = pointForBoardCoordinate(col: c, row: 0)           // top
@@ -375,7 +484,7 @@ class GameScene: SKScene {
         }
 
         let pieceRadius = tileSize * 0.4
-        func createPieceNode(row: Int, col: Int, piece: xq.Piece) {
+        func createPieceNode(row: UInt8, col: UInt8, piece: xq.Piece, pieceCount: UInt8) {
             let node = SKShapeNode(circleOfRadius: pieceRadius)
             node.position = pointForBoardCoordinate(col: col, row: row)
             node.fillColor = pieceColor
@@ -397,14 +506,20 @@ class GameScene: SKScene {
             }
 
             addChild(node)
-            pieceToNode[piece] = node
+            pieceToNode[pieceAndCountToUniquePiece(piece, pieceCount)] = node
         }
 
-        for row in 0..<totalRows {
-            for col in 0..<totalCols {
-                let piece = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
+        var pieceCount: [xq.Piece : UInt8] = [:]
+        for row in 0..<UInt8(totalRows) {
+            for col in 0..<UInt8(totalCols) {
+                let piece = game.PieceAt(xq.Pos(row, col))
                 if piece != .EMPTY {
-                    createPieceNode(row: row, col: col, piece: piece)
+                    createPieceNode(row: row, col: col, piece: piece, pieceCount: pieceCount[piece] ?? 0)
+                    if pieceCount[piece] == nil {
+                        pieceCount[piece] = UInt8(1)
+                    } else {
+                        pieceCount[piece] = pieceCount[piece]! + 1
+                    }
                 }
             }
         }
@@ -458,7 +573,7 @@ class GameScene: SKScene {
 
         let tappedRow = boardPointMaybe.row
         let tappedCol = boardPointMaybe.col
-        let xqPiece = game.PieceAt(xq.Pos(UInt8(tappedRow), UInt8(tappedCol)))
+        let xqPiece = game.PieceAt(xq.Pos(tappedRow, tappedCol))
         let tappedPiece = pieceToNode[xqPiece]
 
         if tappedPiece != nil {
@@ -476,8 +591,8 @@ class GameScene: SKScene {
                 self.drawPossibleMoves(row: UInt8(tappedRow), col: UInt8(tappedCol))
             } else if selectedPiece != nil && ((game.Turn() == .RED && xqPiece.rawValue < 0) || (game.Turn() == .BLACK && xqPiece.rawValue > 0)) {
                 // Selecting an opponent piece, check possible moves.
-                let possibleMoves = game.PossibleMoves(xq.Pos(UInt8(selectedRow!), UInt8(selectedCol!)))
-                if possibleMoves[tappedRow][tappedCol] {
+                let possibleMoves = game.PossibleMoves(xq.Pos(selectedRow!, selectedCol!))
+                if possibleMoves[Int(tappedRow)][Int(tappedCol)] {
                     move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                     movesTs.append(Date())
                 }
@@ -487,7 +602,7 @@ class GameScene: SKScene {
         } else if selectedPiece != nil {
             // Move to empty space.
             let possibleMoves = game.PossibleMoves(xq.Pos(UInt8(selectedRow!), UInt8(selectedCol!)))
-            if possibleMoves[tappedRow][tappedCol] {
+            if possibleMoves[Int(tappedRow)][Int(tappedCol)] {
                 move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                 movesTs.append(Date())
             }
@@ -522,7 +637,7 @@ class GameScene: SKScene {
     }
 
     func drawPossibleMoves(row: UInt8, col: UInt8) {
-        func createPossibleMovesMark(row: Int, col: Int) {
+        func createPossibleMovesMark(row: UInt8, col: UInt8) {
             let mark = SKShapeNode(circleOfRadius: 10)
             mark.position = pointForBoardCoordinate(col: col, row: row)
             mark.fillColor = possibleMoveColor
@@ -534,10 +649,10 @@ class GameScene: SKScene {
         let possibleMoves = self.game.PossibleMoves(xq.Pos(row, col))
         for row in 0..<totalRows {
             for col in 0..<totalCols {
-                if (!possibleMoves[row][col]) {
+                if (!possibleMoves[Int(row)][Int(col)]) {
                     continue;
                 }
-                let capture = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
+                let capture = game.PieceAt(xq.Pos(row, col))
                 if capture != .EMPTY {
                     pieceToNode[capture]?.fillColor = pieceColorThreatened
                 } else {
@@ -576,11 +691,11 @@ class GameScene: SKScene {
             }
             var startingBoard: [[Int8]] = []
             let startingGame = xq.Game()
-            startingBoard.reserveCapacity(totalRows)
-            for row in 0..<totalRows {
-                startingBoard.append(Array(repeating: 0, count: totalCols))
-                for col in 0..<totalCols {
-                    startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Pos(UInt8(row), UInt8(col))).rawValue)
+            startingBoard.reserveCapacity(Int(totalRows))
+            for row in 0..<UInt8(totalRows) {
+                startingBoard.append(Array(repeating: 0, count: Int(totalCols)))
+                for col in 0..<UInt8(totalCols) {
+                    startingBoard[Int(row)][Int(col)] = Int8(startingGame.PieceAt(xq.Pos(row, col)).rawValue)
                 }
             }
             return GameData(
@@ -659,10 +774,10 @@ class GameScene: SKScene {
                 game.Reset() // TODO: should be resetting with loaded board, assuming default board.
                 for m in loadedGame.moves {
                     move(
-                        fromRow: Int((m & 0xF000) >> 12),
-                        fromCol: Int((m & 0x0F00) >> 8),
-                        toRow: Int((m & 0x00F0) >> 4),
-                        toCol: Int(m & 0x000F),
+                        fromRow: UInt8((m & 0xF000) >> 12),
+                        fromCol: UInt8((m & 0x0F00) >> 8),
+                        toRow: UInt8((m & 0x00F0) >> 4),
+                        toCol: UInt8(m & 0x000F),
                         animated: false
                     )
                 }
@@ -672,7 +787,7 @@ class GameScene: SKScene {
         }
     }
 
-    func move(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int, animated: Bool = true) {
+    func move(fromRow: UInt8, fromCol: UInt8, toRow: UInt8, toCol: UInt8, animated: Bool = true) {
         let dest = pointForBoardCoordinate(col: toCol, row: toRow)
         let action = SKAction.move(to: dest, duration: animated ? 0.25 : 0.0)
         let piece = game.PieceAt(xq.Pos(UInt8(fromRow), UInt8(fromCol)))
@@ -696,7 +811,7 @@ class GameScene: SKScene {
         func undoSingleMove() {
             let undoneMove = game.Undo()
             let _ = movesTs.popLast()
-            let dest = pointForBoardCoordinate(col: Int(xq.Col(undoneMove.from)), row: Int(xq.Col(undoneMove.from)))
+            let dest = pointForBoardCoordinate(col: xq.Col(undoneMove.from), row: xq.Col(undoneMove.from))
             let action = SKAction.move(to: dest, duration: 0.25)
             pieceToNode[undoneMove.piece]?.run(action)
             if undoneMove.captured != .EMPTY {
