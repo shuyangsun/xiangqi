@@ -81,7 +81,6 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   const uint8_t self_col = Col(pos);
   if (opponent_general.has_value() && Col(*opponent_general) == self_col) {
     const uint8_t op_row = Row(*opponent_general);
-    const uint8_t op_col = Col(*opponent_general);
     const int8_t change = piece == Piece::B_GENERAL ? 1 : -1;
     bool is_blocked = false;
     // Start checking one square past the moving general.
