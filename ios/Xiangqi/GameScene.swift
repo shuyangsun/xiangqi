@@ -414,12 +414,13 @@ class GameScene: SKScene {
                 tappedPieceNode?.strokeColor = pieceStrokeSelectedColor
                 selectedPosition = tappedPos
                 drawPossibleMoves(tappedPos)
-            } else if selectedPosition != kNoPosition && ((game.Turn() == .RED && xq.IsRed(tappedPiece)) || (game.Turn() == .BLACK && xq.IsBlack(tappedPiece))) {
+            } else if selectedPosition != kNoPosition && ((game.Turn() == .RED && xq.IsBlack(tappedPiece)) || (game.Turn() == .BLACK && xq.IsRed(tappedPiece))) {
                 // Selecting an opponent piece, check possible moves.
                 let possibleMoves = game.PossibleMoves(selectedPosition)
                 if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
                     move(from: selectedPosition, to: tappedPos)
                     movesTs.append(Date())
+                    saveGame()
                 }
                 clearSelection()
                 updateStatusLabels()
@@ -430,11 +431,11 @@ class GameScene: SKScene {
             if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
                 move(from: selectedPosition, to: tappedPos)
                 movesTs.append(Date())
+                saveGame()
             }
             clearSelection()
             updateStatusLabels()
         }
-        saveGame()
     }
 
 
@@ -473,7 +474,6 @@ class GameScene: SKScene {
                 if (!possibleMoves[Int(row)][Int(col)]) {
                     continue;
                 }
-                print(row, col)
                 let possiblePos = xq.Pos(row, col)
                 let capture = game.PieceAt(possiblePos)
                 if capture != .EMPTY {
@@ -603,6 +603,10 @@ class GameScene: SKScene {
     }
 
     func move(from: xq.Position, to: xq.Position, animated: Bool = true) {
+        clearSelection()
+        clearPossibleMovesMark()
+        
+
         let dest = positionToPoint(to)
         let action = SKAction.move(to: dest, duration: animated ? 0.25 : 0.0)
         let captured = game.Move(from, to)
@@ -619,6 +623,9 @@ class GameScene: SKScene {
 
     func undo() {
         if !game.CanUndo() { return }
+        
+        clearSelection()
+        clearPossibleMovesMark()
 
         func undoSingleMove() {
             let undoneMove = game.Undo()
@@ -640,8 +647,6 @@ class GameScene: SKScene {
             }
         }
 
-        clearPossibleMovesMark()
-        clearSelection()
         updateStatusLabels()
         saveGame()
     }
