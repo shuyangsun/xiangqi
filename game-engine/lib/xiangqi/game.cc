@@ -436,6 +436,8 @@ Board<Piece> FlipBoard(const Board<Piece>& board) {
 }
 
 std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
+  using enum Piece;
+
   uint64_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
 
   // Initialize all pieces as missing.
@@ -447,9 +449,147 @@ std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
            b_chariot_poses = 0xFFFF, b_cannon_poses = 0xFFFF;
 
   std::array<uint8_t, 5> r_soldier_poses{};
+  r_soldier_poses.fill(0xFF);
   std::array<uint8_t, 5> b_soldier_poses{};
+  b_soldier_poses.fill(0xFF);
+  uint8_t r_soldier_idx = 0, b_soldier_idx = 0;
 
-  // TODO
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      const Position pos = Pos(row, col);
+      switch (board[row][col]) {
+        case EMPTY: {
+          continue;
+        }
+        case R_GENERAL: {
+          r_general_pos = pos;
+          break;
+        }
+        case B_GENERAL: {
+          b_general_pos = pos;
+          break;
+        }
+        case R_ADVISOR: {
+          const uint16_t left_byte = r_advisor_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          r_advisor_poses = (pos < cur_min)
+                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                : (left_byte | pos);
+          break;
+        }
+        case B_ADVISOR: {
+          const uint16_t left_byte = b_advisor_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          b_advisor_poses = (pos < cur_min)
+                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                : (left_byte | pos);
+          break;
+        }
+        case R_ELEPHANT: {
+          const uint16_t left_byte = r_elephant_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          r_elephant_poses = (pos < cur_min)
+                                 ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                 : (left_byte | pos);
+          break;
+        }
+        case B_ELEPHANT: {
+          const uint16_t left_byte = b_elephant_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          b_elephant_poses = (pos < cur_min)
+                                 ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                 : (left_byte | pos);
+          break;
+        }
+        case R_HORSE: {
+          const uint16_t left_byte = r_horse_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          r_horse_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+          break;
+        }
+        case B_HORSE: {
+          const uint16_t left_byte = b_horse_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          b_horse_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+          break;
+        }
+        case R_CHARIOT: {
+          const uint16_t left_byte = r_chariot_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          r_chariot_poses = (pos < cur_min)
+                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                : (left_byte | pos);
+          break;
+        }
+        case B_CHARIOT: {
+          const uint16_t left_byte = b_chariot_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          b_chariot_poses = (pos < cur_min)
+                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                                : (left_byte | pos);
+          break;
+        }
+        case R_CANNON: {
+          const uint16_t left_byte = r_cannon_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          r_cannon_poses = (pos < cur_min)
+                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                               : (left_byte | pos);
+          break;
+        }
+        case B_CANNON: {
+          const uint16_t left_byte = b_cannon_poses & 0xFF00;
+          const uint16_t cur_min = left_byte >> 8;
+          b_cannon_poses = (pos < cur_min)
+                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                               : (left_byte | pos);
+          break;
+        }
+        case R_SOLDIER:
+          r_soldier_poses[r_soldier_idx++] = pos;
+          break;
+        case B_SOLDIER:
+          b_soldier_poses[b_soldier_idx++] = pos;
+          break;
+      }
+    }
+  }
+
+  std::sort(r_soldier_poses.begin(), r_soldier_poses.end());
+  std::sort(b_soldier_poses.begin(), b_soldier_poses.end());
+
+  res1 |= static_cast<uint64_t>(r_general_pos) << (7 * 8);
+  res3 |= static_cast<uint64_t>(b_general_pos) << (7 * 8);
+  res1 |= static_cast<uint64_t>(r_advisor_poses) << (5 * 8);
+  res3 |= static_cast<uint64_t>(b_advisor_poses) << (5 * 8);
+  res1 |= static_cast<uint64_t>(r_elephant_poses) << (3 * 8);
+  res3 |= static_cast<uint64_t>(b_elephant_poses) << (3 * 8);
+  res1 |= static_cast<uint64_t>(r_horse_poses) << 8;
+  res3 |= static_cast<uint64_t>(b_horse_poses) << 8;
+  res1 |= static_cast<uint64_t>(r_chariot_poses >> 8);
+  res3 |= static_cast<uint64_t>(b_chariot_poses >> 8);
+
+  res2 |= static_cast<uint64_t>(r_chariot_poses & 0x00FF) << (7 * 8);
+  res4 |= static_cast<uint64_t>(b_chariot_poses & 0x00FF) << (7 * 8);
+
+  res2 |= static_cast<uint64_t>(r_cannon_poses) << (5 * 8);
+  res4 |= static_cast<uint64_t>(b_cannon_poses) << (5 * 8);
+
+  res2 |= (static_cast<uint64_t>(r_soldier_poses[0]) << (4 * 8)) |
+          (static_cast<uint64_t>(r_soldier_poses[1]) << (3 * 8)) |
+          (static_cast<uint64_t>(r_soldier_poses[2]) << (2 * 8)) |
+          (static_cast<uint64_t>(r_soldier_poses[3]) << 8) |
+          static_cast<uint64_t>(r_soldier_poses[4]);
+  res4 |= (static_cast<uint64_t>(b_soldier_poses[0]) << (4 * 8)) |
+          (static_cast<uint64_t>(b_soldier_poses[1]) << (3 * 8)) |
+          (static_cast<uint64_t>(b_soldier_poses[2]) << (2 * 8)) |
+          (static_cast<uint64_t>(b_soldier_poses[3]) << 8) |
+          static_cast<uint64_t>(b_soldier_poses[4]);
+
   return {res1, res2, res3, res4};
 }
 

@@ -18,16 +18,14 @@ using enum ::xq::Piece;
 
 namespace {
 
-std::vector<uint8_t> UnpackEncoding(const std::array<uint64_t, 4>& encoding) {
-  std::vector<uint8_t> bytes;
-  bytes.reserve(32);
-  for (size_t i = 0; i < encoding.size(); ++i) {
+std::array<uint8_t, 32> UnpackEncoding(
+    const std::array<uint64_t, 4>& encoding) {
+  std::array<uint8_t, 32> bytes;
+  for (size_t i = 0; i < 4; ++i) {
     uint64_t block = encoding[i];
-    // Pack in big-endian order: the most-significant byte of the block is
-    // first.
-    for (int j = 7; j >= 0; --j) {
-      uint8_t byte = static_cast<uint8_t>((block >> (8 * j)) & 0xFF);
-      bytes.push_back(byte);
+    for (int j = 0; j < 8; ++j) {
+      uint8_t byte = static_cast<uint8_t>(block >> (8 * (7 - j)));
+      bytes[i * 8 + j] = byte;
     }
   }
   return bytes;
@@ -725,7 +723,7 @@ TEST(EncodeBoardStateTest, OnlyRedAdvisorsSorted) {
   // - R_ADVISOR at (2,3): encoded as (2<<4)|3 = 0x23.
   board[5][5] = Piece::R_ADVISOR;
   board[2][3] = Piece::R_ADVISOR;
-  auto encoding = EncodeBoardState(board);
+  const std::array<uint64_t, 4> encoding = EncodeBoardState(board);
   auto bytes = UnpackEncoding(encoding);
   ASSERT_EQ(bytes.size(), 32u);
   // The groups appear in the following order:
@@ -791,17 +789,19 @@ TEST(EncodeBoardStateTest, DefaultBoardState) {
   auto encoding = EncodeBoardState(board);
   auto bytes = UnpackEncoding(encoding);
   ASSERT_EQ(bytes.size(), 32u);
-  // The red general is in group 0 (byte index 0) and the black general is in
-  // group 7. (Red groups: group 0 (1 byte) + group 1 (2 bytes) + ... + group 6
-  // (5 bytes) = 16 bytes, so group 7 starts at index 16.)
   EXPECT_NE(bytes[0], 0xFF) << "Red general should be present (group 0).";
   EXPECT_NE(bytes[16], 0xFF) << "Black general should be present (group 7).";
 
   // Test decoding: verify that the decoded board has R_GENERAL and B_GENERAL in
   // the expected positions.
   Board<Piece> decoded = DecodeBoardState(encoding);
-  EXPECT_EQ(decoded[9][4], Piece::R_GENERAL);
-  EXPECT_EQ(decoded[0][4], Piece::B_GENERAL);
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    for (uint8_t col = 0; row < kTotalCol; row++) {
+      ASSERT_EQ(decoded[row][col], board[row][col])
+          << "Decoded default board at (" << static_cast<int>(row) << ", "
+          << static_cast<int>(col) << ") is not equal.";
+    }
+  }
 }
 
 }  // namespace
