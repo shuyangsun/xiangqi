@@ -353,29 +353,29 @@ class GameScene: SKScene {
     func drawPieces() {
         func pieceText(piece: xq.Piece) -> String {
             switch (piece) {
-            case .B_CHARIOT_1, .B_CHARIOT_2, .R_CHARIOT_1, .R_CHARIOT_2:
+            case .B_CHARIOT, .R_CHARIOT:
                 return "車"
-            case .B_HORSE_1, .B_HORSE_2, .R_HORSE_1, .R_HORSE_2:
+            case .B_HORSE, .R_HORSE:
                 return "馬"
-            case .B_ELEPHANT_1, .B_ELEPHANT_2:
+            case .B_ELEPHANT:
                 return "象"
-            case .R_ELEPHANT_1, .R_ELEPHANT_2:
+            case .R_ELEPHANT:
                 return "象"
-            case .B_ADVISOR_1, .B_ADVISOR_2:
+            case .B_ADVISOR:
                 return "士"
-            case .R_ADVISOR_1, .R_ADVISOR_2:
+            case .R_ADVISOR:
                 return "仕"
             case .B_GENERAL:
                 return "将"
             case .R_GENERAL:
                 return "帥"
-            case .B_CANNON_1, .B_CANNON_2:
+            case .B_CANNON:
                 return "砲"
-            case .R_CANNON_1, .R_CANNON_2:
+            case .R_CANNON:
                 return "炮"
-            case .B_SOLDIER_1, .B_SOLDIER_2, .B_SOLDIER_3, .B_SOLDIER_4, .B_SOLDIER_5:
+            case .B_SOLDIER:
                 return "卒"
-            case .R_SOLDIER_1, .R_SOLDIER_2, .R_SOLDIER_3, .R_SOLDIER_4, .R_SOLDIER_5:
+            case .R_SOLDIER:
                 return "兵"
             default:
                 return "?"
@@ -410,7 +410,7 @@ class GameScene: SKScene {
 
         for row in 0..<totalRows {
             for col in 0..<totalCols {
-                let piece = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                let piece = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
                 if piece != .EMPTY {
                     createPieceNode(row: row, col: col, piece: piece)
                 }
@@ -466,7 +466,7 @@ class GameScene: SKScene {
 
         let tappedRow = boardPointMaybe.row
         let tappedCol = boardPointMaybe.col
-        let xqPiece = game.PieceAt(xq.Position(row: UInt8(tappedRow), col: UInt8(tappedCol)))
+        let xqPiece = game.PieceAt(xq.Pos(UInt8(tappedRow), UInt8(tappedCol)))
         let tappedPiece = pieceToNode[xqPiece]
 
         if tappedPiece != nil {
@@ -484,7 +484,7 @@ class GameScene: SKScene {
                 self.drawPossibleMoves(row: UInt8(tappedRow), col: UInt8(tappedCol))
             } else if selectedPiece != nil && ((game.Turn() == .RED && xqPiece.rawValue < 0) || (game.Turn() == .BLACK && xqPiece.rawValue > 0)) {
                 // Selecting an opponent piece, check possible moves.
-                let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
+                let possibleMoves = game.PossibleMoves(xq.Pos(UInt8(selectedRow!), UInt8(selectedCol!)))
                 if possibleMoves[tappedRow][tappedCol] {
                     move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                     movesTs.append(Date())
@@ -494,7 +494,7 @@ class GameScene: SKScene {
             }
         } else if selectedPiece != nil {
             // Move to empty space.
-            let possibleMoves = game.PossibleMoves(xq.Position(row: UInt8(selectedRow!), col: UInt8(selectedCol!)))
+            let possibleMoves = game.PossibleMoves(xq.Pos(UInt8(selectedRow!), UInt8(selectedCol!)))
             if possibleMoves[tappedRow][tappedCol] {
                 move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
                 movesTs.append(Date())
@@ -518,7 +518,7 @@ class GameScene: SKScene {
 
         for row in 0..<totalRows {
             for col in 0..<totalCols {
-                let piece = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                let piece = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
                 if piece != .EMPTY {
                     let node = pieceToNode[piece]
                     node?.position = pointForBoardCoordinate(col: col, row: row)
@@ -539,13 +539,13 @@ class GameScene: SKScene {
             addChild(mark)
         }
 
-        let possibleMoves = self.game.PossibleMoves(xq.Position(row: row, col: col))
+        let possibleMoves = self.game.PossibleMoves(xq.Pos(row, col))
         for row in 0..<totalRows {
             for col in 0..<totalCols {
                 if (!possibleMoves[row][col]) {
                     continue;
                 }
-                let capture = game.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col)))
+                let capture = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
                 if capture != .EMPTY {
                     pieceToNode[capture]?.fillColor = pieceColorThreatened
                 } else {
@@ -588,7 +588,7 @@ class GameScene: SKScene {
             for row in 0..<totalRows {
                 startingBoard.append(Array(repeating: 0, count: totalCols))
                 for col in 0..<totalCols {
-                    startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Position(row: UInt8(row), col: UInt8(col))).rawValue)
+                    startingBoard[row][col] = Int8(startingGame.PieceAt(xq.Pos(UInt8(row), UInt8(col))).rawValue)
                 }
             }
             return GameData(
@@ -683,10 +683,10 @@ class GameScene: SKScene {
     func move(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int, animated: Bool = true) {
         let dest = pointForBoardCoordinate(col: toCol, row: toRow)
         let action = SKAction.move(to: dest, duration: animated ? 0.25 : 0.0)
-        let piece = game.PieceAt(xq.Position(row: UInt8(fromRow), col: UInt8(fromCol)))
+        let piece = game.PieceAt(xq.Pos(UInt8(fromRow), UInt8(fromCol)))
         let captured = game.Move(
-            xq.Position(row: UInt8(fromRow), col: UInt8(fromCol)),
-            xq.Position(row: UInt8(toRow), col: UInt8(toCol))
+            xq.Pos(UInt8(fromRow), UInt8(fromCol)),
+            xq.Pos(UInt8(toRow), UInt8(toCol))
         )
         if captured != .EMPTY {
             let capturedNode = pieceToNode[captured]
@@ -704,7 +704,7 @@ class GameScene: SKScene {
         func undoSingleMove() {
             let undoneMove = game.Undo()
             let _ = movesTs.popLast()
-            let dest = pointForBoardCoordinate(col: Int(undoneMove.from.col), row: Int(undoneMove.from.row))
+            let dest = pointForBoardCoordinate(col: Int(xq.Col(undoneMove.from)), row: Int(xq.Col(undoneMove.from)))
             let action = SKAction.move(to: dest, duration: 0.25)
             pieceToNode[undoneMove.piece]?.run(action)
             if undoneMove.captured != .EMPTY {
