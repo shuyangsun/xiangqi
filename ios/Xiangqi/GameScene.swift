@@ -416,7 +416,7 @@ class GameScene: SKScene {
                 drawPossibleMoves(tappedPos)
             } else if selectedPosition != kNoPosition && ((game.Turn() == .RED && xq.IsBlack(tappedPiece)) || (game.Turn() == .BLACK && xq.IsRed(tappedPiece))) {
                 // Selecting an opponent piece, check possible moves.
-                let possibleMoves = game.PossibleMoves(selectedPosition)
+                let possibleMoves = xq.PossibleMoves(game.CurrentBoard(), selectedPosition)
                 if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
                     move(from: selectedPosition, to: tappedPos)
                     movesTs.append(Date())
@@ -427,7 +427,7 @@ class GameScene: SKScene {
             }
         } else if selectedPosition != kNoPosition {
             // Move to empty space.
-            let possibleMoves = game.PossibleMoves(selectedPosition)
+            let possibleMoves = xq.PossibleMoves(game.CurrentBoard(), selectedPosition)
             if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
                 move(from: selectedPosition, to: tappedPos)
                 movesTs.append(Date())
@@ -468,7 +468,7 @@ class GameScene: SKScene {
             addChild(mark)
         }
 
-        let possibleMoves = game.PossibleMoves(position)
+        let possibleMoves = xq.PossibleMoves(game.CurrentBoard(), position)
         for row in 0..<totalRows {
             for col in 0..<totalCols {
                 if (!possibleMoves[Int(row)][Int(col)]) {
