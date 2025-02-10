@@ -15,14 +15,8 @@ bool IsRed(Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) > 0;
 }
 
-bool IsRedOrEmpty(Piece piece) { return IsRed(piece) || piece == Piece::EMPTY; }
-
 bool IsBlack(Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) < 0;
-}
-
-bool IsBlackOrEmpty(Piece piece) {
-  return IsBlack(piece) || piece == Piece::EMPTY;
 }
 
 // Helper function to create an empty (all false) board.
@@ -39,14 +33,14 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
     for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
       for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
         if (board[row][col] == Piece::R_GENERAL) {
-          return {{row, col}};
+          return {Pos(row, col)};
         }
       }
     }
     for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
       for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
         if (board[row][col] == Piece::R_GENERAL) {
-          return {{row, col}};
+          return {Pos(row, col)};
         }
       }
     }
@@ -56,14 +50,14 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
     for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
       if (board[row][col] == Piece::B_GENERAL) {
-        return {{row, col}};
+        return {Pos(row, col)};
       }
     }
   }
   for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
     for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
       if (board[row][col] == Piece::B_GENERAL) {
-        return {{row, col}};
+        return {Pos(row, col)};
       }
     }
   }
@@ -77,77 +71,80 @@ Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   Board<bool> result{false};
 
   // Flying general check.
   const std::optional<Position> opponent_general =
       FindGeneral(board, piece == Piece::B_GENERAL);
-  if (opponent_general.has_value() && opponent_general->col == pos.col) {
+  const uint8_t self_row = Row(pos);
+  const uint8_t self_col = Col(pos);
+  if (opponent_general.has_value() && Col(*opponent_general) == self_col) {
+    const uint8_t op_row = Row(*opponent_general);
+    const uint8_t op_col = Col(*opponent_general);
     const int8_t change = piece == Piece::B_GENERAL ? 1 : -1;
     bool is_blocked = false;
     // Start checking one square past the moving general.
-    for (uint8_t row = pos.row + change; row != opponent_general->row;
-         row += change) {
-      if (board[row][pos.col] != Piece::EMPTY) {
+    for (uint8_t row = self_row + change; row != op_row; row += change) {
+      if (board[row][self_col] != Piece::EMPTY) {
         is_blocked = true;
         break;
       }
     }
     if (!is_blocked) {
-      result[opponent_general->row][pos.col] = true;
+      result[op_row][self_col] = true;
     }
   }
 
   int8_t row, col;
   if (piece == Piece::R_GENERAL) {
     // Move down:
-    row = pos.row + 1;
-    col = pos.col;
-    if (row <= kRedPalaceRowMax && IsBlackOrEmpty(board[row][col])) {
+    row = Row(pos) + 1;
+    col = Col(pos);
+    if (row <= kRedPalaceRowMax && !IsRed(board[row][col])) {
       result[row][col] = true;
     }
     // Move up:
-    row = pos.row - 1;
-    col = pos.col;
-    if (row >= kRedPalaceRowMin && IsBlackOrEmpty(board[row][col])) {
+    row = Row(pos) - 1;
+    col = Col(pos);
+    if (row >= kRedPalaceRowMin && !IsRed(board[row][col])) {
       result[row][col] = true;
     }
     // Move left:
-    row = pos.row;
-    col = pos.col - 1;
-    if (col >= kPalaceColMin && IsBlackOrEmpty(board[row][col])) {
+    row = Row(pos);
+    col = Col(pos) - 1;
+    if (col >= kPalaceColMin && !IsRed(board[row][col])) {
       result[row][col] = true;
     }
     // Move right:
-    row = pos.row;
-    col = pos.col + 1;
-    if (col <= kPalaceColMax && IsBlackOrEmpty(board[row][col])) {
+    row = Row(pos);
+    col = Col(pos) + 1;
+    if (col <= kPalaceColMax && !IsRed(board[row][col])) {
       result[row][col] = true;
     }
   } else {
     // Move down:
-    row = pos.row + 1;
-    col = pos.col;
-    if (row <= kBlackPalaceRowMax && IsRedOrEmpty(board[row][col])) {
+    row = Row(pos) + 1;
+    col = Col(pos);
+    if (row <= kBlackPalaceRowMax && !IsBlack(board[row][col])) {
       result[row][col] = true;
     }
     // Move up:
-    row = pos.row - 1;
-    col = pos.col;
-    if (row >= kBlackPalaceRowMin && IsRedOrEmpty(board[row][col])) {
+    row = Row(pos) - 1;
+    col = Col(pos);
+    if (row >= kBlackPalaceRowMin && !IsBlack(board[row][col])) {
       result[row][col] = true;
     }
     // Move left:
-    row = pos.row;
-    col = pos.col - 1;
-    if (col >= kPalaceColMin && IsRedOrEmpty(board[row][col])) {
+    row = Row(pos);
+    col = Col(pos) - 1;
+    if (col >= kPalaceColMin && !IsBlack(board[row][col])) {
       result[row][col] = true;
     }
     // Move right:
-    row = pos.row;
-    col = pos.col + 1;
-    if (col <= kPalaceColMax && IsRedOrEmpty(board[row][col])) {
+    row = Row(pos);
+    col = Col(pos) + 1;
+    if (col <= kPalaceColMax && !IsBlack(board[row][col])) {
       result[row][col] = true;
     }
   }
@@ -156,7 +153,7 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // Advisors move one square diagonally.
@@ -169,16 +166,16 @@ Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
   int minCol = 3, maxCol = 5;
 
   for (int i = 0; i < 4; i++) {
-    int newRow = pos.row + dr[i];
-    int newCol = pos.col + dc[i];
+    int newRow = Row(pos) + dr[i];
+    int newCol = Col(pos) + dc[i];
     if (newRow >= minRow && newRow <= maxRow && newCol >= minCol &&
         newCol <= maxCol) {
       if (isRed) {
-        if (IsBlackOrEmpty(board[newRow][newCol])) {
+        if (!IsRed(board[newRow][newCol])) {
           result[newRow][newCol] = true;
         }
       } else {
-        if (IsRedOrEmpty(board[newRow][newCol])) {
+        if (!IsBlack(board[newRow][newCol])) {
           result[newRow][newCol] = true;
         }
       }
@@ -189,7 +186,7 @@ Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // Elephants move two squares diagonally.
@@ -197,8 +194,8 @@ Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
   int dc[4] = {-2, 2, -2, 2};
 
   for (int i = 0; i < 4; i++) {
-    int newRow = pos.row + dr[i];
-    int newCol = pos.col + dc[i];
+    int newRow = Row(pos) + dr[i];
+    int newCol = Col(pos) + dc[i];
     // Check board bounds.
     if (newRow < 0 || newRow >= kTotalRow || newCol < 0 || newCol >= kTotalCol)
       continue;
@@ -206,16 +203,16 @@ Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
     if (isRed && newRow < 5) continue;
     if (!isRed && newRow > 4) continue;
     // Check the intermediate square ("the eye").
-    int midRow = pos.row + dr[i] / 2;
-    int midCol = pos.col + dc[i] / 2;
+    int midRow = Row(pos) + dr[i] / 2;
+    int midCol = Col(pos) + dc[i] / 2;
     if (board[midRow][midCol] != Piece::EMPTY) continue;
     // Allow move if destination is empty or holds an enemy.
     if (isRed) {
-      if (IsBlackOrEmpty(board[newRow][newCol])) {
+      if (!IsRed(board[newRow][newCol])) {
         result[newRow][newCol] = true;
       }
     } else {
-      if (IsRedOrEmpty(board[newRow][newCol])) {
+      if (!IsBlack(board[newRow][newCol])) {
         result[newRow][newCol] = true;
       }
     }
@@ -225,24 +222,24 @@ Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // For each of the four orthogonal directions, check if the "leg" is free.
   // Upward:
-  if (pos.row - 1 >= 0 && board[pos.row - 1][pos.col] == Piece::EMPTY) {
-    int candRow = pos.row - 2;
+  if (Row(pos) - 1 >= 0 && board[Row(pos) - 1][Col(pos)] == Piece::EMPTY) {
+    int candRow = Row(pos) - 2;
     if (candRow >= 0) {
-      int candCols[2] = {pos.col - 1, pos.col + 1};
+      int candCols[2] = {Col(pos) - 1, Col(pos) + 1};
       for (int i = 0; i < 2; i++) {
         int candCol = candCols[i];
         if (candCol >= 0 && candCol < kTotalCol) {
           if (isRed) {
-            if (IsBlackOrEmpty(board[candRow][candCol])) {
+            if (!IsRed(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           } else {
-            if (IsRedOrEmpty(board[candRow][candCol])) {
+            if (!IsBlack(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           }
@@ -251,19 +248,20 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
     }
   }
   // Downward:
-  if (pos.row + 1 < kTotalRow && board[pos.row + 1][pos.col] == Piece::EMPTY) {
-    int candRow = pos.row + 2;
+  if (Row(pos) + 1 < kTotalRow &&
+      board[Row(pos) + 1][Col(pos)] == Piece::EMPTY) {
+    int candRow = Row(pos) + 2;
     if (candRow < kTotalRow) {
-      int candCols[2] = {pos.col - 1, pos.col + 1};
+      int candCols[2] = {Col(pos) - 1, Col(pos) + 1};
       for (int i = 0; i < 2; i++) {
         int candCol = candCols[i];
         if (candCol >= 0 && candCol < kTotalCol) {
           if (isRed) {
-            if (IsBlackOrEmpty(board[candRow][candCol])) {
+            if (!IsRed(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           } else {
-            if (IsRedOrEmpty(board[candRow][candCol])) {
+            if (!IsBlack(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           }
@@ -272,19 +270,19 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
     }
   }
   // Leftward:
-  if (pos.col - 1 >= 0 && board[pos.row][pos.col - 1] == Piece::EMPTY) {
-    int candCol = pos.col - 2;
+  if (Col(pos) - 1 >= 0 && board[Row(pos)][Col(pos) - 1] == Piece::EMPTY) {
+    int candCol = Col(pos) - 2;
     if (candCol >= 0) {
-      int candRows[2] = {pos.row - 1, pos.row + 1};
+      int candRows[2] = {Row(pos) - 1, Row(pos) + 1};
       for (int i = 0; i < 2; i++) {
         int candRow = candRows[i];
         if (candRow >= 0 && candRow < kTotalRow) {
           if (isRed) {
-            if (IsBlackOrEmpty(board[candRow][candCol])) {
+            if (!IsRed(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           } else {
-            if (IsRedOrEmpty(board[candRow][candCol])) {
+            if (!IsBlack(board[candRow][candCol])) {
               result[candRow][candCol] = true;
             }
           }
@@ -293,18 +291,19 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
     }
   }
   // Rightward:
-  if (pos.col + 1 < kTotalCol && board[pos.row][pos.col + 1] == Piece::EMPTY) {
-    int candCol = pos.col + 2;
+  if (Col(pos) + 1 < kTotalCol &&
+      board[Row(pos)][Col(pos) + 1] == Piece::EMPTY) {
+    int candCol = Col(pos) + 2;
     if (candCol < kTotalCol) {
-      int candRows[2] = {pos.row - 1, pos.row + 1};
+      int candRows[2] = {Row(pos) - 1, Row(pos) + 1};
       for (int i = 0; i < 2; i++) {
         int candRow = candRows[i];
         if (candRow >= 0 && candRow < kTotalRow) {
           if (isRed) {
-            if (IsBlackOrEmpty(board[candRow][candCol]))
+            if (!IsRed(board[candRow][candCol]))
               result[candRow][candCol] = true;
           } else {
-            if (IsRedOrEmpty(board[candRow][candCol]))
+            if (!IsBlack(board[candRow][candCol]))
               result[candRow][candCol] = true;
           }
         }
@@ -316,57 +315,57 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // Upwards.
-  for (int r = pos.row - 1; r >= 0; r--) {
-    if (board[r][pos.col] == Piece::EMPTY) {
-      result[r][pos.col] = true;
+  for (int r = Row(pos) - 1; r >= 0; r--) {
+    if (board[r][Col(pos)] == Piece::EMPTY) {
+      result[r][Col(pos)] = true;
     } else {
       if (isRed) {
-        if (IsBlack(board[r][pos.col])) result[r][pos.col] = true;
+        if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
       } else {
-        if (IsRed(board[r][pos.col])) result[r][pos.col] = true;
+        if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
       }
       break;
     }
   }
   // Downwards.
-  for (int r = pos.row + 1; r < kTotalRow; r++) {
-    if (board[r][pos.col] == Piece::EMPTY) {
-      result[r][pos.col] = true;
+  for (int r = Row(pos) + 1; r < kTotalRow; r++) {
+    if (board[r][Col(pos)] == Piece::EMPTY) {
+      result[r][Col(pos)] = true;
     } else {
       if (isRed) {
-        if (IsBlack(board[r][pos.col])) result[r][pos.col] = true;
+        if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
       } else {
-        if (IsRed(board[r][pos.col])) result[r][pos.col] = true;
+        if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
       }
       break;
     }
   }
   // Leftwards.
-  for (int c = pos.col - 1; c >= 0; c--) {
-    if (board[pos.row][c] == Piece::EMPTY) {
-      result[pos.row][c] = true;
+  for (int c = Col(pos) - 1; c >= 0; c--) {
+    if (board[Row(pos)][c] == Piece::EMPTY) {
+      result[Row(pos)][c] = true;
     } else {
       if (isRed) {
-        if (IsBlack(board[pos.row][c])) result[pos.row][c] = true;
+        if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
       } else {
-        if (IsRed(board[pos.row][c])) result[pos.row][c] = true;
+        if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
       }
       break;
     }
   }
   // Rightwards.
-  for (int c = pos.col + 1; c < kTotalCol; c++) {
-    if (board[pos.row][c] == Piece::EMPTY) {
-      result[pos.row][c] = true;
+  for (int c = Col(pos) + 1; c < kTotalCol; c++) {
+    if (board[Row(pos)][c] == Piece::EMPTY) {
+      result[Row(pos)][c] = true;
     } else {
       if (isRed) {
-        if (IsBlack(board[pos.row][c])) result[pos.row][c] = true;
+        if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
       } else {
-        if (IsRed(board[pos.row][c])) result[pos.row][c] = true;
+        if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
       }
       break;
     }
@@ -377,7 +376,7 @@ Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // For each direction, first mark all empty squares.
@@ -388,19 +387,19 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   // Upwards.
   {
     bool screen_found = false;
-    for (int r = pos.row - 1; r >= 0; r--) {
+    for (int r = Row(pos) - 1; r >= 0; r--) {
       if (!screen_found) {
-        if (board[r][pos.col] == Piece::EMPTY) {
-          result[r][pos.col] = true;
+        if (board[r][Col(pos)] == Piece::EMPTY) {
+          result[r][Col(pos)] = true;
         } else {
           screen_found = true;
         }
       } else {
-        if (board[r][pos.col] != Piece::EMPTY) {
+        if (board[r][Col(pos)] != Piece::EMPTY) {
           if (isRed) {
-            if (IsBlack(board[r][pos.col])) result[r][pos.col] = true;
+            if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
           } else {
-            if (IsRed(board[r][pos.col])) result[r][pos.col] = true;
+            if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
           }
           break;
         }
@@ -411,19 +410,19 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   // Downwards.
   {
     bool screen_found = false;
-    for (int r = pos.row + 1; r < kTotalRow; r++) {
+    for (int r = Row(pos) + 1; r < kTotalRow; r++) {
       if (!screen_found) {
-        if (board[r][pos.col] == Piece::EMPTY) {
-          result[r][pos.col] = true;
+        if (board[r][Col(pos)] == Piece::EMPTY) {
+          result[r][Col(pos)] = true;
         } else {
           screen_found = true;
         }
       } else {
-        if (board[r][pos.col] != Piece::EMPTY) {
+        if (board[r][Col(pos)] != Piece::EMPTY) {
           if (isRed) {
-            if (IsBlack(board[r][pos.col])) result[r][pos.col] = true;
+            if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
           } else {
-            if (IsRed(board[r][pos.col])) result[r][pos.col] = true;
+            if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
           }
           break;
         }
@@ -434,19 +433,19 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   // Leftwards.
   {
     bool screen_found = false;
-    for (int c = pos.col - 1; c >= 0; c--) {
+    for (int c = Col(pos) - 1; c >= 0; c--) {
       if (!screen_found) {
-        if (board[pos.row][c] == Piece::EMPTY) {
-          result[pos.row][c] = true;
+        if (board[Row(pos)][c] == Piece::EMPTY) {
+          result[Row(pos)][c] = true;
         } else {
           screen_found = true;
         }
       } else {
-        if (board[pos.row][c] != Piece::EMPTY) {
+        if (board[Row(pos)][c] != Piece::EMPTY) {
           if (isRed) {
-            if (IsBlack(board[pos.row][c])) result[pos.row][c] = true;
+            if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
           } else {
-            if (IsRed(board[pos.row][c])) result[pos.row][c] = true;
+            if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
           }
           break;
         }
@@ -457,19 +456,19 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   // Rightwards.
   {
     bool screen_found = false;
-    for (int c = pos.col + 1; c < kTotalCol; c++) {
+    for (int c = Col(pos) + 1; c < kTotalCol; c++) {
       if (!screen_found) {
-        if (board[pos.row][c] == Piece::EMPTY) {
-          result[pos.row][c] = true;
+        if (board[Row(pos)][c] == Piece::EMPTY) {
+          result[Row(pos)][c] = true;
         } else {
           screen_found = true;
         }
       } else {
-        if (board[pos.row][c] != Piece::EMPTY) {
+        if (board[Row(pos)][c] != Piece::EMPTY) {
           if (isRed) {
-            if (IsBlack(board[pos.row][c])) result[pos.row][c] = true;
+            if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
           } else {
-            if (IsRed(board[pos.row][c])) result[pos.row][c] = true;
+            if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
           }
           break;
         }
@@ -482,44 +481,44 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesSoldier(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[pos.row][pos.col];
+  const Piece piece = board[Row(pos)][Col(pos)];
   bool isRed = IsRed(piece);
 
   // Forward move.
-  int forwardRow = isRed ? pos.row - 1 : pos.row + 1;
+  int forwardRow = isRed ? Row(pos) - 1 : Row(pos) + 1;
   if (forwardRow >= 0 && forwardRow < kTotalRow) {
     if (isRed) {
-      if (IsBlackOrEmpty(board[forwardRow][pos.col]))
-        result[forwardRow][pos.col] = true;
+      if (!IsRed(board[forwardRow][Col(pos)]))
+        result[forwardRow][Col(pos)] = true;
     } else {
-      if (IsRedOrEmpty(board[forwardRow][pos.col]))
-        result[forwardRow][pos.col] = true;
+      if (!IsBlack(board[forwardRow][Col(pos)]))
+        result[forwardRow][Col(pos)] = true;
     }
   }
 
   // Once soldier has crossed the river, add sideways moves.
   if (isRed) {
     // For red, crossing the river means row <= 4.
-    if (pos.row <= 4) {
-      if (pos.col - 1 >= 0) {
-        if (IsBlackOrEmpty(board[pos.row][pos.col - 1]))
-          result[pos.row][pos.col - 1] = true;
+    if (Row(pos) <= 4) {
+      if (Col(pos) - 1 >= 0) {
+        if (!IsRed(board[Row(pos)][Col(pos) - 1]))
+          result[Row(pos)][Col(pos) - 1] = true;
       }
-      if (pos.col + 1 < kTotalCol) {
-        if (IsBlackOrEmpty(board[pos.row][pos.col + 1]))
-          result[pos.row][pos.col + 1] = true;
+      if (Col(pos) + 1 < kTotalCol) {
+        if (!IsRed(board[Row(pos)][Col(pos) + 1]))
+          result[Row(pos)][Col(pos) + 1] = true;
       }
     }
   } else {
     // For black, crossing the river means row >= 5.
-    if (pos.row >= 5) {
-      if (pos.col - 1 >= 0) {
-        if (IsRedOrEmpty(board[pos.row][pos.col - 1]))
-          result[pos.row][pos.col - 1] = true;
+    if (Row(pos) >= 5) {
+      if (Col(pos) - 1 >= 0) {
+        if (!IsBlack(board[Row(pos)][Col(pos) - 1]))
+          result[Row(pos)][Col(pos) - 1] = true;
       }
-      if (pos.col + 1 < kTotalCol) {
-        if (IsRedOrEmpty(board[pos.row][pos.col + 1]))
-          result[pos.row][pos.col + 1] = true;
+      if (Col(pos) + 1 < kTotalCol) {
+        if (!IsBlack(board[Row(pos)][Col(pos) + 1]))
+          result[Row(pos)][Col(pos) + 1] = true;
       }
     }
   }

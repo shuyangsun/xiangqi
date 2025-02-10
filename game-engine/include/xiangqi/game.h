@@ -20,7 +20,7 @@ class Game {
   // Reset the game with a given board position.
   void ResetFromBoard(Board<Piece>&& board);
   // Reset the game with a map of pieces to their positions.
-  void ResetFromPos(std::unordered_map<Piece, Position>&& piece_pos);
+  void ResetFromPos(std::unordered_map<Position, Piece>&& pos_piece);
 
   // Returns true if it is red's turn, false if black's.
   Player Turn() const;
@@ -68,7 +68,7 @@ class Game {
   Winner GetWinner() const;
 
   // Export moves as vector of uint16_t. The integer represents four 4-bit
-  // integers as from.row, from.col, to.row and to.col.
+  // integers as Row(from), Col(from), Row(to) and Col(to).
   std::vector<uint16_t> ExportMoves() const;
 
   // Restores game state from exported moves.
@@ -81,8 +81,7 @@ class Game {
 };
 
 // Returns all possible moves for the player with piece at position.
-std::vector<Position> PossibleMoves(const Board<Piece>& board,
-                                    const Position& pos);
+std::vector<Position> PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Returns a vector of all possible moves for the given player.
 std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player);
@@ -91,9 +90,7 @@ std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player);
 Board<Piece> FlipBoard(const Board<Piece>& board);
 
 // Encode the board state using a small number of bytes, mainly used for the
-// game AI to identify a unique board state. The board state does not
-// distinguish the same piece for the same player, i.e., R_ADVISOR_1 is the same
-// as R_ADVISOR_2.
+// game AI to identify a unique board state.
 //
 // There are a total of 32 pieces on the board, so the encoded board state is
 // 32 bytes, with each byte representing the row and column of that piece
@@ -102,9 +99,7 @@ Board<Piece> FlipBoard(const Board<Piece>& board);
 // all byte representations of a group of piece is sorted.
 std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board);
 
-// Decode the encoded board state back to its original state, but ignores
-// differences in pieces in the same type. All pieces (except for general) are
-// decoded to the "_1" varaint.
+// Decode the encoded board state back to its original state.
 Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state);
 
 }  // namespace xq

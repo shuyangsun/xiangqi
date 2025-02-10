@@ -14,6 +14,7 @@ using ::xq::kTotalCol;
 using ::xq::kTotalRow;
 using ::xq::Piece;
 using ::xq::Player;
+using ::xq::Pos;
 using ::xq::Position;
 using ::xq::Winner;
 
@@ -32,57 +33,39 @@ char PieceToChar(Piece piece) {
       return 'g';
 
     // Advisors
-    case Piece::R_ADVISOR_1:
-    case Piece::R_ADVISOR_2:
+    case Piece::R_ADVISOR:
       return 'A';
-    case Piece::B_ADVISOR_1:
-    case Piece::B_ADVISOR_2:
+    case Piece::B_ADVISOR:
       return 'a';
 
     // Elephants
-    case Piece::R_ELEPHANT_1:
-    case Piece::R_ELEPHANT_2:
+    case Piece::R_ELEPHANT:
       return 'E';
-    case Piece::B_ELEPHANT_1:
-    case Piece::B_ELEPHANT_2:
+    case Piece::B_ELEPHANT:
       return 'e';
 
     // Horses
-    case Piece::R_HORSE_1:
-    case Piece::R_HORSE_2:
+    case Piece::R_HORSE:
       return 'H';
-    case Piece::B_HORSE_1:
-    case Piece::B_HORSE_2:
+    case Piece::B_HORSE:
       return 'h';
 
     // Chariots
-    case Piece::R_CHARIOT_1:
-    case Piece::R_CHARIOT_2:
+    case Piece::R_CHARIOT:
       return 'R';
-    case Piece::B_CHARIOT_1:
-    case Piece::B_CHARIOT_2:
+    case Piece::B_CHARIOT:
       return 'r';
 
     // Cannons
-    case Piece::R_CANNON_1:
-    case Piece::R_CANNON_2:
+    case Piece::R_CANNON:
       return 'C';
-    case Piece::B_CANNON_1:
-    case Piece::B_CANNON_2:
+    case Piece::B_CANNON:
       return 'c';
 
     // Soldiers
-    case Piece::R_SOLDIER_1:
-    case Piece::R_SOLDIER_2:
-    case Piece::R_SOLDIER_3:
-    case Piece::R_SOLDIER_4:
-    case Piece::R_SOLDIER_5:
+    case Piece::R_SOLDIER:
       return 'S';
-    case Piece::B_SOLDIER_1:
-    case Piece::B_SOLDIER_2:
-    case Piece::B_SOLDIER_3:
-    case Piece::B_SOLDIER_4:
-    case Piece::B_SOLDIER_5:
+    case Piece::B_SOLDIER:
       return 's';
 
     default:
@@ -168,7 +151,7 @@ int main() {
     }
 
     if (input_size == 2) {
-      Position pos{static_cast<uint8_t>(row), static_cast<uint8_t>(col)};
+      Position pos = Pos(row, col);
 
       // Get the possible moves for the piece at the given position.
       Board<bool> moves = game.PossibleMoves(pos);
@@ -214,8 +197,7 @@ int main() {
         continue;
       }
 
-      game.Move({static_cast<uint8_t>(row), static_cast<uint8_t>(col)},
-                {static_cast<uint8_t>(row_2), static_cast<uint8_t>(col_2)});
+      game.Move(Pos(row, col), Pos(row_2, col_2));
 
       PrintGame(game);
     }

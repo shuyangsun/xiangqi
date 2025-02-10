@@ -6,6 +6,11 @@
 
 namespace xq {
 
+// row, col, 4 bytes each.
+using Position = uint8_t;
+
+constexpr Position kNoPosition = 0xFF;
+
 constexpr uint8_t kTotalRow = 10;
 constexpr uint8_t kTotalCol = 9;
 
@@ -28,41 +33,18 @@ enum class Piece : int8_t {
   EMPTY = 0,
   R_GENERAL = 1,
   B_GENERAL = -1,
-  R_ADVISOR_1 = 2,
-  B_ADVISOR_1 = -2,
-  R_ADVISOR_2 = 3,
-  B_ADVISOR_2 = -3,
-  R_ELEPHANT_1 = 4,
-  B_ELEPHANT_1 = -4,
-  R_ELEPHANT_2 = 5,
-  B_ELEPHANT_2 = -5,
-  R_HORSE_1 = 6,
-  B_HORSE_1 = -6,
-  R_HORSE_2 = 7,
-  B_HORSE_2 = -7,
-  R_CHARIOT_1 = 8,
-  B_CHARIOT_1 = -8,
-  R_CHARIOT_2 = 9,
-  B_CHARIOT_2 = -9,
-  R_CANNON_1 = 10,
-  B_CANNON_1 = -10,
-  R_CANNON_2 = 11,
-  B_CANNON_2 = -11,
-  R_SOLDIER_1 = 12,
-  B_SOLDIER_1 = -12,
-  R_SOLDIER_2 = 13,
-  B_SOLDIER_2 = -13,
-  R_SOLDIER_3 = 14,
-  B_SOLDIER_3 = -14,
-  R_SOLDIER_4 = 15,
-  B_SOLDIER_4 = -15,
-  R_SOLDIER_5 = 16,
-  B_SOLDIER_5 = -16,
-};
-
-struct Position {
-  uint8_t row;
-  uint8_t col;
+  R_ADVISOR = 2,
+  B_ADVISOR = -2,
+  R_ELEPHANT = 3,
+  B_ELEPHANT = -3,
+  R_HORSE = 4,
+  B_HORSE = -4,
+  R_CHARIOT = 5,
+  B_CHARIOT = -5,
+  R_CANNON = 6,
+  B_CANNON = -6,
+  R_SOLDIER = 7,
+  B_SOLDIER = -7
 };
 
 struct MoveAction {
@@ -71,6 +53,10 @@ struct MoveAction {
   Position to;
   Piece captured;
 };
+
+inline Position Pos(uint8_t row, uint8_t col) { return row << 4 | col; }
+inline Position Row(Position position) { return (position & 0xF0) >> 4; }
+inline Position Col(Position position) { return (position & 0x0F); }
 
 }  // namespace xq
 
