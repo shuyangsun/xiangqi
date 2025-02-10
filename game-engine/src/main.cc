@@ -16,6 +16,7 @@ using ::xq::Piece;
 using ::xq::Player;
 using ::xq::Pos;
 using ::xq::Position;
+using ::xq::PossibleMoves;
 using ::xq::Winner;
 
 // Converts a Piece value to a one-character representation.
@@ -154,7 +155,7 @@ int main() {
       Position pos = Pos(row, col);
 
       // Get the possible moves for the piece at the given position.
-      Board<bool> moves = game.PossibleMoves(pos);
+      Board<bool> moves = PossibleMoves(game.CurrentBoard(), pos);
 
       // Print the board overlaying possible moves with 'o'.
       std::cout << "\nPossible moves from (" << row << "," << col << "):\n";

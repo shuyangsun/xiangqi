@@ -252,40 +252,6 @@ MoveAction Game::Undo() {
   return result;
 }
 
-Board<bool> Game::PossibleMoves(Position pos) const {
-  using namespace xq::internal::util;
-  using enum Piece;
-  const Piece piece = PieceAt(pos);
-  const Board<Piece>& board = history_.back();
-  switch (piece) {
-    case EMPTY:
-      return PossibleMovesEmpty(board, pos);
-    case R_GENERAL:
-    case B_GENERAL:
-      return PossibleMovesGeneral(board, pos);
-    case R_ADVISOR:
-    case B_ADVISOR:
-      return PossibleMovesAdvisor(board, pos);
-    case R_ELEPHANT:
-    case B_ELEPHANT:
-      return PossibleMovesElephant(board, pos);
-    case R_HORSE:
-    case B_HORSE:
-      return PossibleMovesHorse(board, pos);
-    case R_CHARIOT:
-    case B_CHARIOT:
-      return PossibleMovesChariot(board, pos);
-    case R_CANNON:
-    case B_CANNON:
-      return PossibleMovesCannon(board, pos);
-    case R_SOLDIER:
-    case B_SOLDIER:
-      return PossibleMovesSoldier(board, pos);
-    default:
-      return {false};
-  }
-}
-
 bool Game::IsCheckMade() const {
   Board<Piece> board = CurrentBoard();
   Position general_pos = kNoPosition;
@@ -761,15 +727,37 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   return board;
 }
 
-// Returns all possible moves for the player with piece at position.
-std::vector<Position> PossibleMoves(const Board<Piece>& board, Position pos) {
+Board<bool> PossibleMoves(const Board<Piece>& board, Position pos) {
+  using namespace xq::internal::util;
   using enum Piece;
-  std::vector<Position> result;
-  if (board[Row(pos)][Col(pos)] == EMPTY) {
-    return result;
+  const Piece piece = board[Row(pos)][Col(pos)];
+  switch (piece) {
+    case EMPTY:
+      return PossibleMovesEmpty(board, pos);
+    case R_GENERAL:
+    case B_GENERAL:
+      return PossibleMovesGeneral(board, pos);
+    case R_ADVISOR:
+    case B_ADVISOR:
+      return PossibleMovesAdvisor(board, pos);
+    case R_ELEPHANT:
+    case B_ELEPHANT:
+      return PossibleMovesElephant(board, pos);
+    case R_HORSE:
+    case B_HORSE:
+      return PossibleMovesHorse(board, pos);
+    case R_CHARIOT:
+    case B_CHARIOT:
+      return PossibleMovesChariot(board, pos);
+    case R_CANNON:
+    case B_CANNON:
+      return PossibleMovesCannon(board, pos);
+    case R_SOLDIER:
+    case B_SOLDIER:
+      return PossibleMovesSoldier(board, pos);
+    default:
+      return {false};
   }
-  // TODO: implementation.
-  return result;
 }
 
 // Returns a vector of all possible moves for the given player.

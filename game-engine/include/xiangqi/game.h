@@ -40,11 +40,6 @@ class Game {
   // Get the piece at a speific position of the current board.
   Piece PieceAt(Position pos) const;
 
-  // Get all possible moves of a position. Returns a 10x9 boolean board, with
-  // possible locations marked as true. If there is no piece at the position,
-  // returns a board with all false values.
-  Board<bool> PossibleMoves(Position pos) const;
-
   // Move a piece from a position to another position, returns the captured
   // piece.
   Piece Move(Position from, Position to);
@@ -84,7 +79,7 @@ class Game {
 };
 
 // Returns all possible moves for the player with piece at position.
-std::vector<Position> PossibleMoves(const Board<Piece>& board, Position pos);
+Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Returns a vector of all possible moves for the given player.
 std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player);
