@@ -2,6 +2,7 @@
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_GAME_H__
 
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "xiangqi/types.h"
@@ -78,6 +79,13 @@ class Game {
   std::vector<Board<Piece>> history_;
   std::vector<MoveAction> moves_;
 };
+
+// Returns all possible moves for the player with piece at position.
+std::vector<Position> PossibleMoves(const Board<Piece>& board,
+                                    const Position& pos);
+
+// Returns a vector of all possible moves for the given player.
+std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player);
 
 // Rotate the board so that it's from the opponent's perspective.
 Board<Piece> FlipBoard(const Board<Piece>& board);

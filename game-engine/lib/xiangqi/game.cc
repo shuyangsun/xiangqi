@@ -900,4 +900,23 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   return board;
 }
 
+// Returns all possible moves for the player with piece at position.
+std::vector<Position> PossibleMoves(const Board<Piece>& board,
+                                    const Position& pos) {
+  using enum Piece;
+  std::vector<Position> result;
+  if (board[pos.row][pos.col] == EMPTY) {
+    return result;
+  }
+  // TODO: implementation.
+  return result;
+}
+
+// Returns a vector of all possible moves for the given player.
+std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player) {
+  std::vector<std::pair<Position, Position>> result;
+  // TODO: implementation.
+  return result;
+}
+
 }  // namespace xq
