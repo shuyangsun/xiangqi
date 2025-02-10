@@ -21,7 +21,7 @@ let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
 let buttonColor = SKColor(red: 0.35, green: 0.70, blue: 0.35, alpha: 1.0)
 
 struct GameData: Codable {
-    var board: [[Int8]]
+    var boardState: [UInt64]
     var moves: [UInt16]
     // We can encode Dates as ISO8601 strings or as timestamps.
     // For simplicity, we encode them as Doubles (time intervals).
@@ -31,8 +31,8 @@ struct GameData: Codable {
     var winner: Int8
 
     // A custom initializer to convert [Date] to [TimeInterval].
-    init(board: [[Int8]], moves: [UInt16], movesTs: [Date], isOver: Bool, isVsHuman: Bool, winner: Int8) {
-        self.board = board
+    init(boardState: [UInt64], moves: [UInt16], movesTs: [Date], isOver: Bool, isVsHuman: Bool, winner: Int8) {
+        self.boardState = boardState
         self.moves = moves
         self.movesTs = movesTs.map { $0.timeIntervalSince1970 }
         self.isOver = isOver
@@ -510,17 +510,9 @@ class GameScene: SKScene {
             for m in game.ExportMoves() {
                 moves.append(m)
             }
-            var startingBoard: [[Int8]] = []
-            let startingGame = xq.Game()
-            startingBoard.reserveCapacity(Int(totalRows))
-            for row in 0..<UInt8(totalRows) {
-                startingBoard.append(Array(repeating: 0, count: Int(totalCols)))
-                for col in 0..<UInt8(totalCols) {
-                    startingBoard[Int(row)][Int(col)] = Int8(startingGame.PieceAt(xq.Pos(row, col)).rawValue)
-                }
-            }
+            let state = xq.EncodeBoardState(game.StartingBoard())
             return GameData(
-                board: startingBoard,
+                boardState: [state[0], state[1], state[2], state[3]],
                 moves: moves,
                 movesTs: movesTs,
                 isOver: game.IsGameOver(),
@@ -592,7 +584,16 @@ class GameScene: SKScene {
                 }
                 humanVsHuman = loadedGame.isVsHuman
                 movesTs = loadedGame.movesTs.map {Date(timeIntervalSince1970: $0)}
-                game.Reset() // TODO: should be resetting with loaded board, assuming default board.
+                if loadedGame.boardState.isEmpty {
+                    game.Reset()
+                } else {
+                    var state = xq.EncodeBoardState(xq.Game().CurrentBoard());
+                    state[0] = loadedGame.boardState[0]
+                    state[1] = loadedGame.boardState[1]
+                    state[2] = loadedGame.boardState[2]
+                    state[3] = loadedGame.boardState[3]
+                    game.ResetFromBoard(xq.DecodeBoardState(state))
+                }
                 for m in loadedGame.moves {
                     move(from: UInt8((m & 0xFF00) >> 8), to: UInt8(m & 0x00FF), animated: false)
                 }

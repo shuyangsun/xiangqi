@@ -18,9 +18,9 @@ class Game {
   // Reset the board with default Xiangqi openning board.
   void Reset();
   // Reset the game with a given board position.
-  void ResetFromBoard(Board<Piece>&& board);
+  void ResetFromBoard(const Board<Piece>& board);
   // Reset the game with a map of pieces to their positions.
-  void ResetFromPos(std::unordered_map<Position, Piece>&& pos_piece);
+  void ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece);
 
   // Returns true if it is red's turn, false if black's.
   Player Turn() const;
@@ -30,6 +30,9 @@ class Game {
 
   // Change the starting turn to Black.
   void MakeBlackMoveFirst();
+
+  // Get a copy of the starting board.
+  Board<Piece> StartingBoard() const;
 
   // Get a copy of the current board.
   Board<Piece> CurrentBoard() const;

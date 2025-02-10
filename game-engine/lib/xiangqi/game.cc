@@ -40,7 +40,8 @@ constexpr Board<Piece> kInitState = {
 
 // Converts a piece map to a board. The resulting board will be completely empty
 // (all cells set to EMPTY) except for the positions specified in the map.
-Board<Piece> pieceMapToBoard(std::unordered_map<Position, Piece>&& pos_piece) {
+Board<Piece> pieceMapToBoard(
+    const std::unordered_map<Position, Piece>& pos_piece) {
   Board<Piece> board;
   for (auto& row : board) {
     row.fill(EMPTY);
@@ -182,7 +183,7 @@ bool threatensByCannon(const Board<Piece>& board, Position cannonPos,
 
 Game::Game() : history_{kInitState} {}
 
-void Game::ResetFromBoard(Board<Piece>&& board) {
+void Game::ResetFromBoard(const Board<Piece>& board) {
   using enum Player;
   moves_.clear();
   history_.clear();
@@ -190,13 +191,10 @@ void Game::ResetFromBoard(Board<Piece>&& board) {
   player_ = RED;
 }
 
-void Game::Reset() {
-  Board<Piece> board = kInitState;
-  ResetFromBoard(std::move(board));
-}
+void Game::Reset() { ResetFromBoard(kInitState); }
 
-void Game::ResetFromPos(std::unordered_map<Position, Piece>&& pos_piece) {
-  ResetFromBoard(pieceMapToBoard(std::move(pos_piece)));
+void Game::ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece) {
+  ResetFromBoard(pieceMapToBoard(pos_piece));
 }
 
 Player Game::Turn() const { return player_; }
@@ -209,6 +207,8 @@ void Game::MakeBlackMoveFirst() {
   }
   player_ = Player::BLACK;
 }
+
+Board<Piece> Game::StartingBoard() const { return {history_.front()}; }
 
 Board<Piece> Game::CurrentBoard() const { return {history_.back()}; }
 
