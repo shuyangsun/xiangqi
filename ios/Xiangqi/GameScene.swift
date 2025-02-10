@@ -4,6 +4,22 @@ import GameKit
 import XiangqiLib
 import UIKit  // Needed for UIAlertController
 
+let totalRows = UInt8(10)
+let totalCols = UInt8(9)
+let kNoPosition = UInt8(0xFF)
+let kTotalPieces = UInt8(32)
+
+let boardColor = SKColor(red: 0.91, green: 0.82, blue: 0.64, alpha: 1.0)
+let lineColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+let pieceColor = SKColor(red: 0.80, green: 0.65, blue: 0.57, alpha: 1.0)
+let pieceColorThreatened = SKColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 0.9)
+let pieceStrokeColor = SKColor(red: 0.64, green: 0.5, blue: 0.38, alpha: 1.0)
+let pieceStrokeSelectedColor = SKColor(red: 0.35, green: 0.22, blue: 0.09, alpha: 1.0)
+let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
+let blackTextColor = SKColor(red: 0.15, green: 0.12, blue: 0.1, alpha: 1.0)
+let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
+let buttonColor = SKColor(red: 0.35, green: 0.70, blue: 0.35, alpha: 1.0)
+
 struct GameData: Codable {
     var board: [[Int8]]
     var moves: [UInt16]
@@ -25,133 +41,9 @@ struct GameData: Codable {
     }
 }
 
-enum UniquePiece {
-    case empty
-    case rGeneral
-    case rAdvisor1
-    case rAdvisor2
-    case rElephant1
-    case rElephant2
-    case rHorse1
-    case rHorse2
-    case rChariot1
-    case rChariot2
-    case rCannon1
-    case rCannon2
-    case rSoldier1
-    case rSoldier2
-    case rSoldier3
-    case rSoldier4
-    case rSoldier5
-    case bGeneral
-    case bAdvisor1
-    case bAdvisor2
-    case bElephant1
-    case bElephant2
-    case bHorse1
-    case bHorse2
-    case bChariot1
-    case bChariot2
-    case bCannon1
-    case bCannon2
-    case bSoldier1
-    case bSoldier2
-    case bSoldier3
-    case bSoldier4
-    case bSoldier5
-}
-
-func pieceAndCountToUniquePiece(_ piece: xq.Piece, _ pieceCount: UInt8) -> UniquePiece {
-    switch (piece, pieceCount) {
-    case (.EMPTY, _):
-        return .empty;
-    case (.R_GENERAL, _):
-        return .rGeneral;
-    case (.R_ADVISOR, 0):
-        return .rAdvisor1;
-    case (.R_ADVISOR, 1):
-        return .rAdvisor2;
-    case (.R_ELEPHANT, 0):
-        return .rElephant1;
-    case (.R_ELEPHANT, 1):
-        return .rElephant2;
-    case (.R_HORSE, 0):
-        return .rHorse1;
-    case (.R_HORSE, 1):
-        return .rHorse2;
-    case (.R_CHARIOT, 0):
-        return .rChariot1;
-    case (.R_CHARIOT, 1):
-        return .rChariot2;
-    case (.R_CANNON, 0):
-        return .rCannon1;
-    case (.R_CANNON, 1):
-        return .rCannon1;
-    case (.R_SOLDIER, 0):
-        return .rSoldier1;
-    case (.R_SOLDIER, 1):
-        return .rSoldier2;
-    case (.R_SOLDIER, 2):
-        return .rSoldier3;
-    case (.R_SOLDIER, 3):
-        return .rSoldier4;
-    case (.R_SOLDIER, 4):
-        return .rSoldier5;
-    case (.B_GENERAL, _):
-        return .bGeneral;
-    case (.B_ADVISOR, 0):
-        return .bAdvisor1;
-    case (.B_ADVISOR, 1):
-        return .bAdvisor2;
-    case (.B_ELEPHANT, 0):
-        return .bElephant1;
-    case (.B_ELEPHANT, 1):
-        return .bElephant2;
-    case (.B_HORSE, 0):
-        return .bHorse1;
-    case (.B_HORSE, 1):
-        return .bHorse2;
-    case (.B_CHARIOT, 0):
-        return .bChariot1;
-    case (.B_CHARIOT, 1):
-        return .bChariot2;
-    case (.B_CANNON, 0):
-        return .bCannon1;
-    case (.B_CANNON, 1):
-        return .bCannon1;
-    case (.B_SOLDIER, 0):
-        return .bSoldier1;
-    case (.B_SOLDIER, 1):
-        return .bSoldier2;
-    case (.B_SOLDIER, 2):
-        return .bSoldier3;
-    case (.B_SOLDIER, 3):
-        return .bSoldier4;
-    case (.B_SOLDIER, 4):
-        return .bSoldier5;
-    default:
-        return .empty;
-    }
-}
-
 class GameScene: SKScene {
 
     var game = xq.Game()
-
-    // Board dimensions (number of columns and rows in our data structure)
-    let totalRows = UInt8(10)
-    let totalCols = UInt8(9)
-
-    let boardColor = SKColor(red: 0.91, green: 0.82, blue: 0.64, alpha: 1.0)
-    let lineColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-    let pieceColor = SKColor(red: 0.80, green: 0.65, blue: 0.57, alpha: 1.0)
-    let pieceColorThreatened = SKColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 0.9)
-    let pieceStrokeColor = SKColor(red: 0.64, green: 0.5, blue: 0.38, alpha: 1.0)
-    let pieceStrokeSelectedColor = SKColor(red: 0.35, green: 0.22, blue: 0.09, alpha: 1.0)
-    let redTextColor = SKColor(red: 0.5, green: 0.05, blue: 0.05, alpha: 1.0)
-    let blackTextColor = SKColor(red: 0.15, green: 0.12, blue: 0.1, alpha: 1.0)
-    let possibleMoveColor = SKColor(red: 0.2, green: 0.2, blue: 0.9, alpha: 1.0)
-    let buttonColor = SKColor(red: 0.35, green: 0.70, blue: 0.35, alpha: 1.0)
 
     // tileSize will be computed from a chosen board height.
     var tileSize: CGFloat = 0.0
@@ -160,12 +52,11 @@ class GameScene: SKScene {
     // We will align the board so that its right edge is flush with the scene’s right edge.
     var boardOrigin: CGPoint = .zero
 
-    var selectedPiece: SKShapeNode?
-    var selectedPieceValue: xq.Piece?
-    var selectedRow: UInt8?
-    var selectedCol: UInt8?
+    var pieces: [xq.Position : SKShapeNode] = [:]
+    var selectedPosition: xq.Position = kNoPosition
+
     var possibleMovesMark: [SKShapeNode] = []
-    var pieceToNode: [UniquePiece: SKShapeNode] = [:]
+
     var winnerLabel: SKLabelNode = SKLabelNode(text: "")
     var humanVsHuman: Bool = true
     var movesTs: [Date] = []
@@ -285,17 +176,17 @@ class GameScene: SKScene {
     // MARK: - Coordinate Transformation
 
     /// Given board coordinates (with (0,0) at the top‑left), return the scene coordinate.
-    func pointForBoardCoordinate(col: UInt8, row: UInt8) -> CGPoint {
+    func positionToPoint(_ position: xq.Position) -> CGPoint {
         // Our board data is in row‑major order with (0,0) at the top.
         // In the scene, boardOrigin is the bottom‑left.
-        let x = boardOrigin.x + CGFloat(col) * tileSize
-        let y = boardOrigin.y + CGFloat(totalRows - 1 - row) * tileSize
+        let x = boardOrigin.x + CGFloat(xq.Col(position)) * tileSize
+        let y = boardOrigin.y + CGFloat(totalRows - 1 - xq.Row(position)) * tileSize
         return CGPoint(x: x, y: y)
     }
 
     /// Converts a scene point to a board coordinate (col, row) by snapping to the grid.
     /// Returns nil if the point is outside the board’s bounds.
-    func boardCoordinateForPoint(_ point: CGPoint) -> (col: UInt8, row: UInt8)? {
+    func pointToPosition(_ point: CGPoint) -> xq.Position {
         let boardWidth = CGFloat(totalCols - 1) * tileSize
         let boardHeight = CGFloat(totalRows - 1) * tileSize
 
@@ -305,7 +196,7 @@ class GameScene: SKScene {
         // Check that the point is within the board’s rectangle.
         let tsizeHalf = tileSize / 2
         if relativeX < -tsizeHalf || relativeX > boardWidth + tsizeHalf || relativeY < -tsizeHalf || relativeY > boardHeight + tsizeHalf {
-            return nil
+            return kNoPosition
         }
 
         // Snap by rounding to the nearest grid index.
@@ -313,7 +204,7 @@ class GameScene: SKScene {
         // Our board rows are counted from the top. Since our origin is at the bottom,
         // compute row by flipping the relative Y.
         let row = UInt8(Int(totalRows - 1) - Int(round(relativeY / tileSize)))
-        return (col, row)
+        return xq.Pos(row, col)
     }
 
     // MARK: - Board Drawing
@@ -341,8 +232,8 @@ class GameScene: SKScene {
         for c in 0..<UInt8(totalCols) {
             if c == 0 || c == totalCols - 1 {
                 let path = CGMutablePath()
-                let start = pointForBoardCoordinate(col: c, row: 0)           // top
-                let end   = pointForBoardCoordinate(col: c, row: totalRows - 1) // bottom
+                let start = positionToPoint(xq.Pos(0, c))           // top
+                let end   = positionToPoint(xq.Pos(totalRows - 1, c)) // bottom
                 path.move(to: start)
                 path.addLine(to: end)
 
@@ -353,8 +244,8 @@ class GameScene: SKScene {
             } else {
                 // For inner columns, draw two segments (with a gap for the river between rows 4 and 5).
                 let topPath = CGMutablePath()
-                let startTop = pointForBoardCoordinate(col: c, row: 0)
-                let endTop = pointForBoardCoordinate(col: c, row: 4)
+                let startTop = positionToPoint(xq.Pos(0, c))
+                let endTop = positionToPoint(xq.Pos(4, c))
                 topPath.move(to: startTop)
                 topPath.addLine(to: endTop)
 
@@ -364,8 +255,8 @@ class GameScene: SKScene {
                 addChild(topLine)
 
                 let bottomPath = CGMutablePath()
-                let startBottom = pointForBoardCoordinate(col: c, row: 5)
-                let endBottom = pointForBoardCoordinate(col: c, row: totalRows - 1)
+                let startBottom = positionToPoint(xq.Pos(5, c))
+                let endBottom = positionToPoint(xq.Pos(totalRows - 1, c))
                 bottomPath.move(to: startBottom)
                 bottomPath.addLine(to: endBottom)
 
@@ -378,10 +269,10 @@ class GameScene: SKScene {
 
         // 3. Draw the palace diagonals.
         // Black palace (top): occupies columns 3-5 and rows 0-2.
-        let blackPalaceTopLeft     = pointForBoardCoordinate(col: 3, row: 0)
-        let blackPalaceTopRight    = pointForBoardCoordinate(col: 5, row: 0)
-        let blackPalaceBottomLeft  = pointForBoardCoordinate(col: 3, row: 2)
-        let blackPalaceBottomRight = pointForBoardCoordinate(col: 5, row: 2)
+        let blackPalaceTopLeft     = positionToPoint(xq.Pos(0, 3))
+        let blackPalaceTopRight    = positionToPoint(xq.Pos(0, 5))
+        let blackPalaceBottomLeft  = positionToPoint(xq.Pos(2, 3))
+        let blackPalaceBottomRight = positionToPoint(xq.Pos(2, 5))
 
         let blackDiagonal1 = SKShapeNode(path: {
             let path = CGMutablePath()
@@ -404,10 +295,10 @@ class GameScene: SKScene {
         addChild(blackDiagonal2)
 
         // Red palace (bottom): occupies columns 3-5 and rows 7-9.
-        let redPalaceTopLeft     = pointForBoardCoordinate(col: 3, row: 7)
-        let redPalaceTopRight    = pointForBoardCoordinate(col: 5, row: 7)
-        let redPalaceBottomLeft  = pointForBoardCoordinate(col: 3, row: 9)
-        let redPalaceBottomRight = pointForBoardCoordinate(col: 5, row: 9)
+        let redPalaceTopLeft     = positionToPoint(xq.Pos(7, 3))
+        let redPalaceTopRight    = positionToPoint(xq.Pos(7, 5))
+        let redPalaceBottomLeft  = positionToPoint(xq.Pos(9, 3))
+        let redPalaceBottomRight = positionToPoint(xq.Pos(9, 5))
 
         let redDiagonal1 = SKShapeNode(path: {
             let path = CGMutablePath()
@@ -452,74 +343,12 @@ class GameScene: SKScene {
     // MARK: - Piece Setup
 
     func drawPieces() {
-        func pieceText(piece: xq.Piece) -> String {
-            switch (piece) {
-            case .B_CHARIOT, .R_CHARIOT:
-                return "車"
-            case .B_HORSE, .R_HORSE:
-                return "馬"
-            case .B_ELEPHANT:
-                return "象"
-            case .R_ELEPHANT:
-                return "象"
-            case .B_ADVISOR:
-                return "士"
-            case .R_ADVISOR:
-                return "仕"
-            case .B_GENERAL:
-                return "将"
-            case .R_GENERAL:
-                return "帥"
-            case .B_CANNON:
-                return "砲"
-            case .R_CANNON:
-                return "炮"
-            case .B_SOLDIER:
-                return "卒"
-            case .R_SOLDIER:
-                return "兵"
-            default:
-                return "?"
-            }
-        }
-
-        let pieceRadius = tileSize * 0.4
-        func createPieceNode(row: UInt8, col: UInt8, piece: xq.Piece, pieceCount: UInt8) {
-            let node = SKShapeNode(circleOfRadius: pieceRadius)
-            node.position = pointForBoardCoordinate(col: col, row: row)
-            node.fillColor = pieceColor
-            node.strokeColor = pieceStrokeColor
-            node.lineWidth = 5
-            node.name = "piece_\(piece.rawValue)"
-            node.zPosition = 1
-
-            let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
-            label.text = pieceText(piece: piece)
-            label.fontSize = pieceRadius * 1.2
-            label.fontColor = piece.rawValue > 0 ? redTextColor : blackTextColor
-            label.verticalAlignmentMode = .center
-            label.horizontalAlignmentMode = .center
-            node.addChild(label)
-
-            if humanVsHuman && piece.rawValue < 0 {
-                node.zRotation = CGFloat(Double.pi)
-            }
-
-            addChild(node)
-            pieceToNode[pieceAndCountToUniquePiece(piece, pieceCount)] = node
-        }
-
-        var pieceCount: [xq.Piece : UInt8] = [:]
         for row in 0..<UInt8(totalRows) {
             for col in 0..<UInt8(totalCols) {
-                let piece = game.PieceAt(xq.Pos(row, col))
+                let pos = xq.Pos(row, col)
+                let piece = game.PieceAt(pos)
                 if piece != .EMPTY {
-                    createPieceNode(row: row, col: col, piece: piece, pieceCount: pieceCount[piece] ?? 0)
-                    if pieceCount[piece] == nil {
-                        pieceCount[piece] = UInt8(1)
-                    } else {
-                        pieceCount[piece] = pieceCount[piece]! + 1
-                    }
+                    createPieceNode(piece, pos)
                 }
             }
         }
@@ -563,47 +392,43 @@ class GameScene: SKScene {
             return
         }
 
-        guard let boardPointMaybe = boardCoordinateForPoint(location) else {
+        let tappedPos = pointToPosition(location)
+        if tappedPos == kNoPosition {
             return // Touch is outside board.
         }
 
         // Touching board:
         if !humanVsHuman && game.Turn() != .RED { return }
-        clearPossibleMovesMark()
 
-        let tappedRow = boardPointMaybe.row
-        let tappedCol = boardPointMaybe.col
-        let xqPiece = game.PieceAt(xq.Pos(tappedRow, tappedCol))
-        let tappedPiece = pieceToNode[xqPiece]
+        let tappedPiece = game.PieceAt(tappedPos)
+        let tappedPieceNode = pieces[tappedPos]
 
-        if tappedPiece != nil {
-            if selectedPieceValue == xqPiece {
+        if tappedPiece != .EMPTY {
+            if selectedPosition == tappedPos {
                 // Selecting the same piece, deselect.
                 clearSelection()
-            } else if (game.Turn() == .RED && xqPiece.rawValue > 0) || (game.Turn() == .BLACK && xqPiece.rawValue < 0) {
+            } else if (game.Turn() == .RED && xq.IsRed(tappedPiece)) || (game.Turn() == .BLACK && xq.IsBlack(tappedPiece)) {
                 // Selecting a different self piece, change selection.
-                selectedPiece?.strokeColor = pieceStrokeColor
-                tappedPiece!.strokeColor = pieceStrokeSelectedColor
-                selectedRow = tappedRow
-                selectedCol = tappedCol
-                selectedPiece = tappedPiece
-                selectedPieceValue = xqPiece
-                self.drawPossibleMoves(row: UInt8(tappedRow), col: UInt8(tappedCol))
-            } else if selectedPiece != nil && ((game.Turn() == .RED && xqPiece.rawValue < 0) || (game.Turn() == .BLACK && xqPiece.rawValue > 0)) {
+                let selectedNode = pieces[tappedPos]
+                selectedNode?.strokeColor = pieceStrokeColor
+                tappedPieceNode?.strokeColor = pieceStrokeSelectedColor
+                selectedPosition = tappedPos
+                drawPossibleMoves(tappedPos)
+            } else if selectedPosition != kNoPosition && ((game.Turn() == .RED && xq.IsRed(tappedPiece)) || (game.Turn() == .BLACK && xq.IsBlack(tappedPiece))) {
                 // Selecting an opponent piece, check possible moves.
-                let possibleMoves = game.PossibleMoves(xq.Pos(selectedRow!, selectedCol!))
-                if possibleMoves[Int(tappedRow)][Int(tappedCol)] {
-                    move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
+                let possibleMoves = game.PossibleMoves(selectedPosition)
+                if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
+                    move(from: selectedPosition, to: tappedPos)
                     movesTs.append(Date())
                 }
                 clearSelection()
                 updateStatusLabels()
             }
-        } else if selectedPiece != nil {
+        } else if selectedPosition != kNoPosition {
             // Move to empty space.
-            let possibleMoves = game.PossibleMoves(xq.Pos(UInt8(selectedRow!), UInt8(selectedCol!)))
-            if possibleMoves[Int(tappedRow)][Int(tappedCol)] {
-                move(fromRow: selectedRow!, fromCol: selectedCol!, toRow: tappedRow, toCol: tappedCol)
+            let possibleMoves = game.PossibleMoves(selectedPosition)
+            if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
+                move(from: selectedPosition, to: tappedPos)
                 movesTs.append(Date())
             }
             clearSelection()
@@ -623,61 +448,57 @@ class GameScene: SKScene {
         clearSelection()
         clearPossibleMovesMark()
 
-        for row in 0..<totalRows {
-            for col in 0..<totalCols {
-                let piece = game.PieceAt(xq.Pos(UInt8(row), UInt8(col)))
-                if piece != .EMPTY {
-                    let node = pieceToNode[piece]
-                    node?.position = pointForBoardCoordinate(col: col, row: row)
-                    node?.isHidden = false
-                }
-            }
+        for piece in pieces.values {
+            piece.removeFromParent()
         }
+        pieces.removeAll()
+        pieces.reserveCapacity(Int(kTotalPieces))
         updateStatusLabels()
+        drawPieces()
     }
 
-    func drawPossibleMoves(row: UInt8, col: UInt8) {
-        func createPossibleMovesMark(row: UInt8, col: UInt8) {
+    func drawPossibleMoves(_ position: xq.Position) {
+        func createPossibleMovesMark(_ position: xq.Position) {
             let mark = SKShapeNode(circleOfRadius: 10)
-            mark.position = pointForBoardCoordinate(col: col, row: row)
+            mark.position = positionToPoint(position)
             mark.fillColor = possibleMoveColor
             mark.zPosition = 5
             possibleMovesMark.append(mark)
             addChild(mark)
         }
 
-        let possibleMoves = self.game.PossibleMoves(xq.Pos(row, col))
+        let possibleMoves = game.PossibleMoves(position)
         for row in 0..<totalRows {
             for col in 0..<totalCols {
                 if (!possibleMoves[Int(row)][Int(col)]) {
                     continue;
                 }
-                let capture = game.PieceAt(xq.Pos(row, col))
+                print(row, col)
+                let possiblePos = xq.Pos(row, col)
+                let capture = game.PieceAt(possiblePos)
                 if capture != .EMPTY {
-                    pieceToNode[capture]?.fillColor = pieceColorThreatened
+                    pieces[possiblePos]?.fillColor = pieceColorThreatened
                 } else {
-                    createPossibleMovesMark(row: row, col: col)
+                    createPossibleMovesMark(possiblePos)
                 }
             }
         }
     }
 
     func clearPossibleMovesMark() {
-        for mark in self.possibleMovesMark {
+        for mark in possibleMovesMark {
             mark.removeFromParent()
         }
         self.possibleMovesMark.removeAll()
-        for node in self.pieceToNode.values {
+        for node in pieces.values {
             node.fillColor = pieceColor
         }
     }
 
     func clearSelection() {
-        self.selectedPiece?.strokeColor = pieceStrokeColor
-        self.selectedRow = nil
-        self.selectedCol = nil
-        self.selectedPiece = nil
-        self.selectedPieceValue = nil
+        pieces[selectedPosition]?.strokeColor = pieceStrokeColor
+        selectedPosition = kNoPosition
+        clearPossibleMovesMark()
     }
 
     func saveGame() {
@@ -773,13 +594,7 @@ class GameScene: SKScene {
                 movesTs = loadedGame.movesTs.map {Date(timeIntervalSince1970: $0)}
                 game.Reset() // TODO: should be resetting with loaded board, assuming default board.
                 for m in loadedGame.moves {
-                    move(
-                        fromRow: UInt8((m & 0xF000) >> 12),
-                        fromCol: UInt8((m & 0x0F00) >> 8),
-                        toRow: UInt8((m & 0x00F0) >> 4),
-                        toCol: UInt8(m & 0x000F),
-                        animated: false
-                    )
+                    move(from: UInt8((m & 0xFF00) >> 8), to: UInt8(m & 0x00FF), animated: false)
                 }
             } catch {
                 print("Error decoding game data: \(error)")
@@ -787,21 +602,18 @@ class GameScene: SKScene {
         }
     }
 
-    func move(fromRow: UInt8, fromCol: UInt8, toRow: UInt8, toCol: UInt8, animated: Bool = true) {
-        let dest = pointForBoardCoordinate(col: toCol, row: toRow)
+    func move(from: xq.Position, to: xq.Position, animated: Bool = true) {
+        let dest = positionToPoint(to)
         let action = SKAction.move(to: dest, duration: animated ? 0.25 : 0.0)
-        let piece = game.PieceAt(xq.Pos(UInt8(fromRow), UInt8(fromCol)))
-        let captured = game.Move(
-            xq.Pos(UInt8(fromRow), UInt8(fromCol)),
-            xq.Pos(UInt8(toRow), UInt8(toCol))
-        )
+        let captured = game.Move(from, to)
         if captured != .EMPTY {
-            let capturedNode = pieceToNode[captured]
-            capturedNode?.zPosition = 0
-            capturedNode?.isHidden = true
+            pieces[to]?.zPosition = 1
+            removePieceNode(to)
         }
-        let node = pieceToNode[piece]
-        node?.zPosition = 1
+        let node = pieces[from]
+        pieces.removeValue(forKey: from)
+        pieces[to] = node
+        node?.zPosition = 2
         node?.run(action)
     }
 
@@ -811,11 +623,12 @@ class GameScene: SKScene {
         func undoSingleMove() {
             let undoneMove = game.Undo()
             let _ = movesTs.popLast()
-            let dest = pointForBoardCoordinate(col: xq.Col(undoneMove.from), row: xq.Col(undoneMove.from))
-            let action = SKAction.move(to: dest, duration: 0.25)
-            pieceToNode[undoneMove.piece]?.run(action)
+            let action = SKAction.move(to: positionToPoint(undoneMove.from), duration: 0.25)
+            let node = pieces.removeValue(forKey: undoneMove.to)
+            pieces[undoneMove.from] = node
+            node?.run(action)
             if undoneMove.captured != .EMPTY {
-                pieceToNode[undoneMove.captured]?.isHidden = false
+                createPieceNode(undoneMove.captured, undoneMove.to)
             }
         }
         if humanVsHuman {
@@ -831,5 +644,67 @@ class GameScene: SKScene {
         clearSelection()
         updateStatusLabels()
         saveGame()
+    }
+
+    func createPieceNode(_ piece: xq.Piece, _ position: xq.Position) {
+        func pieceText(piece: xq.Piece) -> String {
+            switch (piece) {
+            case .B_CHARIOT, .R_CHARIOT:
+                return "車"
+            case .B_HORSE, .R_HORSE:
+                return "馬"
+            case .B_ELEPHANT:
+                return "象"
+            case .R_ELEPHANT:
+                return "象"
+            case .B_ADVISOR:
+                return "士"
+            case .R_ADVISOR:
+                return "仕"
+            case .B_GENERAL:
+                return "将"
+            case .R_GENERAL:
+                return "帥"
+            case .B_CANNON:
+                return "砲"
+            case .R_CANNON:
+                return "炮"
+            case .B_SOLDIER:
+                return "卒"
+            case .R_SOLDIER:
+                return "兵"
+            default:
+                return "?"
+            }
+        }
+
+        let pieceRadius = tileSize * 0.4
+        let node = SKShapeNode(circleOfRadius: pieceRadius)
+        node.position = positionToPoint(position)
+        node.fillColor = pieceColor
+        node.strokeColor = pieceStrokeColor
+        node.lineWidth = 5
+        node.name = "piece_\(piece.rawValue)"
+        node.zPosition = 1
+
+        let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        label.text = pieceText(piece: piece)
+        label.fontSize = pieceRadius * 1.2
+        label.fontColor = piece.rawValue > 0 ? redTextColor : blackTextColor
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        node.addChild(label)
+
+        if humanVsHuman && piece.rawValue < 0 {
+            node.zRotation = CGFloat(Double.pi)
+        }
+
+        addChild(node)
+        pieces[position] = node
+    }
+    
+    func removePieceNode(_ position: xq.Position) {
+        pieces[position]?.removeFromParent()
+        pieces.removeValue(forKey: position)
     }
 }

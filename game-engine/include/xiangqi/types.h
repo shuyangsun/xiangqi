@@ -54,6 +54,9 @@ struct MoveAction {
   Piece captured;
 };
 
+inline bool IsRed(Piece piece) { return static_cast<uint8_t>(piece) > 0; }
+inline bool IsBlack(Piece piece) { return static_cast<uint8_t>(piece) < 0; }
+
 inline Position Pos(uint8_t row, uint8_t col) { return row << 4 | col; }
 inline Position Row(Position position) { return (position & 0xF0) >> 4; }
 inline Position Col(Position position) { return (position & 0x0F); }

@@ -11,14 +11,6 @@ namespace xq::internal::util {
 
 namespace {
 
-bool IsRed(Piece piece) {
-  return static_cast<std::underlying_type_t<Piece>>(piece) > 0;
-}
-
-bool IsBlack(Piece piece) {
-  return static_cast<std::underlying_type_t<Piece>>(piece) < 0;
-}
-
 // Helper function to create an empty (all false) board.
 Board<bool> MakeEmptyBoard() {
   Board<bool> board;
