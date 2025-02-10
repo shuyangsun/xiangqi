@@ -217,22 +217,12 @@ Piece Game::PieceAt(Position pos) const {
 }
 
 Piece Game::Move(Position from, Position to) {
-  using enum Player;
-  if (from == to) {
-    return Piece::EMPTY;
-  }
-  const Piece piece = PieceAt(from);
-  if (piece == Piece::EMPTY) {
-    return Piece::EMPTY;
-  }
-
   Board<Piece> next = history_.back();
-  Piece captured = next[Row(to)][Col(to)];
-  next[Row(to)][Col(to)] = PieceAt(from);
-  next[Row(from)][Col(from)] = Piece::EMPTY;
+  const Piece piece = next[Row(from)][Col(from)];
+  const Piece captured = xq::Move(next, from, to);
   moves_.emplace_back(piece, from, to, captured);
   history_.emplace_back(next);
-  player_ = player_ == RED ? BLACK : RED;
+  player_ = player_ == Player::RED ? Player::BLACK : Player::RED;
   return captured;
 }
 
@@ -760,10 +750,43 @@ Board<bool> PossibleMoves(const Board<Piece>& board, Position pos) {
   }
 }
 
-// Returns a vector of all possible moves for the given player.
-std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player) {
-  std::vector<std::pair<Position, Position>> result;
-  // TODO: implementation.
+Piece Move(Board<Piece>& board, Position from, Position to) {
+  using enum Player;
+  if (from == to) {
+    return Piece::EMPTY;
+  }
+  const Piece piece = board[Row(from)][Col(from)];
+  if (piece == Piece::EMPTY) {
+    return Piece::EMPTY;
+  }
+  const Piece captured = board[Row(to)][Col(to)];
+  board[Row(to)][Col(to)] = piece;
+  board[Row(from)][Col(from)] = Piece::EMPTY;
+  return captured;
+}
+
+std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
+                                             Player player) {
+  std::vector<Board<Piece>> result;
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      const Piece piece = board[row][col];
+      if (piece == Piece::EMPTY || IsRed(piece) != (player == Player::RED)) {
+        continue;
+      }
+      const Board<bool> possible_moves = PossibleMoves(board, Pos(row, col));
+      for (uint8_t mrow = 0; mrow < kTotalRow; mrow++) {
+        for (uint8_t mcol = 0; mcol < kTotalCol; mcol++) {
+          if (!possible_moves[mrow][mcol]) {
+            continue;
+          }
+          Board<Piece> next = board;
+          Move(next, Pos(row, col), Pos(mrow, mcol));
+          result.emplace_back(std::move(next));
+        }
+      }
+    }
+  }
   return result;
 }
 

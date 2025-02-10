@@ -81,8 +81,14 @@ class Game {
 // Returns all possible moves for the player with piece at position.
 Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
 
-// Returns a vector of all possible moves for the given player.
-std::vector<std::pair<Position, Position>> AllPossibleMoves(Player player);
+// Move a piece from a position to another position, returns the captured
+// piece. If no piece was captured, return EMPTY.
+Piece Move(Board<Piece>& board, Position from, Position to);
+
+// Returns a vector of all possible boards for the given player after any valid
+// move.
+std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
+                                             Player player);
 
 // Rotate the board so that it's from the opponent's perspective.
 Board<Piece> FlipBoard(const Board<Piece>& board);
