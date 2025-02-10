@@ -17,6 +17,7 @@ using ::xq::Player;
 using ::xq::Pos;
 using ::xq::Position;
 using ::xq::PossibleMoves;
+using ::xq::PossibleNextBoards;
 using ::xq::Winner;
 
 // Converts a Piece value to a one-character representation.
@@ -101,6 +102,9 @@ void PrintGame(const Game& game) {
   std::cout << "Winner: "
             << (winner.has_value() ? (*winner == Winner::RED ? "Red" : "Black")
                                    : "None")
+            << std::endl;
+  std::cout << "Number next states: "
+            << PossibleNextBoards(game.CurrentBoard(), Player::RED).size()
             << std::endl;
 }
 
