@@ -478,129 +478,231 @@ Board<Piece> FlipBoard(const Board<Piece>& board) {
 }
 
 std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
-  // We divide the 32 pieces into 14 groups:
-  // Red pieces:
-  //   Group 0: red general     (1 piece)    (R_GENERAL)
-  //   Group 1: red advisors    (2 pieces)   (R_ADVISOR_1, R_ADVISOR_2)
-  //   Group 2: red elephants   (2 pieces)   (R_ELEPHANT_1, R_ELEPHANT_2)
-  //   Group 3: red horses      (2 pieces)   (R_HORSE_1, R_HORSE_2)
-  //   Group 4: red chariots    (2 pieces)   (R_CHARIOT_1, R_CHARIOT_2)
-  //   Group 5: red cannons     (2 pieces)   (R_CANNON_1, R_CANNON_2)
-  //   Group 6: red soldiers    (5 pieces)   (R_SOLDIER_1 ... R_SOLDIER_5)
-  // Black pieces:
-  //   Group 7: black general   (1 piece)    (B_GENERAL)
-  //   Group 8: black advisors  (2 pieces)   (B_ADVISOR_1, B_ADVISOR_2)
-  //   Group 9: black elephants (2 pieces)   (B_ELEPHANT_1, B_ELEPHANT_2)
-  //   Group 10: black horses   (2 pieces)   (B_HORSE_1, B_HORSE_2)
-  //   Group 11: black chariots (2 pieces)   (B_CHARIOT_1, B_CHARIOT_2)
-  //   Group 12: black cannons  (2 pieces)   (B_CANNON_1, B_CANNON_2)
-  //   Group 13: black soldiers (5 pieces)   (B_SOLDIER_1 ...B_SOLDIER_5)
-  //
-  // For each piece found on the board we compute a one‐byte encoding of its
-  // position: (row << 4) | col.
-  // For pieces that are missing we will later pad the group with 0xFF.
-  // (0xFF is equivalent to a missing piece because 0xF in each nibble indicates
-  // that the piece is not on the board.)
+  uint64_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
 
-  // Create 14 groups to hold the encoded positions.
-  std::array<std::vector<uint8_t>, 14> groups;
-
-  // Expected counts for each group in order.
-  const std::array<size_t, 14> expected_counts = {
-      1,  // red general
-      2,  // red advisors
-      2,  // red elephants
-      2,  // red horses
-      2,  // red chariots
-      2,  // red cannons
-      5,  // red soldiers
-      1,  // black general
-      2,  // black advisors
-      2,  // black elephants
-      2,  // black horses
-      2,  // black chariots
-      2,  // black cannons
-      5   // black soldiers
-  };
+  // Initialize all pieces as missing.
+  uint8_t r_general_pos = 0xFF, r_advisor_1_pos = 0xFF, r_advisor_2_pos = 0xFF,
+          r_elephant_1_pos = 0xFF, r_elephant_2_pos = 0xFF,
+          r_horse_1_pos = 0xFF, r_horse_2_pos = 0xFF, r_chariot_1_pos = 0xFF,
+          r_chariot_2_pos = 0xFF, r_cannon_1_pos = 0xFF, r_cannon_2_pos = 0xFF,
+          r_soldier_1_pos = 0xFF, r_soldier_2_pos = 0xFF,
+          r_soldier_3_pos = 0xFF, r_soldier_4_pos = 0xFF,
+          r_soldier_5_pos = 0xFF, b_advisor_1_pos = 0xFF, b_general_pos = 0xFF,
+          b_advisor_2_pos = 0xFF, b_elephant_1_pos = 0xFF,
+          b_elephant_2_pos = 0xFF, b_horse_1_pos = 0xFF, b_horse_2_pos = 0xFF,
+          b_chariot_1_pos = 0xFF, b_chariot_2_pos = 0xFF, b_cannon_1_pos = 0xFF,
+          b_cannon_2_pos = 0xFF, b_soldier_1_pos = 0xFF, b_soldier_2_pos = 0xFF,
+          b_soldier_3_pos = 0xFF, b_soldier_4_pos = 0xFF,
+          b_soldier_5_pos = 0xFF;
 
   // Loop over the board and record positions.
   for (uint8_t r = 0; r < kTotalRow; ++r) {
     for (uint8_t c = 0; c < kTotalCol; ++c) {
-      Piece p = board[r][c];
+      const Piece p = board[r][c];
       if (p == Piece::EMPTY) {
         continue;
       }
-      const auto value = static_cast<std::underlying_type_t<Piece>>(p);
-      // Encode the position: upper nibble is row, lower nibble is col.
-      const uint8_t posByte = (r << 4) | c;
-      int groupIndex = -1;
-      if (value > 0) {  // red piece
-        if (value == 1)
-          groupIndex = 0;  // red general
-        else if (value == 2 || value == 3)
-          groupIndex = 1;  // advisors
-        else if (value == 4 || value == 5)
-          groupIndex = 2;  // elephants
-        else if (value == 6 || value == 7)
-          groupIndex = 3;  // horses
-        else if (value == 8 || value == 9)
-          groupIndex = 4;  // chariots
-        else if (value == 10 || value == 11)
-          groupIndex = 5;  // cannons
-        else if (value >= 12 && value <= 16)
-          groupIndex = 6;      // soldiers
-      } else if (value < 0) {  // black piece
-        int absValue = -value;
-        if (absValue == 1)
-          groupIndex = 7;  // black general
-        else if (absValue == 2 || absValue == 3)
-          groupIndex = 8;  // advisors
-        else if (absValue == 4 || absValue == 5)
-          groupIndex = 9;  // elephants
-        else if (absValue == 6 || absValue == 7)
-          groupIndex = 10;  // horses
-        else if (absValue == 8 || absValue == 9)
-          groupIndex = 11;  // chariots
-        else if (absValue == 10 || absValue == 11)
-          groupIndex = 12;  // cannons
-        else if (absValue >= 12 && absValue <= 16)
-          groupIndex = 13;  // soldiers
-      }
-      if (groupIndex >= 0 && groupIndex < 14) {
-        groups[groupIndex].push_back(posByte);
+      const uint8_t pos = (r << 4) | c;
+      switch (p) {
+        case R_GENERAL:
+          r_general_pos = pos;
+          break;
+        case R_ADVISOR_1:
+          r_advisor_1_pos = pos;
+          break;
+        case R_ADVISOR_2:
+          r_advisor_2_pos = pos;
+          break;
+        case R_ELEPHANT_1:
+          r_elephant_1_pos = pos;
+          break;
+        case R_ELEPHANT_2:
+          r_elephant_2_pos = pos;
+          break;
+        case R_HORSE_1:
+          r_horse_1_pos = pos;
+          break;
+        case R_HORSE_2:
+          r_horse_2_pos = pos;
+          break;
+        case R_CHARIOT_1:
+          r_chariot_1_pos = pos;
+          break;
+        case R_CHARIOT_2:
+          r_chariot_2_pos = pos;
+          break;
+        case R_CANNON_1:
+          r_cannon_1_pos = pos;
+          break;
+        case R_CANNON_2:
+          r_cannon_2_pos = pos;
+          break;
+        case R_SOLDIER_1:
+          r_soldier_1_pos = pos;
+          break;
+        case R_SOLDIER_2:
+          r_soldier_2_pos = pos;
+          break;
+        case R_SOLDIER_3:
+          r_soldier_3_pos = pos;
+          break;
+        case R_SOLDIER_4:
+          r_soldier_4_pos = pos;
+          break;
+        case R_SOLDIER_5:
+          r_soldier_5_pos = pos;
+          break;
+        case B_GENERAL:
+          b_general_pos = pos;
+          break;
+        case B_ADVISOR_1:
+          b_advisor_1_pos = pos;
+          break;
+        case B_ADVISOR_2:
+          b_advisor_2_pos = pos;
+          break;
+        case B_ELEPHANT_1:
+          b_elephant_1_pos = pos;
+          break;
+        case B_ELEPHANT_2:
+          b_elephant_2_pos = pos;
+          break;
+        case B_HORSE_1:
+          b_horse_1_pos = pos;
+          break;
+        case B_HORSE_2:
+          b_horse_2_pos = pos;
+          break;
+        case B_CHARIOT_1:
+          b_chariot_1_pos = pos;
+          break;
+        case B_CHARIOT_2:
+          b_chariot_2_pos = pos;
+          break;
+        case B_CANNON_1:
+          b_cannon_1_pos = pos;
+          break;
+        case B_CANNON_2:
+          b_cannon_2_pos = pos;
+          break;
+        case B_SOLDIER_1:
+          b_soldier_1_pos = pos;
+          break;
+        case B_SOLDIER_2:
+          b_soldier_2_pos = pos;
+          break;
+        case B_SOLDIER_3:
+          b_soldier_3_pos = pos;
+          break;
+        case B_SOLDIER_4:
+          b_soldier_4_pos = pos;
+          break;
+        case B_SOLDIER_5:
+          b_soldier_5_pos = pos;
+          break;
       }
     }
   }
 
-  // For each group, sort the encoded positions and pad with 0xFF if missing.
-  std::vector<uint8_t> encoding;
-  encoding.reserve(32);
-  for (size_t i = 0; i < groups.size(); ++i) {
-    auto& vec = groups[i];
-    std::sort(vec.begin(), vec.end());
-    // Pad the group with 0xFF until the number of entries equals
-    // expected_counts[i].
-    while (vec.size() < expected_counts[i]) {
-      vec.push_back(0xFF);
-    }
-    // In a normal game there should never be more than expected_counts[i]
-    // pieces.
-    if (vec.size() > expected_counts[i]) {
-      vec.resize(expected_counts[i]);
-    }
-    // Append the (now sorted and padded) group into our overall encoding.
-    encoding.insert(encoding.end(), vec.begin(), vec.end());
-  }
-  // At this point, encoding should contain exactly 32 bytes.
+  // generals
+  res1 |= (static_cast<uint64_t>(r_general_pos) << 56);
+  res3 |= (static_cast<uint64_t>(b_general_pos) << 56);
 
-  // Pack the 32 bytes into 4 uint64_t values.
-  std::array<uint64_t, 4> result = {0, 0, 0, 0};
-  for (size_t i = 0; i < encoding.size(); ++i) {
-    size_t index = i / 8;
-    // We pack in big‐endian order within each 64‐bit block:
-    result[index] |= static_cast<uint64_t>(encoding[i]) << (8 * (7 - (i % 8)));
+  // Advisors
+  if (r_advisor_1_pos < r_advisor_2_pos) {
+    res1 |= ((static_cast<uint64_t>(r_advisor_1_pos) << 48) |
+             (static_cast<uint64_t>(r_advisor_2_pos) << 40));
+  } else {
+    res1 |= ((static_cast<uint64_t>(r_advisor_2_pos) << 48) |
+             (static_cast<uint64_t>(r_advisor_1_pos) << 40));
   }
-  return result;
+  if (b_advisor_1_pos < b_advisor_2_pos) {
+    res3 |= ((static_cast<uint64_t>(b_advisor_1_pos) << 48) |
+             (static_cast<uint64_t>(b_advisor_2_pos) << 40));
+  } else {
+    res3 |= ((static_cast<uint64_t>(b_advisor_2_pos) << 48) |
+             (static_cast<uint64_t>(b_advisor_1_pos) << 40));
+  }
+  // Elephants
+  if (r_elephant_1_pos < r_elephant_2_pos) {
+    res1 |= ((static_cast<uint64_t>(r_elephant_1_pos) << 32) |
+             (static_cast<uint64_t>(r_elephant_2_pos) << 24));
+  } else {
+    res1 |= ((static_cast<uint64_t>(r_elephant_2_pos) << 32) |
+             (static_cast<uint64_t>(r_elephant_1_pos) << 24));
+  }
+  if (b_elephant_1_pos < b_elephant_2_pos) {
+    res3 |= ((static_cast<uint64_t>(b_elephant_1_pos) << 32) |
+             (static_cast<uint64_t>(b_elephant_2_pos) << 24));
+  } else {
+    res3 |= ((static_cast<uint64_t>(b_elephant_2_pos) << 32) |
+             (static_cast<uint64_t>(b_elephant_1_pos) << 24));
+  }
+  // Horses
+  if (r_horse_1_pos < r_horse_2_pos) {
+    res1 |= ((static_cast<uint64_t>(r_horse_1_pos) << 16) |
+             (static_cast<uint64_t>(r_horse_2_pos) << 8));
+  } else {
+    res1 |= ((static_cast<uint64_t>(r_horse_2_pos) << 16) |
+             (static_cast<uint64_t>(r_horse_1_pos) << 8));
+  }
+  if (b_horse_1_pos < b_horse_2_pos) {
+    res3 |= ((static_cast<uint64_t>(b_horse_1_pos) << 16) |
+             (static_cast<uint64_t>(b_horse_2_pos) << 8));
+  } else {
+    res3 |= ((static_cast<uint64_t>(b_horse_2_pos) << 16) |
+             (static_cast<uint64_t>(b_horse_1_pos) << 8));
+  }
+  // Chariots
+  if (r_chariot_1_pos < r_chariot_2_pos) {
+    res1 |= static_cast<uint64_t>(r_chariot_1_pos);
+    res2 |= (static_cast<uint64_t>(r_chariot_2_pos) << 56);
+  } else {
+    res1 |= static_cast<uint64_t>(r_chariot_2_pos);
+    res2 |= (static_cast<uint64_t>(r_chariot_1_pos) << 56);
+  }
+  if (b_chariot_1_pos < b_chariot_2_pos) {
+    res3 |= static_cast<uint64_t>(b_chariot_1_pos);
+    res4 |= (static_cast<uint64_t>(b_chariot_2_pos) << 56);
+  } else {
+    res3 |= static_cast<uint64_t>(b_chariot_2_pos);
+    res4 |= (static_cast<uint64_t>(b_chariot_1_pos) << 56);
+  }
+  // Cannons
+  if (r_cannon_1_pos < r_cannon_2_pos) {
+    res2 |= ((static_cast<uint64_t>(r_cannon_1_pos) << 48) |
+             (static_cast<uint64_t>(r_cannon_2_pos) << 40));
+  } else {
+    res2 |= ((static_cast<uint64_t>(r_cannon_2_pos) << 48) |
+             (static_cast<uint64_t>(r_cannon_1_pos) << 40));
+  }
+  if (b_cannon_1_pos < b_cannon_2_pos) {
+    res4 |= ((static_cast<uint64_t>(b_cannon_1_pos) << 48) |
+             (static_cast<uint64_t>(b_cannon_2_pos) << 40));
+  } else {
+    res4 |= ((static_cast<uint64_t>(b_cannon_2_pos) << 48) |
+             (static_cast<uint64_t>(b_cannon_1_pos) << 40));
+  }
+  // Soldiers
+  std::array<uint8_t, 5> red_soldier_pos{r_soldier_1_pos, r_soldier_2_pos,
+                                         r_soldier_3_pos, r_soldier_4_pos,
+                                         r_soldier_5_pos};
+  std::sort(red_soldier_pos.begin(), red_soldier_pos.end());
+  std::array<uint8_t, 5> black_soldier_pos{b_soldier_1_pos, b_soldier_2_pos,
+                                           b_soldier_3_pos, b_soldier_4_pos,
+                                           b_soldier_5_pos};
+  std::sort(black_soldier_pos.begin(), black_soldier_pos.end());
+  res2 |= (static_cast<uint64_t>(red_soldier_pos[0]) << 32) |
+          (static_cast<uint64_t>(red_soldier_pos[1]) << 24) |
+          (static_cast<uint64_t>(red_soldier_pos[2]) << 16) |
+          (static_cast<uint64_t>(red_soldier_pos[3]) << 8) |
+          (static_cast<uint64_t>(red_soldier_pos[4]));
+  res4 |= (static_cast<uint64_t>(black_soldier_pos[0]) << 32) |
+          (static_cast<uint64_t>(black_soldier_pos[1]) << 24) |
+          (static_cast<uint64_t>(black_soldier_pos[2]) << 16) |
+          (static_cast<uint64_t>(black_soldier_pos[3]) << 8) |
+          (static_cast<uint64_t>(black_soldier_pos[4]));
+  return {res1, res2, res3, res4};
 }
 
 }  // namespace xq
