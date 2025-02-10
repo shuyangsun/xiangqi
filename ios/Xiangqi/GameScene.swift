@@ -207,14 +207,6 @@ class GameScene: SKScene {
         return (col, row)
     }
 
-    /// Given a scene point, return the nearest grid point on the board.
-    func snappedPosition(from point: CGPoint) -> CGPoint? {
-        guard let (col, row) = boardCoordinateForPoint(point) else {
-            return nil
-        }
-        return pointForBoardCoordinate(col: col, row: row)
-    }
-
     // MARK: - Board Drawing
 
     func drawBoard() {
