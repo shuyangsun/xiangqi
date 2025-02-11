@@ -197,7 +197,7 @@ void Game::ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece) {
   ResetFromBoard(pieceMapToBoard(pos_piece));
 }
 
-Player Game::Turn() const { return player_; }
+Player Game::CurrentPlayer() const { return player_; }
 
 size_t Game::MovesCount() const { return moves_.size(); }
 
@@ -242,13 +242,29 @@ MoveAction Game::Undo() {
   return result;
 }
 
-bool Game::IsCheckMade() const {
-  Board<Piece> board = CurrentBoard();
+std::vector<uint16_t> Game::ExportMoves() const {
+  std::vector<uint16_t> result;
+  result.reserve(moves_.size());
+  for (const MoveAction& move : moves_) {
+    result.emplace_back((static_cast<uint16_t>(move.from) << 8) |
+                        (static_cast<uint16_t>(move.to)));
+  }
+  return result;
+}
+
+void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
+  for (const uint16_t move : moves) {
+    Move(static_cast<Position>((move & 0xFF00) >> 8),
+         static_cast<Position>(move & 0x00FF));
+  }
+}
+
+bool IsCheckMade(const Board<Piece>& board, Player player) {
   Position general_pos = kNoPosition;
   bool found = false;
   // Determine our own general based on whose turn it is.
   Piece my_general =
-      (player_ == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
+      (player == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
   for (uint8_t r = 0; r < kTotalRow; ++r) {
     for (uint8_t c = 0; c < kTotalCol; ++c) {
       if (board[r][c] == my_general) {
@@ -270,7 +286,7 @@ bool Game::IsCheckMade() const {
       if (piece == Piece::EMPTY) continue;
       int piece_val = static_cast<int>(piece);
       const bool piece_is_red = piece_val > 0;
-      const bool player_is_red = player_ == Player::RED;
+      const bool player_is_red = player == Player::RED;
       if (piece_is_red == player_is_red) continue;  // skip our own pieces
 
       Position piece_pos = Pos(r, c);
@@ -311,9 +327,8 @@ bool Game::IsCheckMade() const {
   return false;
 }
 
-bool Game::IsGameOver() const {
+bool IsGameOver(const Board<Piece>& board) {
   // The game is over if one or both generals have been captured.
-  const Board<Piece>& board = history_.back();
   bool redFound = false;
   bool blackFound = false;
   for (uint8_t r = 0; r < kTotalRow; ++r) {
@@ -328,12 +343,11 @@ bool Game::IsGameOver() const {
   return (!redFound || !blackFound);
 }
 
-Winner Game::GetWinner() const {
-  if (!IsGameOver()) {
+Winner GetWinner(const Board<Piece>& board) {
+  if (!IsGameOver(board)) {
     return Winner::NONE;
   }
 
-  const Board<Piece>& board = history_.back();
   bool redFound = false;
   bool blackFound = false;
   for (uint8_t r = 0; r < kTotalRow; ++r) {
@@ -354,23 +368,6 @@ Winner Game::GetWinner() const {
     return Winner::DRAW;
   }
   return Winner::DRAW;
-}
-
-std::vector<uint16_t> Game::ExportMoves() const {
-  std::vector<uint16_t> result;
-  result.reserve(moves_.size());
-  for (const MoveAction& move : moves_) {
-    result.emplace_back((static_cast<uint16_t>(move.from) << 8) |
-                        (static_cast<uint16_t>(move.to)));
-  }
-  return result;
-}
-
-void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
-  for (const uint16_t move : moves) {
-    Move(static_cast<Position>((move & 0xFF00) >> 8),
-         static_cast<Position>(move & 0x00FF));
-  }
 }
 
 Position FlipPosition(Position position) {

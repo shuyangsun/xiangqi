@@ -10,6 +10,8 @@ namespace {
 
 using ::xq::Board;
 using ::xq::Game;
+using ::xq::GetWinner;
+using ::xq::IsCheckMade;
 using ::xq::kTotalCol;
 using ::xq::kTotalRow;
 using ::xq::Piece;
@@ -94,11 +96,13 @@ void PrintGame(const Game& game) {
     std::cout << std::endl;
   }
   std::cout << std::endl;
-  std::cout << "Turn: " << (game.Turn() == Player::RED ? "Red" : "Black")
+  std::cout << "Turn: "
+            << (game.CurrentPlayer() == Player::RED ? "Red" : "Black")
             << std::endl;
-  std::cout << "Check made: " << (game.IsCheckMade() ? "true" : "false")
+  std::cout << "Check made: "
+            << (IsCheckMade(board, game.CurrentPlayer()) ? "true" : "false")
             << std::endl;
-  const std::optional<Winner> winner = game.GetWinner();
+  const std::optional<Winner> winner = GetWinner(board);
   std::cout << "Winner: "
             << (winner.has_value() ? (*winner == Winner::RED ? "Red" : "Black")
                                    : "None")

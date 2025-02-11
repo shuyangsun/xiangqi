@@ -22,8 +22,8 @@ class Game {
   // Reset the game with a map of pieces to their positions.
   void ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece);
 
-  // Returns true if it is red's turn, false if black's.
-  Player Turn() const;
+  // Returns the current player.
+  Player CurrentPlayer() const;
 
   // Returns the number of moves has been made in this game.
   size_t MovesCount() const;
@@ -51,20 +51,6 @@ class Game {
   // if the board is already at its original state when initialized or reset.
   MoveAction Undo();
 
-  // Returns true if it's checkmade for the current player. I.e., if the
-  // current player does not take certain actions, the opponent can capture
-  // the general with their next move.
-  bool IsCheckMade() const;
-
-  // Returns true if the game is over. For example, one of the generals has
-  // been captured, or if there is no possible move for the current player's
-  // general to not be captured.
-  bool IsGameOver() const;
-
-  // Returns the winner if the game is over. Returns NONE if the game is not
-  // over.
-  Winner GetWinner() const;
-
   // Export moves as vector of uint16_t. The integer represents four 4-bit
   // integers as Row(from), Col(from), Row(to) and Col(to).
   std::vector<uint16_t> ExportMoves() const;
@@ -78,12 +64,29 @@ class Game {
   std::vector<MoveAction> moves_;
 };
 
+// Returns true if it's checkmade for the given player. I.e., if the
+// current player does not take certain actions, the opponent can capture
+// the general with their next move.
+bool IsCheckMade(const Board<Piece>& board, Player player);
+
+// Returns true if the game is over. For example, one of the generals has
+// been captured, or if there is no possible move for the current player's
+// general to not be captured.
+bool IsGameOver(const Board<Piece>& board);
+
+// Returns the winner if the game is over. Returns NONE if the game is not
+// over.
+Winner GetWinner(const Board<Piece>& board);
+
 // Returns all possible moves for the player with piece at position.
 Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
 Piece Move(Board<Piece>& board, Position from, Position to);
+
+// Returns a vector of all possible moves for player.
+std::vector<uint16_t> PossibleMoves(const Board<Piece>& board, Player player);
 
 // Returns a vector of all possible boards for the given player after any valid
 // move.

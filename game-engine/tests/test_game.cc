@@ -322,7 +322,7 @@ TEST(IsCheckMadeTest, RedNotInCheck) {
       {Pos(9, 4), R_GENERAL},
       {Pos(0, 3), B_GENERAL},
   });
-  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
@@ -336,7 +336,7 @@ TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
       {Pos(9, 4), R_GENERAL},
       {Pos(0, 4), B_GENERAL},
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -352,7 +352,7 @@ TEST(IsCheckMadeTest, RedInCheckByChariot) {
       {Pos(5, 4), B_CHARIOT},
 
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
@@ -366,7 +366,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
       {Pos(7, 4), R_SOLDIER},  // blocks the chariot's path to the general
 
   });
-  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -380,7 +380,7 @@ TEST(IsCheckMadeTest, RedInCheckBySoldier) {
       {Pos(0, 3), B_GENERAL},
       {Pos(8, 4), B_SOLDIER},
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -395,7 +395,7 @@ TEST(IsCheckMadeTest, RedInCheckByHorse) {
       {Pos(0, 3), B_GENERAL},
       {Pos(7, 3), B_HORSE},
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
@@ -408,7 +408,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
       {Pos(7, 3), B_HORSE},
       {Pos(8, 3), R_SOLDIER},  // blocking the horse’s move
   });
-  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -423,7 +423,7 @@ TEST(IsCheckMadeTest, RedInCheckByElephant) {
       {Pos(0, 3), B_GENERAL},
       {Pos(7, 2), B_ELEPHANT},
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
@@ -435,7 +435,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
       {Pos(7, 2), B_ELEPHANT},
       {Pos(8, 3), R_SOLDIER},  // blocks the elephant’s diagonal move
   });
-  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -451,7 +451,7 @@ TEST(IsCheckMadeTest, RedInCheckByCannon) {
       {Pos(7, 4), B_CANNON},
       {Pos(8, 4), R_SOLDIER},  // screen piece for the cannon
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
@@ -461,7 +461,7 @@ TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
       {Pos(9, 4), R_GENERAL}, {Pos(0, 3), B_GENERAL}, {Pos(7, 4), B_CANNON}
       // No piece at (8,4)
   });
-  EXPECT_FALSE(game.IsCheckMade());
+  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
@@ -481,7 +481,7 @@ TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
       {Pos(7, 4), B_CANNON},
 
   });
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
@@ -502,7 +502,7 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
       {Pos(2, 4), R_CANNON},
   });
   game.MakeBlackMoveFirst();
-  EXPECT_TRUE(game.IsCheckMade());
+  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(GameHistory, ExportAndRestoreMoves) {
