@@ -645,15 +645,9 @@ Piece Move(Board<Piece>& board, Position from, Position to) {
 }
 
 // Returns a vector of all possible moves for player.
-std::vector<uint16_t> PossibleMoves(const Board<Piece>& board, Player player) {
+std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
+                                           Player player) {
   std::vector<uint16_t> result;
-  // TODO: implementation
-  return result;
-}
-
-std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
-                                             Player player) {
-  std::vector<Board<Piece>> result;
   for (uint8_t row = 0; row < kTotalRow; row++) {
     for (uint8_t col = 0; col < kTotalCol; col++) {
       const Piece piece = board[row][col];
@@ -666,12 +660,27 @@ std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
           if (!possible_moves[mrow][mcol]) {
             continue;
           }
-          Board<Piece> next = board;
-          Move(next, Pos(row, col), Pos(mrow, mcol));
-          result.emplace_back(std::move(next));
+          result.emplace_back(static_cast<uint16_t>(Pos(row, col) << 8) |
+                              static_cast<uint16_t>(Pos(mrow, mcol)));
         }
       }
     }
+  }
+  return result;
+}
+
+std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
+                                                Player player) {
+  const std::vector<uint16_t> possible_moves =
+      AllPossibleNextMoves(board, player);
+  std::vector<Board<Piece>> result;
+  result.reserve(possible_moves.size());
+  for (const uint16_t move : possible_moves) {
+    const Position from = static_cast<Position>((move & 0xFF00) >> 8);
+    const Position to = static_cast<Position>(move & 0x00FF);
+    Board<Piece> next = board;
+    Move(next, from, to);
+    result.emplace_back(std::move(next));
   }
   return result;
 }

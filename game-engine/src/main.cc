@@ -9,6 +9,7 @@
 
 namespace {
 
+using ::xq::AllPossibleNextMoves;
 using ::xq::Board;
 using ::xq::Game;
 using ::xq::GetWinner;
@@ -20,7 +21,6 @@ using ::xq::Player;
 using ::xq::Pos;
 using ::xq::Position;
 using ::xq::PossibleMoves;
-using ::xq::PossibleNextBoards;
 using ::xq::Winner;
 
 // Converts a Piece value to a one-character representation.
@@ -109,7 +109,7 @@ void PrintGame(const Game& game) {
                                    : "None")
             << std::endl;
   std::cout << "Number next states: "
-            << PossibleNextBoards(game.CurrentBoard(), Player::RED).size()
+            << AllPossibleNextMoves(game.CurrentBoard(), Player::RED).size()
             << std::endl;
 }
 

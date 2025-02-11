@@ -30,12 +30,13 @@ Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
 Piece Move(Board<Piece>& board, Position from, Position to);
 
 // Returns a vector of all possible moves for player.
-std::vector<uint16_t> PossibleMoves(const Board<Piece>& board, Player player);
+std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
+                                           Player player);
 
 // Returns a vector of all possible boards for the given player after any valid
 // move.
-std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
-                                             Player player);
+std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
+                                                Player player);
 
 // Rotate the position so that it's from the opponent's perspective.
 Position FlipPosition(Position position);
