@@ -7,12 +7,6 @@
 
 namespace xq::internal::agent {
 
-namespace {
-
-using ::xq::Position;
-
-}  // namespace
-
 uint16_t Random::MakeMove(const Board<Piece>& board, Player player) const {
   const std::vector<uint16_t> possible_moves =
       AllPossibleNextMoves(board, player);

@@ -140,7 +140,8 @@ int main() {
   Game game;
   PrintGame(game);
 
-  const std::unique_ptr<IAgent> agent = AgentFactory::Random();
+  const std::unique_ptr<IAgent> agent =
+      AgentFactory::MCTS(/*num_simulations=*/100);
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
@@ -226,15 +227,20 @@ int main() {
       }
 
       game.Move(Pos(row, col), Pos(row_2, col_2));
+      const auto start = std::chrono::high_resolution_clock::now();
       const uint16_t agent_move =
           agent->MakeMove(game.CurrentBoard(), game.CurrentPlayer());
+      const auto end = std::chrono::high_resolution_clock::now();
+      const auto duration =
+          std::chrono::duration_cast<std::chrono::seconds>(end - start);
       game.Move(static_cast<uint8_t>((agent_move & 0xFF00) >> 8),
                 static_cast<uint8_t>(agent_move & 0x00FF));
-      std::cout << "Agent Move: ("
+      std::cout << "Agent thought for " << duration.count()
+                << "s and made move ("
                 << static_cast<int>((agent_move & 0xF000) >> 12) << ", "
-                << static_cast<int>((agent_move & 0x0F00) >> 8) << ") -> ("
+                << static_cast<int>((agent_move & 0x0F00) >> 8) << ") to ("
                 << static_cast<int>((agent_move & 0x00F0) >> 4) << ", "
-                << static_cast<int>(agent_move & 0x000F) << ")" << std::endl
+                << static_cast<int>(agent_move & 0x000F) << ")." << std::endl
                 << std::endl;
 
       PrintGame(game);

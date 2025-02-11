@@ -20,7 +20,7 @@ class AgentFactory {
   ~AgentFactory() = delete;
 
   static std::unique_ptr<IAgent> Random();
-  static std::unique_ptr<IAgent> MCTS();
+  static std::unique_ptr<IAgent> MCTS(size_t num_simulations = 1000);
 };
 
 }  // namespace xq

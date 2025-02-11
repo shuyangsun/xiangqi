@@ -7,11 +7,17 @@ namespace xq::internal::agent {
 
 class MCTS : public IAgent {
  public:
-  MCTS() = default;
+  MCTS() = delete;
+
+  MCTS(size_t num_simulations);
+
   ~MCTS() = default;
 
   virtual uint16_t MakeMove(const Board<Piece>& board,
                             Player player) const override final;
+
+ private:
+  const size_t num_simulations_;
 };
 
 }  // namespace xq::internal::agent
