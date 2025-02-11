@@ -29,7 +29,9 @@ Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
 // piece. If no piece was captured, return EMPTY.
 Piece Move(Board<Piece>& board, Position from, Position to);
 
-// Returns a vector of all possible moves for player.
+// Returns a vector of all possible moves for player. Each move is a 16-bit
+// integer, representing "from" and "to" positions, each being 8 bits
+// (Position).
 std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
                                            Player player);
 

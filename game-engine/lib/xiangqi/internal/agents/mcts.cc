@@ -105,40 +105,38 @@ class Node {
  public:
   Node()
       : player_{Player::BLACK},
-        is_leaf_{true},
+        winner_{Winner::NONE},
         parent_{std::nullopt},
-        children_{} {};
+        children_{},
+        untried_moves_{},
+        wins_{0},
+        visits_{0},
+        uct_{0.0f} {};
 
   Node(const Board<Piece>& board, Player player,
        std::optional<BoardState> parent)
       : player_{player},
-        is_leaf_{IsGameOver(board)},
+        winner_{GetWinner(board)},
         parent_{parent},
-        val_{0},
-        vis_{0},
+        children_{},
+        wins_{0},
+        visits_{0},
         uct_{0.0f} {
-    if (!is_leaf_) {
-      const std::vector<uint16_t> possible_moves =
-          AllPossibleNextMoves(board, player);
-      children_.reserve(possible_moves.size());
-      for (const uint64_t move : possible_moves) {
-        Board<Piece> next = board;
-        Move(next, static_cast<uint8_t>((move & 0xFF00) >> 8),
-             static_cast<uint8_t>(move & 0x00FF));
-        children_.emplace_back(EncodeBoardState(next));
-      }
+    if (winner_ == Winner::NONE) {
+      untried_moves_ = AllPossibleNextMoves(board, player);
     }
   }
   ~Node() = default;
 
  private:
   Player player_;
-  bool is_leaf_;
+  Winner winner_;
   std::optional<BoardState> parent_;
-  std::vector<BoardState> children_;
+  std::vector<Node> children_;
+  std::vector<uint16_t> untried_moves_;
 
-  int val_;
-  size_t vis_;
+  int wins_;
+  size_t visits_;
   float uct_;
 };
 
