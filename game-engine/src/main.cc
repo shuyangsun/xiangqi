@@ -1,4 +1,5 @@
 #include <cctype>
+#include <chrono>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -108,8 +109,20 @@ void PrintGame(const Game& game) {
             << (winner.has_value() ? (*winner == Winner::RED ? "Red" : "Black")
                                    : "None")
             << std::endl;
-  std::cout << "Number next states: "
-            << AllPossibleNextMoves(game.CurrentBoard(), Player::RED).size()
+  std::cout
+      << "Number next states: "
+      << AllPossibleNextMoves(game.CurrentBoard(), game.CurrentPlayer()).size()
+      << std::endl;
+  const auto start = std::chrono::high_resolution_clock::now();
+  const size_t num_iter = 10000;
+  for (int i = 0; i < 10000; ++i) {
+    AllPossibleNextMoves(game.CurrentBoard(), game.CurrentPlayer());
+  }
+  const auto end = std::chrono::high_resolution_clock::now();
+  const auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+  std::cout << "Time to generate " << num_iter
+            << " possible next moves : " << duration.count() << "ms"
             << std::endl;
 }
 
