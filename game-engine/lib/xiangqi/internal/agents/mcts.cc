@@ -36,7 +36,10 @@ Winner MakeRandomMoveUntilGameOver(const Board<Piece>& board, Player player) {
 
 }  // namespace
 
-MCTS::MCTS(size_t num_simulations) : num_simulations_{num_simulations} {}
+MCTS::MCTS(size_t num_iter, size_t depth, float exploration_constant)
+    : num_iter_{num_iter},
+      depth_{depth},
+      exploration_constant_{exploration_constant} {}
 
 uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
   const std::vector<uint16_t> possible_moves =
@@ -57,8 +60,8 @@ uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
     std::vector<size_t> draws(num_threads, 0);
     std::vector<std::thread> threads;
 
-    size_t simulations_per_thread = num_simulations_ / num_threads;
-    size_t remainder = num_simulations_ % num_threads;
+    size_t simulations_per_thread = num_iter_ / num_threads;
+    size_t remainder = num_iter_ % num_threads;
     size_t start = 0;
 
     for (unsigned int t = 0; t < num_threads; t++) {

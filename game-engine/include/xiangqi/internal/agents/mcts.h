@@ -9,7 +9,7 @@ class MCTS : public IAgent {
  public:
   MCTS() = delete;
 
-  MCTS(size_t num_simulations);
+  MCTS(size_t num_simulations, size_t depth, float exploration_constant);
 
   ~MCTS() = default;
 
@@ -17,7 +17,9 @@ class MCTS : public IAgent {
                             Player player) const override final;
 
  private:
-  const size_t num_simulations_;
+  const size_t num_iter_;
+  const size_t depth_;
+  const float exploration_constant_;
 };
 
 }  // namespace xq::internal::agent

@@ -140,8 +140,10 @@ int main() {
   Game game;
   PrintGame(game);
 
-  const std::unique_ptr<IAgent> agent =
-      AgentFactory::MCTS(/*num_simulations=*/100000);
+  const std::unique_ptr<IAgent> agent = AgentFactory::MCTS(
+      /* num_simulations = */ 10000,
+      /* depth = */ 20,
+      /* exploration_constant = */ 5.0);
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
