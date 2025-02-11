@@ -119,7 +119,7 @@ void PrintGame(const Game& game) {
   const auto start = std::chrono::high_resolution_clock::now();
   const size_t num_iter = 10000;
   const std::unique_ptr<IAgent> random_agent = AgentFactory::Random();
-  for (int i = 0; i < 10000; ++i) {
+  for (int i = 0; i < num_iter; ++i) {
     random_agent->MakeMove(board, game.CurrentPlayer());
   }
   const auto end = std::chrono::high_resolution_clock::now();
@@ -141,7 +141,7 @@ int main() {
   PrintGame(game);
 
   const std::unique_ptr<IAgent> agent =
-      AgentFactory::MCTS(/*num_simulations=*/10000);
+      AgentFactory::MCTS(/*num_simulations=*/100000);
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
