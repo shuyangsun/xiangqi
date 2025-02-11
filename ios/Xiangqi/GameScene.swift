@@ -137,11 +137,11 @@ class GameScene: SKScene {
     }
 
     func updateStatusLabels() {
-        if !game.IsGameOver() {
+        if !xq.IsGameOver(game.CurrentBoard()) {
             winnerLabel.text = ""
             return
         }
-        let winner = game.GetWinner()
+        let winner = xq.GetWinner(game.CurrentBoard())
         if winner == .DRAW {
             winnerLabel.fontColor = .black
             winnerLabel.text = "和棋！"
@@ -398,7 +398,7 @@ class GameScene: SKScene {
         }
 
         // Touching board:
-        if !humanVsHuman && game.Turn() != .RED { return }
+        if !humanVsHuman && game.CurrentPlayer() != .RED { return }
 
         let tappedPiece = game.PieceAt(tappedPos)
         let tappedPieceNode = pieces[tappedPos]
@@ -407,14 +407,14 @@ class GameScene: SKScene {
             if selectedPosition == tappedPos {
                 // Selecting the same piece, deselect.
                 clearSelection()
-            } else if (game.Turn() == .RED && xq.IsRed(tappedPiece)) || (game.Turn() == .BLACK && xq.IsBlack(tappedPiece)) {
+            } else if (game.CurrentPlayer() == .RED && xq.IsRed(tappedPiece)) || (game.CurrentPlayer() == .BLACK && xq.IsBlack(tappedPiece)) {
                 // Selecting a different self piece, change selection.
                 let selectedNode = pieces[tappedPos]
                 selectedNode?.strokeColor = pieceStrokeColor
                 tappedPieceNode?.strokeColor = pieceStrokeSelectedColor
                 selectedPosition = tappedPos
                 drawPossibleMoves(tappedPos)
-            } else if selectedPosition != kNoPosition && ((game.Turn() == .RED && xq.IsBlack(tappedPiece)) || (game.Turn() == .BLACK && xq.IsRed(tappedPiece))) {
+            } else if selectedPosition != kNoPosition && ((game.CurrentPlayer() == .RED && xq.IsBlack(tappedPiece)) || (game.CurrentPlayer() == .BLACK && xq.IsRed(tappedPiece))) {
                 // Selecting an opponent piece, check possible moves.
                 let possibleMoves = xq.PossibleMoves(game.CurrentBoard(), selectedPosition)
                 if possibleMoves[Int(xq.Row(tappedPos))][Int(xq.Col(tappedPos))] {
@@ -515,9 +515,9 @@ class GameScene: SKScene {
                 boardState: [state[0], state[1], state[2], state[3]],
                 moves: moves,
                 movesTs: movesTs,
-                isOver: game.IsGameOver(),
+                isOver: xq.IsGameOver(game.CurrentBoard()),
                 isVsHuman: humanVsHuman,
-                winner: game.GetWinner().rawValue
+                winner: xq.GetWinner(game.CurrentBoard()).rawValue
             )
         }
 
@@ -643,7 +643,7 @@ class GameScene: SKScene {
             undoSingleMove()
         } else {
             undoSingleMove()
-            if game.Turn() != .RED && game.CanUndo() {
+            if game.CurrentPlayer() != .RED && game.CanUndo() {
                 undoSingleMove()
             }
         }
