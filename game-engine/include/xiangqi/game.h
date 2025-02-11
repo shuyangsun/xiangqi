@@ -90,6 +90,9 @@ Piece Move(Board<Piece>& board, Position from, Position to);
 std::vector<Board<Piece>> PossibleNextBoards(const Board<Piece>& board,
                                              Player player);
 
+// Rotate the position so that it's from the opponent's perspective.
+Position FlipPosition(Position position);
+
 // Rotate the board so that it's from the opponent's perspective.
 Board<Piece> FlipBoard(const Board<Piece>& board);
 

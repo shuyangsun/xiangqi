@@ -804,4 +804,13 @@ TEST(EncodeBoardStateTest, DefaultBoardState) {
   }
 }
 
+TEST(TestFlipPosition, Cannon1) {
+  const Position position = 0x71;
+  const Position flipped = FlipPosition(position);
+  const Position flipped_twice = FlipPosition(flipped);
+
+  EXPECT_EQ(flipped, 0x27);
+  EXPECT_EQ(flipped_twice, position);
+}
+
 }  // namespace

@@ -373,6 +373,10 @@ void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
   }
 }
 
+Position FlipPosition(Position position) {
+  return Pos(kTotalRow - 1 - Row(position), kTotalCol - 1 - Col(position));
+}
+
 Board<Piece> FlipBoard(const Board<Piece>& board) {
   Board<Piece> flipped;
   // Iterate through every cell in the board.
