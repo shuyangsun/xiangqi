@@ -1,6 +1,8 @@
 #include "xiangqi/internal/agents/mcts.h"
 
 #include <random>
+#include <thread>
+#include <vector>
 
 #include "xiangqi/board.h"
 #include "xiangqi/types.h"
@@ -42,31 +44,63 @@ uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
   uint16_t best_move = 0xFFFF;
   size_t best_move_wins = 0;
   size_t best_move_draws = 0;
-  size_t cur_wins = 0;
-  size_t cur_draws = 0;
   for (const uint16_t move : possible_moves) {
     Board<Piece> next = board;
     Move(next, static_cast<uint8_t>((move & 0xFF00) >> 8),
          static_cast<uint8_t>(move & 0x00FF));
-    for (size_t i = 0; i < num_simulations_; i++) {
-      const Winner winner =
-          MakeRandomMoveUntilGameOver(next, ChangePlayer(player));
-      if ((winner == Winner::BLACK && player == Player::BLACK) ||
-          (winner == Winner::RED && player == Player::RED)) {
-        cur_wins++;
-      } else if (winner == Winner::DRAW) {
-        cur_draws++;
-      }
+    unsigned int num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) {
+      num_threads = 8;
     }
+
+    std::vector<size_t> wins(num_threads, 0);
+    std::vector<size_t> draws(num_threads, 0);
+    std::vector<std::thread> threads;
+
+    size_t simulations_per_thread = num_simulations_ / num_threads;
+    size_t remainder = num_simulations_ % num_threads;
+    size_t start = 0;
+
+    for (unsigned int t = 0; t < num_threads; t++) {
+      // Distribute any remainder among the first few threads.
+      size_t end = start + simulations_per_thread + (t < remainder ? 1 : 0);
+
+      threads.emplace_back(
+          [next, player, start, end, t, &wins, &draws, this]() {
+            for (size_t i = start; i < end; i++) {
+              const Winner winner =
+                  MakeRandomMoveUntilGameOver(next, ChangePlayer(player));
+              if ((winner == Winner::BLACK && player == Player::BLACK) ||
+                  (winner == Winner::RED && player == Player::RED)) {
+                wins[t]++;
+              } else if (winner == Winner::DRAW) {
+                draws[t]++;
+              }
+            }
+          });
+      start = end;
+    }
+
+    for (auto& th : threads) {
+      th.join();
+    }
+
+    size_t cur_wins = 0, cur_draws = 0;
+    for (const size_t win : wins) {
+      cur_wins += win;
+    }
+    for (const size_t draw : draws) {
+      cur_draws += draw;
+    }
+
     if (cur_wins > best_move_wins ||
         (cur_wins == best_move_wins && cur_draws > best_move_draws)) {
       best_move = move;
       best_move_wins = cur_wins;
       best_move_draws = cur_draws;
-      cur_wins = 0;
-      cur_draws = 0;
     }
   }
+
   return best_move;
 }
 
