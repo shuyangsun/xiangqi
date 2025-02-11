@@ -2,7 +2,10 @@
 
 add_library(xiangqi_lib STATIC
     game.cc
+    agent.cc
     internal/moves.cc
+    internal/agents/mcts.cc
+    internal/agents/random.cc
 )
 
 set_target_properties(xiangqi_lib PROPERTIES Swift_MODULE_NAME "SwiftXiangqiLib")
