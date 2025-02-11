@@ -238,15 +238,19 @@ int main() {
       const auto end = std::chrono::high_resolution_clock::now();
       const auto duration =
           std::chrono::duration_cast<std::chrono::seconds>(end - start);
-      game.Move(static_cast<uint8_t>((agent_move & 0xFF00) >> 8),
-                static_cast<uint8_t>(agent_move & 0x00FF));
-      std::cout << "\n*** Agent thought for " << duration.count()
-                << "s and made move ("
-                << static_cast<int>((agent_move & 0xF000) >> 12) << ", "
-                << static_cast<int>((agent_move & 0x0F00) >> 8) << ") to ("
-                << static_cast<int>((agent_move & 0x00F0) >> 4) << ", "
-                << static_cast<int>(agent_move & 0x000F) << ")." << std::endl
-                << std::endl;
+      std::cout << "\n*** Agent thought for " << duration.count() << "s ";
+      if (agent_move != 0xFFFF) {
+        game.Move(static_cast<uint8_t>((agent_move & 0xFF00) >> 8),
+                  static_cast<uint8_t>(agent_move & 0x00FF));
+        std::cout << "and made move ("
+                  << static_cast<int>((agent_move & 0xF000) >> 12) << ", "
+                  << static_cast<int>((agent_move & 0x0F00) >> 8) << ") to ("
+                  << static_cast<int>((agent_move & 0x00F0) >> 4) << ", "
+                  << static_cast<int>(agent_move & 0x000F) << ")." << std::endl
+                  << std::endl;
+      } else {
+        std::cout << "and generated invalid move.";
+      }
 
       PrintGame(game);
     }

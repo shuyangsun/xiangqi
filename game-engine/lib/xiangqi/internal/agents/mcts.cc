@@ -278,7 +278,7 @@ uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
 
   // Select the move that was explored the most (or with the best win rate).
   std::shared_ptr<Node> best_child = nullptr;
-  int best_visits = -1;
+  size_t best_visits = 0;
   for (std::shared_ptr<Node> child : root->Children()) {
     if (child->Visits() > best_visits) {
       best_visits = child->Visits();
