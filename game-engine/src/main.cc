@@ -141,7 +141,7 @@ int main() {
   PrintGame(game);
 
   const std::unique_ptr<IAgent> agent =
-      AgentFactory::MCTS(/*num_simulations=*/1000);
+      AgentFactory::MCTS(/*num_simulations=*/10000);
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
@@ -227,6 +227,9 @@ int main() {
       }
 
       game.Move(Pos(row, col), Pos(row_2, col_2));
+
+      PrintGame(game);
+
       const auto start = std::chrono::high_resolution_clock::now();
       const uint16_t agent_move =
           agent->MakeMove(game.CurrentBoard(), game.CurrentPlayer());
