@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "xiangqi/board.h"
+#include "xiangqi/internal/agents/util.h"
 #include "xiangqi/types.h"
 
 namespace xq::internal::agent {
@@ -24,7 +25,7 @@ Winner MakeRandomMoveUntilGameOver(const Board<Piece>& board, Player player) {
   Player cur_player = player;
 
   std::random_device rd;
-  std::mt19937 rand_gen(rd());
+  std::mt19937 rand_gen(util::GetRNG());
 
   while (!IsGameOver(cur_board)) {
     const std::vector<uint16_t> possible_moves =
@@ -104,41 +105,157 @@ class StateLookup {
 class Node {
  public:
   Node()
-      : player_{Player::BLACK},
+      : board_{},
+        player_{Player::BLACK},
         winner_{Winner::NONE},
-        parent_{std::nullopt},
+        produced_by_move_{0xFFFF},
+        parent_{std::shared_ptr<Node>(nullptr)},
         children_{},
         untried_moves_{},
-        wins_{0},
-        visits_{0},
-        uct_{0.0f} {};
+        wins_{0.0f},
+        visits_{0} {};
 
-  Node(const Board<Piece>& board, Player player,
-       std::optional<BoardState> parent)
-      : player_{player},
+  Node(const Board<Piece>& board, Player player, std::shared_ptr<Node> parent,
+       uint16_t produced_by_move)
+      : board_{board},
+        player_{player},
         winner_{GetWinner(board)},
-        parent_{parent},
+        produced_by_move_{produced_by_move},
+        parent_{std::move(parent)},
         children_{},
-        wins_{0},
-        visits_{0},
-        uct_{0.0f} {
+        wins_{0.0f},
+        visits_{0} {
     if (winner_ == Winner::NONE) {
       untried_moves_ = AllPossibleNextMoves(board, player);
+      children_.reserve(untried_moves_.size());
     }
   }
   ~Node() = default;
 
+  inline const Board<Piece>& GetBoard() const { return board_; }
+  inline Player GetPlayer() const { return player_; }
+  inline std::weak_ptr<Node> Parent() const { return parent_; }
+  inline bool HasUntriedMoves() const { return !untried_moves_.empty(); }
+  inline size_t Wins() const { return wins_; }
+  inline size_t Visits() const { return visits_; }
+  uint16_t ProducedByMove() const { return produced_by_move_; }
+  inline std::vector<std::shared_ptr<Node>> Children() const {
+    return children_;
+  }
+
+  inline void Reward(float reward) { wins_ += reward; }
+  inline void RecordVisit() { visits_++; }
+
+  inline void AddChild(std::shared_ptr<Node> child) {
+    children_.emplace_back(child);
+  }
+
+  uint16_t ChooseRandomUntriedMove() {
+    std::mt19937& rng = util::GetRNG();
+    std::uniform_int_distribution<size_t> dist(0, untried_moves_.size() - 1);
+    size_t idx = dist(rng);
+    uint16_t result = untried_moves_[idx];
+    untried_moves_.erase(untried_moves_.begin() + idx);
+    return result;
+  }
+
  private:
+  Board<Piece> board_;
   Player player_;
   Winner winner_;
-  std::optional<BoardState> parent_;
-  std::vector<Node> children_;
+  uint16_t produced_by_move_;
+  std::weak_ptr<Node> parent_;
+  std::vector<std::shared_ptr<Node>> children_;
   std::vector<uint16_t> untried_moves_;
 
-  int wins_;
+  float wins_;
   size_t visits_;
-  float uct_;
 };
+
+std::shared_ptr<Node> TreePolicy(std::shared_ptr<Node> node,
+                                 float exploration_constant) {
+  while (!IsGameOver(node->GetBoard())) {
+    if (node->HasUntriedMoves()) {
+      // -- Expansion --
+      const uint16_t move = node->ChooseRandomUntriedMove();
+      const Position from = move >> 8, to = move & 0xFF;
+      Board<Piece> next = node->GetBoard();
+      Move(next, from, to);
+      const Player next_player = ChangePlayer(node->GetPlayer());
+      auto child = std::make_shared<Node>(next, next_player, node, move);
+      node->AddChild(child);
+      return child;
+    } else {
+      // -- Selection: choose the best UCT child.
+      float best_uct = -std::numeric_limits<float>::infinity();
+      std::shared_ptr<Node> best_child = nullptr;
+      for (std::shared_ptr<Node> child : node->Children()) {
+        // UCT = (child wins / child visits) + kUCTConstant * sqrt( log(parent
+        // visits) / child visits )
+        float winRate = child->Wins() == 0
+                            ? 0
+                            : double(child->Wins()) / double(child->Visits());
+        float uct = winRate + exploration_constant *
+                                  std::sqrt(std::log(node->Visits() + 1) /
+                                            (child->Visits() + 1e-4));
+        if (uct > best_uct) {
+          best_uct = uct;
+          best_child = child;
+        }
+      }
+      if (best_child == nullptr) {
+        // Should not happen, but if no child is available return the current
+        // node.
+        return node;
+      }
+      node = best_child;
+    }
+  }
+  return node;
+}
+
+Winner DefaultPolicy(const Board<Piece>& board, Player player) {
+  // Simulate a random playout from the current board.
+  constexpr size_t kMaxPlayoutSteps = 10000;
+  size_t steps = 0;
+  Board<Piece> next = board;
+  while (!IsGameOver(next) && steps < kMaxPlayoutSteps) {
+    std::vector<uint16_t> moves = AllPossibleNextMoves(next, player);
+    if (moves.empty()) {
+      break;
+    }
+    std::mt19937& rng = util::GetRNG();
+    std::uniform_int_distribution<size_t> dist(0, moves.size() - 1);
+    const uint16_t move = moves[dist(rng)];
+    const Position from = move >> 8, to = move & 0xFF;
+    Move(next, from, to);
+    player = ChangePlayer(player);
+    steps++;
+  }
+  return GetWinner(next);
+}
+
+void Backup(std::shared_ptr<Node> node, Winner winner) {
+  // Propagate the simulation result back up the tree.
+  // We use the “playerJustMoved” stored in each node to determine if the move
+  // leading to that node was a win. (For draws we add 0.5.)
+  while (node != nullptr) {
+    node->RecordVisit();
+    float reward = 0.0f;
+    if (winner == Winner::DRAW || winner == Winner::NONE) {
+      reward = 0.5f;
+    } else {
+      // Convert the Winner to a Player.
+      const Player winner_player =
+          (winner == Winner::RED) ? Player::RED : Player::BLACK;
+      // Node player is not the one played this move, but the current player,
+      // so we reward if winning player is NOT the same as current player.
+      reward = (node->GetPlayer() != winner_player) ? 1.0f : 0.0f;
+    }
+    node->Reward(reward);
+    node = node->Parent().lock();
+  }
+}
 
 }  // namespace
 
@@ -148,73 +265,32 @@ MCTS::MCTS(size_t num_iter, size_t depth, float exploration_constant)
       exploration_constant_{exploration_constant} {}
 
 uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
-  StateLookup<Node> node_map{};
-  node_map.Set(EncodeBoardState(board), Node{board, player, std::nullopt});
-  // TODO: implementation
+  auto root = std::make_shared<Node>(board, player,
+                                     std::shared_ptr<Node>(nullptr), 0xFFFF);
+  for (size_t i = 0; i < num_iter_; i++) {
+    // Selection and expansion.
+    std::shared_ptr<Node> node = TreePolicy(root, exploration_constant_);
+    // Simulation
+    const Winner winner =
+        DefaultPolicy(node->GetBoard(), ChangePlayer(node->GetPlayer()));
+    Backup(node, winner);
+  }
 
-  const std::vector<uint16_t> possible_moves =
-      AllPossibleNextMoves(board, player);
-  uint16_t best_move = 0xFFFF;
-  size_t best_move_wins = 0;
-  size_t best_move_draws = 0;
-  for (const uint16_t move : possible_moves) {
-    Board<Piece> next = board;
-    Move(next, static_cast<uint8_t>((move & 0xFF00) >> 8),
-         static_cast<uint8_t>(move & 0x00FF));
-    unsigned int num_threads = std::thread::hardware_concurrency();
-    if (num_threads == 0) {
-      num_threads = 8;
-    }
-
-    std::vector<size_t> wins(num_threads, 0);
-    std::vector<size_t> draws(num_threads, 0);
-    std::vector<std::thread> threads;
-
-    size_t simulations_per_thread = num_iter_ / num_threads;
-    size_t remainder = num_iter_ % num_threads;
-    size_t start = 0;
-
-    for (unsigned int t = 0; t < num_threads; t++) {
-      // Distribute any remainder among the first few threads.
-      size_t end = start + simulations_per_thread + (t < remainder ? 1 : 0);
-
-      threads.emplace_back(
-          [next, player, start, end, t, &wins, &draws, this]() {
-            for (size_t i = start; i < end; i++) {
-              const Winner winner =
-                  MakeRandomMoveUntilGameOver(next, ChangePlayer(player));
-              if ((winner == Winner::BLACK && player == Player::BLACK) ||
-                  (winner == Winner::RED && player == Player::RED)) {
-                wins[t]++;
-              } else if (winner == Winner::DRAW) {
-                draws[t]++;
-              }
-            }
-          });
-      start = end;
-    }
-
-    for (auto& th : threads) {
-      th.join();
-    }
-
-    size_t cur_wins = 0, cur_draws = 0;
-    for (const size_t win : wins) {
-      cur_wins += win;
-    }
-    for (const size_t draw : draws) {
-      cur_draws += draw;
-    }
-
-    if (cur_wins > best_move_wins ||
-        (cur_wins == best_move_wins && cur_draws > best_move_draws)) {
-      best_move = move;
-      best_move_wins = cur_wins;
-      best_move_draws = cur_draws;
+  // Select the move that was explored the most (or with the best win rate).
+  std::shared_ptr<Node> best_child = nullptr;
+  int best_visits = -1;
+  for (std::shared_ptr<Node> child : root->Children()) {
+    if (child->Visits() > best_visits) {
+      best_visits = child->Visits();
+      best_child = child;
     }
   }
 
-  return best_move;
+  if (best_child == nullptr) {
+    // No moves were found (should not happen in a valid position).
+    return 0xFFFF;
+  }
+  return best_child->ProducedByMove();
 }
 
 }  // namespace xq::internal::agent

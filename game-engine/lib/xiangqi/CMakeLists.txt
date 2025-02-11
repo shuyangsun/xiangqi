@@ -5,6 +5,7 @@ add_library(xiangqi_lib STATIC
     agent.cc
     board.cc
     internal/moves.cc
+    internal/agents/util.cc
     internal/agents/mcts.cc
     internal/agents/random.cc
 )
