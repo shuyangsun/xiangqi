@@ -3,6 +3,7 @@
 add_library(xiangqi_lib STATIC
     game.cc
     agent.cc
+    board.cc
     internal/moves.cc
     internal/agents/mcts.cc
     internal/agents/random.cc

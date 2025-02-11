@@ -1,5 +1,6 @@
 module XiangqiLib {
   header "types.h"
+  header "board.h"
   header "game.h"
   header "agent.h"
   export *

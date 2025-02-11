@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "xiangqi/board.h"
 #include "xiangqi/game.h"
 #include "xiangqi/types.h"
 

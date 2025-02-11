@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 
+#include "xiangqi/board.h"
 #include "xiangqi/game.h"
 #include "xiangqi/types.h"
 
