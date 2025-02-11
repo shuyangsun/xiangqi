@@ -11,7 +11,7 @@ class IAgent {
  public:
   virtual ~IAgent() = default;
 
-  virtual Position MakeMove(const Board<Piece>& board, Player player) const = 0;
+  virtual uint16_t MakeMove(const Board<Piece>& board, Player player) const = 0;
 };
 
 class AgentFactory {

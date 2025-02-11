@@ -1,19 +1,23 @@
 #include <cctype>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
+#include "xiangqi/agent.h"
 #include "xiangqi/board.h"
 #include "xiangqi/game.h"
 #include "xiangqi/types.h"
 
 namespace {
 
+using ::xq::AgentFactory;
 using ::xq::AllPossibleNextMoves;
 using ::xq::Board;
 using ::xq::Game;
 using ::xq::GetWinner;
+using ::xq::IAgent;
 using ::xq::IsCheckMade;
 using ::xq::kTotalCol;
 using ::xq::kTotalRow;
@@ -109,21 +113,20 @@ void PrintGame(const Game& game) {
             << (winner.has_value() ? (*winner == Winner::RED ? "Red" : "Black")
                                    : "None")
             << std::endl;
-  std::cout
-      << "Number next states: "
-      << AllPossibleNextMoves(game.CurrentBoard(), game.CurrentPlayer()).size()
-      << std::endl;
+  std::cout << "Number next states: "
+            << AllPossibleNextMoves(board, game.CurrentPlayer()).size()
+            << std::endl;
   const auto start = std::chrono::high_resolution_clock::now();
   const size_t num_iter = 10000;
+  const std::unique_ptr<IAgent> random_agent = AgentFactory::Random();
   for (int i = 0; i < 10000; ++i) {
-    AllPossibleNextMoves(game.CurrentBoard(), game.CurrentPlayer());
+    random_agent->MakeMove(board, game.CurrentPlayer());
   }
   const auto end = std::chrono::high_resolution_clock::now();
   const auto duration =
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   std::cout << "Time to generate " << num_iter
-            << " possible next moves : " << duration.count() << "ms"
-            << std::endl;
+            << " random moves : " << duration.count() << "ms" << std::endl;
 }
 
 }  // namespace
@@ -136,6 +139,8 @@ int main() {
   // Create a game instance with the default Xiangqi opening board.
   Game game;
   PrintGame(game);
+
+  const std::unique_ptr<IAgent> agent = AgentFactory::Random();
 
   while (true) {
     // Ask the user to enter the coordinates of a piece.
@@ -221,6 +226,10 @@ int main() {
       }
 
       game.Move(Pos(row, col), Pos(row_2, col_2));
+      const uint16_t agent_move =
+          agent->MakeMove(game.CurrentBoard(), game.CurrentPlayer());
+      game.Move(static_cast<Position>((agent_move & 0xFF00) >> 8),
+                static_cast<Position>(agent_move && 0x00FF));
 
       PrintGame(game);
     }

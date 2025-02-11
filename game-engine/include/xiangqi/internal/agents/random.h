@@ -1,6 +1,8 @@
 #ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_INTERNAL_AGENTS_RANDOM_H_
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_INTERNAL_AGENTS_RANDOM_H_
 
+#include <random>
+
 #include "xiangqi/agent.h"
 
 namespace xq::internal::agent {
@@ -10,7 +12,7 @@ class Random : public IAgent {
   Random() = default;
   ~Random() = default;
 
-  virtual Position MakeMove(const Board<Piece>& board,
+  virtual uint16_t MakeMove(const Board<Piece>& board,
                             Player player) const override final;
 };
 

@@ -10,7 +10,7 @@ class MCTS : public IAgent {
   MCTS() = default;
   ~MCTS() = default;
 
-  virtual Position MakeMove(const Board<Piece>& board,
+  virtual uint16_t MakeMove(const Board<Piece>& board,
                             Player player) const override final;
 };
 

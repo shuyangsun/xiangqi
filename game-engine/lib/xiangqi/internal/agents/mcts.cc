@@ -10,7 +10,7 @@ using ::xq::Position;
 
 }  // namespace
 
-Position MCTS::MakeMove(const Board<Piece>& board, Player player) const {
+uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
   return xq::kNoPosition;  // TODO: implementation
 }
 
