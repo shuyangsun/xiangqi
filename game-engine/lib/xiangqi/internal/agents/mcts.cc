@@ -250,7 +250,7 @@ void Backup(std::shared_ptr<Node> node, Winner winner) {
           (winner == Winner::RED) ? Player::RED : Player::BLACK;
       // Node player is not the one played this move, but the current player,
       // so we reward if winning player is NOT the same as current player.
-      reward = (node->GetPlayer() != winner_player) ? 1.0f : 0.0f;
+      reward = (node->GetPlayer() == winner_player) ? 0.0f : 1.0f;
     }
     node->Reward(reward);
     node = node->Parent().lock();
