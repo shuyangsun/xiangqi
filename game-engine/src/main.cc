@@ -148,12 +148,12 @@ int main() {
   PrintGame(game, is_vs_human);
 
   const std::unique_ptr<IAgent> agent_black = AgentFactory::MCTS(
-      /* num_iterations = */ 10000,
+      /* num_iterations = */ 10000000,
       /* depth = */ 20,
-      /* exploration_constant = */ 2.0);
+      /* exploration_constant = */ 3.0);
 
   const std::unique_ptr<IAgent> agent_red = AgentFactory::MCTS(
-      /* num_iterations = */ 100000,
+      /* num_iterations = */ 10000000,
       /* depth = */ 20,
       /* exploration_constant = */ 5.0);
 
