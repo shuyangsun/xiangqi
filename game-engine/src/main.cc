@@ -228,8 +228,14 @@ int main() {
       game.Move(Pos(row, col), Pos(row_2, col_2));
       const uint16_t agent_move =
           agent->MakeMove(game.CurrentBoard(), game.CurrentPlayer());
-      game.Move(static_cast<Position>((agent_move & 0xFF00) >> 8),
-                static_cast<Position>(agent_move && 0x00FF));
+      game.Move(static_cast<uint8_t>((agent_move & 0xFF00) >> 8),
+                static_cast<uint8_t>(agent_move & 0x00FF));
+      std::cout << "Agent Move: ("
+                << static_cast<int>((agent_move & 0xF000) >> 12) << ", "
+                << static_cast<int>((agent_move & 0x0F00) >> 8) << ") -> ("
+                << static_cast<int>((agent_move & 0x00F0) >> 4) << ", "
+                << static_cast<int>(agent_move & 0x000F) << ")" << std::endl
+                << std::endl;
 
       PrintGame(game);
     }
