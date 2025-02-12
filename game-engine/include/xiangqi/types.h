@@ -12,7 +12,11 @@ namespace xq {
 // Position on the board, range is [0, 90).
 using Position = uint8_t;
 
+// Two Positions representing a movement.
+using Movement = uint16_t;
+
 constexpr Position kNoPosition = 0xFF;
+constexpr Movement kNoMovement = 0xFFFF;
 
 constexpr uint8_t kTotalRow = 10;
 constexpr uint8_t kTotalCol = 9;
@@ -54,32 +58,39 @@ enum class Piece : int8_t {
   B_SOLDIER = -7
 };
 
-struct MoveAction {
-  Piece piece;
-  Position from;
-  Position to;
-  Piece captured;
-};
-
-inline bool IsRed(Piece piece) {
+inline bool IsRed(const Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) > 0;
 }
-inline bool IsBlack(Piece piece) {
+inline bool IsBlack(const Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) < 0;
 }
-inline Player ChangePlayer(Player player) {
+inline Player ChangePlayer(const Player player) {
   return (player == Player::RED) ? Player::BLACK : Player::RED;
 }
 
-inline Position Pos(uint8_t row, uint8_t col) { return row * kTotalCol + col; }
-inline uint8_t Row(Position position) { return position / kTotalCol; }
-inline uint8_t Col(Position position) { return position % kTotalCol; }
+inline Position Pos(const uint8_t row, const uint8_t col) {
+  return row * kTotalCol + col;
+}
+inline uint8_t Row(const Position position) { return position / kTotalCol; }
+inline uint8_t Col(const Position position) { return position % kTotalCol; }
 inline Position PosStr(const std::string_view str) {
   if (str.size() != 2) {
     return kNoPosition;
   }
   return Pos(str[1] - '0', std::tolower(str[0]) - 'a');
 }
+
+inline Movement NewMovement(const Position orig, const Position dest) {
+  return static_cast<Movement>(orig) << 8 | static_cast<Movement>(dest);
+}
+inline Position Orig(const Movement movement) { return movement >> 8; }
+inline Position Dest(const Movement movement) { return movement & 0x00FF; }
+
+struct MoveAction {
+  Piece piece;
+  Movement movement;
+  Piece captured;
+};
 
 }  // namespace xq
 
