@@ -652,8 +652,17 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
     const auto from_16bit = static_cast<uint16_t>(pos << 8);
     switch (piece) {
       case R_GENERAL:
+        for (const Position to : PossibleMovesGeneral(
+                 board, pos, FindGeneral(board, Player::BLACK))) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
       case B_GENERAL:
-        for (const Position to : PossibleMovesGeneral(board, pos)) {
+        for (const Position to : PossibleMovesGeneral(
+                 board, pos, FindGeneral(board, Player::RED))) {
           if (to == kNoPosition) {
             break;
           }
