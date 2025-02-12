@@ -2,7 +2,9 @@
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__
 
 #include <array>
+#include <cctype>
 #include <cstdint>
+#include <string_view>
 #include <type_traits>
 
 namespace xq {
@@ -72,6 +74,12 @@ inline Player ChangePlayer(Player player) {
 inline Position Pos(uint8_t row, uint8_t col) { return row * kTotalCol + col; }
 inline uint8_t Row(Position position) { return position / kTotalCol; }
 inline uint8_t Col(Position position) { return position % kTotalRow; }
+inline Position PosStr(const std::string_view str) {
+  if (str.size() != 2) {
+    return kNoPosition;
+  }
+  return Pos(str[1] - '0', std::tolower(str[0]) - 'a');
+}
 
 }  // namespace xq
 
