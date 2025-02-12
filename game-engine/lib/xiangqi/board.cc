@@ -85,65 +85,6 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
            ));
 }
 
-bool ThreatensByElephant(const Board<Piece>& board, const Piece elephant,
-                         const Position pos, const Position target) {
-  using enum Piece;
-  if ((elephant == R_ELEPHANT && target < kRedRiverStart + 2) ||
-      (elephant == B_ELEPHANT && target > kRedRiverStart - 3)) {
-    return false;  // across the river
-  }
-  return (pos + 2 * kTotalCol + 2 == target       // down right
-          && board[pos + kTotalCol + 1] == EMPTY  // not blocking
-          &&
-          ((elephant == B_ELEPHANT && (pos == 2 || pos == 6 || pos == 18 ||
-                                       pos == 22)  // black can move down right
-            ) ||
-           (elephant == R_ELEPHANT && (pos == 47 || pos == 51 || pos == 63 ||
-                                       pos == 69)  // red can move down right
-            ))) ||
-         (pos + 2 * kTotalCol - 2 == target       // down left
-          && board[pos + kTotalCol - 1] == EMPTY  // not blocking
-          &&
-          ((elephant == B_ELEPHANT && (pos == 2 || pos == 6 || pos == 22 ||
-                                       pos == 26)  // black can move down left
-            ) ||
-           (elephant == R_ELEPHANT && (pos == 47 || pos == 51 || pos == 67 ||
-                                       pos == 71)  // red can move down left
-            ))) ||
-         (target + 2 * kTotalCol - 2 == pos       // up right
-          && board[pos - kTotalCol + 1] == EMPTY  // not blocking
-          && ((elephant == B_ELEPHANT && (pos == 18 || pos == 22 || pos == 38 ||
-                                          pos == 42)  // black can move up right
-               ) ||
-              (elephant == R_ELEPHANT && (pos == 63 || pos == 67 || pos == 83 ||
-                                          pos == 87)  // red can move up right
-               ))) ||
-         (target + 2 * kTotalCol + 2 == pos       // up left
-          && board[pos - kTotalCol - 1] == EMPTY  // not blocking
-          && ((elephant == B_ELEPHANT && (pos == 22 || pos == 26 || pos == 38 ||
-                                          pos == 42)  // black can move up left
-               ) ||
-              (elephant == R_ELEPHANT && (pos == 67 || pos == 71 || pos == 83 ||
-                                          pos == 87)  // red can move up left
-               )));
-}
-
-// The advisor moves one point diagonally but must remain within its palace.
-bool ThreatensByAdvisor(Piece advisor, Position pos, Position target) {
-  int dr = Row(target) - Row(pos);
-  int dc = Col(target) - Col(pos);
-  if (std::abs(dr) != 1 || std::abs(dc) != 1) return false;
-  int val = static_cast<int>(advisor);
-  if (val > 0) {  // red advisor: palace is rows 7–9 and cols 3–5
-    if (Row(target) < 7 || Row(target) > 9 || Col(target) < 3 ||
-        Col(target) > 5)
-      return false;
-  } else {  // black advisor: palace is rows 0–2 and cols 3–5
-    if (Row(target) > 2 || Col(target) < 3 || Col(target) > 5) return false;
-  }
-  return true;
-}
-
 // The cannon moves like a chariot but can only capture if exactly one piece
 // (the “screen”) lies between it and its target.
 bool ThreatensByCannon(const Board<Piece>& board, Position cannonPos,
