@@ -239,7 +239,15 @@ Position FlipPosition(const Position position) {
 
 Board<Piece> FlipBoard(const Board<Piece>& board) {
   Board<Piece> result = board;
-  std::reverse(result.begin(), result.end());
+  for (uint8_t pos = 0; pos < kBoardSize / 2; pos++) {
+    const uint8_t pos_mirror = kBoardSize - 1 - pos;
+    const Piece left_flipped = static_cast<Piece>(
+        -static_cast<std::underlying_type_t<Piece>>(board[pos]));
+    const Piece right_flipped = static_cast<Piece>(
+        -static_cast<std::underlying_type_t<Piece>>(board[pos_mirror]));
+    result[pos] = right_flipped;
+    result[pos_mirror] = left_flipped;
+  }
   return result;
 }
 
