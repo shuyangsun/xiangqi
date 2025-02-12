@@ -49,7 +49,7 @@ Board<Piece> pieceMapToBoard(
     Position pos = entry.first;
     const Piece piece = entry.second;
     if (Row(pos) < kTotalRow && Col(pos) < kTotalCol) {
-      board[Row(pos)][Col(pos)] = piece;
+      board[pos] = piece;
     }
   }
   return board;

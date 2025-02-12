@@ -7,13 +7,14 @@
 
 namespace xq {
 
-// row, col, 4 bytes each.
+// Position on the board, range is [0, 90).
 using Position = uint8_t;
 
 constexpr Position kNoPosition = 0xFF;
 
 constexpr uint8_t kTotalRow = 10;
 constexpr uint8_t kTotalCol = 9;
+constexpr uint8_t kTotalPieces = 32;
 
 constexpr uint8_t kRedPalaceRowMin = 7;
 constexpr uint8_t kRedPalaceRowMax = kTotalRow - 1;
@@ -22,8 +23,10 @@ constexpr uint8_t kBlackPalaceRowMax = 3;
 constexpr uint8_t kPalaceColMin = 3;
 constexpr uint8_t kPalaceColMax = 5;
 
-constexpr uint8_t kTotalPieces = 32;
+// Starting position of red river.
+constexpr Position kRedRiverStart = 5 * kTotalCol + 1;
 
+// Row-major board in flat 1-D array.
 template <typename T>
 using Board = std::array<T, kTotalCol * kTotalRow>;
 
@@ -65,9 +68,9 @@ inline Player ChangePlayer(Player player) {
   return (player == Player::RED) ? Player::BLACK : Player::RED;
 }
 
-inline Position Pos(uint8_t row, uint8_t col) { return row << 4 | col; }
-inline Position Row(Position position) { return (position & 0xF0) >> 4; }
-inline Position Col(Position position) { return (position & 0x0F); }
+inline Position Pos(uint8_t row, uint8_t col) { return row * kTotalCol + col; }
+inline uint8_t Row(Position position) { return position / kTotalCol; }
+inline uint8_t Col(Position position) { return position % kTotalRow; }
 
 }  // namespace xq
 

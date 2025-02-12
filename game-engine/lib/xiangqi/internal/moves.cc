@@ -62,7 +62,7 @@ Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {
 }
 
 Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   Board<bool> result{false};
 
   // Flying general check.
@@ -143,7 +143,7 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // Advisors move one square diagonally.
@@ -176,7 +176,7 @@ Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // Elephants move two squares diagonally.
@@ -212,7 +212,7 @@ Board<bool> PossibleMovesElephant(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // For each of the four orthogonal directions, check if the "leg" is free.
@@ -305,7 +305,7 @@ Board<bool> PossibleMovesHorse(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // Upwards.
@@ -366,7 +366,7 @@ Board<bool> PossibleMovesChariot(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // For each direction, first mark all empty squares.
@@ -471,7 +471,7 @@ Board<bool> PossibleMovesCannon(const Board<Piece>& board, Position pos) {
 
 Board<bool> PossibleMovesSoldier(const Board<Piece>& board, Position pos) {
   Board<bool> result = MakeEmptyBoard();
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   bool isRed = IsRed(piece);
 
   // Forward move.

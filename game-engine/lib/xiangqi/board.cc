@@ -11,71 +11,78 @@ namespace xq {
 
 namespace {
 
-bool isPathClear(const Board<Piece>& board, Position from, Position to) {
-  // Assumes from and to are in the same row or same column.
-  if (Row(from) == Row(to)) {
-    int start = std::min((int)Col(from), (int)Col(to)) + 1;
-    int end = std::max((int)Col(from), (int)Col(to));
-    for (int c = start; c < end; ++c) {
-      if (board[Row(from)][c] != Piece::EMPTY) return false;
+bool IsPathClear(const Board<Piece>& board, const Position from,
+                 const Position to) {
+  const uint8_t start = std::min(from, to);
+  const uint8_t end = std::max(from, to);
+  if (end - start < kTotalCol) {  // same row
+    for (uint8_t pos = start + 1; pos < end; pos++) {
+      if (board[pos] != Piece::EMPTY) return false;
     }
     return true;
   } else if (Col(from) == Col(to)) {
-    int start = std::min((int)Row(from), (int)Row(to)) + 1;
-    int end = std::max((int)Row(from), (int)Row(to));
-    for (int r = start; r < end; ++r) {
-      if (board[r][Col(from)] != Piece::EMPTY) return false;
+    for (uint8_t pos = start + kTotalCol; pos < end; pos += kTotalCol) {
+      if (board[pos] != Piece::EMPTY) return false;
     }
     return true;
   }
   return false;
 }
 
-// Soldiers move one step forward. Once they have “crossed the river” they can
-// also move sideways. (For the purposes of check‐detection we test only the
-// immediate “attack” squares.)
-bool ThreatensBySoldier(Piece soldier, Position pos, Position target) {
-  int val = static_cast<int>(soldier);
-  if (val > 0) {  // red soldier moves upward (row decreases)
-    if ((int)Row(pos) - 1 == (int)Row(target) && Col(pos) == Col(target))
-      return true;
-    // Allow sideways movement after crossing the river:
-    if (Row(pos) <= 4 && Row(pos) == Row(target) &&
-        std::abs((int)Col(pos) - (int)Col(target)) == 1)
-      return true;
-  } else {  // black soldier moves downward (row increases)
-    if ((int)Row(pos) + 1 == (int)Row(target) && Col(pos) == Col(target))
-      return true;
-    // Allow sideways movement after crossing the river:
-    if (Row(pos) >= 5 && Row(pos) == Row(target) &&
-        std::abs((int)Col(pos) - (int)Col(target)) == 1)
-      return true;
-  }
-  return false;
+bool ThreatensBySoldier(const Piece soldier, const Position pos,
+                        const Position target) {
+  const uint8_t pos_col = Col(pos);
+  return ((soldier == Piece::R_SOLDIER) &&
+          ((pos == target + kTotalCol) ||                    // up
+           (pos < kRedRiverStart &&                          // crossed river
+            ((pos_col < kTotalCol - 1 && pos + 1 == target)  // right
+             || (pos_col > 0 && target + 1 == pos)           // left
+             )))) ||
+         ((soldier == Piece::B_SOLDIER) &&
+          ((pos + kTotalCol == target) ||                    // down
+           (pos >= kRedRiverStart &&                         // crossed river
+            ((pos_col < kTotalCol - 1 && pos + 1 == target)  // right
+             || (pos_col > 0 && target + 1 == pos)           // left
+             ))));
 }
 
-// The horse moves in an L-shape but its move is “blocked” if the adjacent
-// square in the moving direction is occupied.
-bool ThreatensByHorse(const Board<Piece>& board, Position horsePos,
-                      Position target) {
-  // Moves and corresponding “leg” (blocking square) offsets.
-  const int moves[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1},
-                           {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
-  const int blocks[8][2] = {{1, 0}, {1, 0},  {-1, 0}, {-1, 0},
-                            {0, 1}, {0, -1}, {0, 1},  {0, -1}};
-  for (int i = 0; i < 8; ++i) {
-    int new_r = Row(horsePos) + moves[i][0];
-    int new_c = Col(horsePos) + moves[i][1];
-    if (new_r == Row(target) && new_c == Col(target)) {
-      int block_r = Row(horsePos) + blocks[i][0];
-      int block_c = Col(horsePos) + blocks[i][1];
-      if (block_r >= 0 && block_r < kTotalRow && block_c >= 0 &&
-          block_c < kTotalCol && board[block_r][block_c] == Piece::EMPTY) {
-        return true;
-      }
+bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
+                      const Position target) {
+  const uint8_t pos_row = Row(pos);
+  const uint8_t pos_col = Col(pos);
+  if ((target > pos + kTotalCol)    // target at least one row below
+      && (pos_row < kTotalRow - 2)  // can move down for 2 rows
+      && board[pos + kTotalCol] == Piece::EMPTY  // not blocked
+  ) {
+    const uint8_t down_2_row = target + kTotalCol * 2;
+    if ((pos_col > 0 && down_2_row - 1 == target)                 // left 1
+        || (pos_col < kTotalCol - 1 && down_2_row + 1 == target)  // right 1
+    ) {
+      return true;  // down right
+    }
+  } else if ((target + kTotalCol < pos)  // target at least one row above
+             && (pos_row > 1)            // can move up for 2 rows
+             && (board[pos - kTotalCol] == Piece::EMPTY)  // not blocked
+  ) {
+    const uint8_t up_2_row = target - kTotalCol * 2;
+    if ((pos_col > 0 && up_2_row == target + 1)                 // left 1
+        || (pos_col < kTotalCol - 1 && up_2_row + 1 == target)  // right 1
+    ) {
+      return true;
     }
   }
-  return false;
+  return ((pos_col < kTotalCol - 2)            // can move right for 2 columns
+          && (board[pos + 1] == Piece::EMPTY)  // not blocked
+          &&
+          ((pos_row < kTotalRow - 1 && pos + kTotalCol + 2 == target)  // down 1
+           || (pos_row > 0 && target + kTotalCol - 2 == pos)           // up 1
+           )) ||
+         ((pos_col > 1)                        // can move left for 2 columns
+          && (board[pos - 1] == Piece::EMPTY)  // not blocked
+          &&
+          ((pos_row < kTotalRow - 1 && pos + kTotalCol - 2 == target)  // down 1
+           || (pos_row > 0 && target + kTotalCol + 2 == pos)           // up 1
+           ));
 }
 
 // The elephant moves two points diagonally. Its move is blocked if the midpoint
@@ -173,13 +180,13 @@ bool IsCheckMade(const Board<Piece>& board, Player player) {
           // Enemy general: by the flying-general rule, if the two generals are
           // on the same file with no piece between.
           if (Col(piece_pos) == Col(general_pos) &&
-              isPathClear(board, piece_pos, general_pos))
+              IsPathClear(board, piece_pos, general_pos))
             return true;
           break;
         case static_cast<uint8_t>(R_CHARIOT):
           if ((Row(piece_pos) == Row(general_pos) ||
                Col(piece_pos) == Col(general_pos)) &&
-              isPathClear(board, piece_pos, general_pos))
+              IsPathClear(board, piece_pos, general_pos))
             return true;
           break;
         case static_cast<uint8_t>(R_SOLDIER):
@@ -445,59 +452,59 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   // Red General: bits 56-63 of res1.
   uint8_t r_general = (res1 >> 56) & 0xFF;
   if (r_general != 0xFF) {
-    board[Row(r_general)][Col(r_general)] = Piece::R_GENERAL;
+    board[r_general] = Piece::R_GENERAL;
   }
 
   // Red Advisors: bits 48-55 and 40-47 of res1.
   uint8_t r_adv1 = (res1 >> 48) & 0xFF;
   if (r_adv1 != 0xFF) {
-    board[Row(r_adv1)][Col(r_adv1)] = Piece::R_ADVISOR;
+    board[r_adv1] = Piece::R_ADVISOR;
   }
   uint8_t r_adv2 = (res1 >> 40) & 0xFF;
   if (r_adv2 != 0xFF) {
-    board[Row(r_adv2)][Col(r_adv2)] = Piece::R_ADVISOR;
+    board[r_adv2] = Piece::R_ADVISOR;
   }
 
   // Red Elephants: bits 32-39 and 24-31 of res1.
   uint8_t r_ele1 = (res1 >> 32) & 0xFF;
   if (r_ele1 != 0xFF) {
-    board[Row(r_ele1)][Col(r_ele1)] = Piece::R_ELEPHANT;
+    board[r_ele1] = Piece::R_ELEPHANT;
   }
   uint8_t r_ele2 = (res1 >> 24) & 0xFF;
   if (r_ele2 != 0xFF) {
-    board[Row(r_ele2)][Col(r_ele2)] = Piece::R_ELEPHANT;
+    board[r_ele2] = Piece::R_ELEPHANT;
   }
 
   // Red Horses: bits 16-23 and 8-15 of res1.
   uint8_t r_horse1 = (res1 >> 16) & 0xFF;
   if (r_horse1 != 0xFF) {
-    board[Row(r_horse1)][Col(r_horse1)] = Piece::R_HORSE;
+    board[r_horse1] = Piece::R_HORSE;
   }
   uint8_t r_horse2 = (res1 >> 8) & 0xFF;
   if (r_horse2 != 0xFF) {
-    board[Row(r_horse2)][Col(r_horse2)] = Piece::R_HORSE;
+    board[r_horse2] = Piece::R_HORSE;
   }
 
   // Red Chariots:
   //   - One chariot: bits 0-7 of res1.
   uint8_t r_chariot1 = res1 & 0xFF;
   if (r_chariot1 != 0xFF) {
-    board[Row(r_chariot1)][Col(r_chariot1)] = Piece::R_CHARIOT;
+    board[r_chariot1] = Piece::R_CHARIOT;
   }
   //   - The other chariot: bits 56-63 of res2.
   uint8_t r_chariot2 = (res2 >> 56) & 0xFF;
   if (r_chariot2 != 0xFF) {
-    board[Row(r_chariot2)][Col(r_chariot2)] = Piece::R_CHARIOT;
+    board[r_chariot2] = Piece::R_CHARIOT;
   }
 
   // Red Cannons: bits 48-55 and 40-47 of res2.
   uint8_t r_cannon1 = (res2 >> 48) & 0xFF;
   if (r_cannon1 != 0xFF) {
-    board[Row(r_cannon1)][Col(r_cannon1)] = Piece::R_CANNON;
+    board[r_cannon1] = Piece::R_CANNON;
   }
   uint8_t r_cannon2 = (res2 >> 40) & 0xFF;
   if (r_cannon2 != 0xFF) {
-    board[Row(r_cannon2)][Col(r_cannon2)] = Piece::R_CANNON;
+    board[r_cannon2] = Piece::R_CANNON;
   }
 
   // Red Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res2.
@@ -510,7 +517,7 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   for (int i = 0; i < 5; ++i) {
     if (r_soldier[i] != 0xFF) {
       const Position pos = r_soldier[i];
-      board[Row(pos)][Col(pos)] = Piece::R_SOLDIER;
+      board[pos] = Piece::R_SOLDIER;
     }
   }
 
@@ -524,59 +531,59 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   // Black General: bits 56-63 of res3.
   uint8_t b_general = (res3 >> 56) & 0xFF;
   if (b_general != 0xFF) {
-    board[Row(b_general)][Col(b_general)] = Piece::B_GENERAL;
+    board[b_general] = Piece::B_GENERAL;
   }
 
   // Black Advisors: bits 48-55 and 40-47 of res3.
   uint8_t b_adv1 = (res3 >> 48) & 0xFF;
   if (b_adv1 != 0xFF) {
-    board[Row(b_adv1)][Col(b_adv1)] = Piece::B_ADVISOR;
+    board[b_adv1] = Piece::B_ADVISOR;
   }
   uint8_t b_adv2 = (res3 >> 40) & 0xFF;
   if (b_adv2 != 0xFF) {
-    board[Row(b_adv2)][Col(b_adv2)] = Piece::B_ADVISOR;
+    board[b_adv2] = Piece::B_ADVISOR;
   }
 
   // Black Elephants: bits 32-39 and 24-31 of res3.
   uint8_t b_ele1 = (res3 >> 32) & 0xFF;
   if (b_ele1 != 0xFF) {
-    board[Row(b_ele1)][Col(b_ele1)] = Piece::B_ELEPHANT;
+    board[b_ele1] = Piece::B_ELEPHANT;
   }
   uint8_t b_ele2 = (res3 >> 24) & 0xFF;
   if (b_ele2 != 0xFF) {
-    board[Row(b_ele2)][Col(b_ele2)] = Piece::B_ELEPHANT;
+    board[b_ele2] = Piece::B_ELEPHANT;
   }
 
   // Black Horses: bits 16-23 and 8-15 of res3.
   uint8_t b_horse1 = (res3 >> 16) & 0xFF;
   if (b_horse1 != 0xFF) {
-    board[Row(b_horse1)][Col(b_horse1)] = Piece::B_HORSE;
+    board[b_horse1] = Piece::B_HORSE;
   }
   uint8_t b_horse2 = (res3 >> 8) & 0xFF;
   if (b_horse2 != 0xFF) {
-    board[Row(b_horse2)][Col(b_horse2)] = Piece::B_HORSE;
+    board[b_horse2] = Piece::B_HORSE;
   }
 
   // Black Chariots:
   //   - One from res3: bits 0-7.
   uint8_t b_chariot1 = res3 & 0xFF;
   if (b_chariot1 != 0xFF) {
-    board[Row(b_chariot1)][Col(b_chariot1)] = Piece::B_CHARIOT;
+    board[b_chariot1] = Piece::B_CHARIOT;
   }
   //   - The other from res4: bits 56-63.
   uint8_t b_chariot2 = (res4 >> 56) & 0xFF;
   if (b_chariot2 != 0xFF) {
-    board[Row(b_chariot2)][Col(b_chariot2)] = Piece::B_CHARIOT;
+    board[b_chariot2] = Piece::B_CHARIOT;
   }
 
   // Black Cannons: bits 48-55 and 40-47 of res4.
   uint8_t b_cannon1 = (res4 >> 48) & 0xFF;
   if (b_cannon1 != 0xFF) {
-    board[Row(b_cannon1)][Col(b_cannon1)] = Piece::B_CANNON;
+    board[b_cannon1] = Piece::B_CANNON;
   }
   uint8_t b_cannon2 = (res4 >> 40) & 0xFF;
   if (b_cannon2 != 0xFF) {
-    board[Row(b_cannon2)][Col(b_cannon2)] = Piece::B_CANNON;
+    board[b_cannon2] = Piece::B_CANNON;
   }
 
   // Black Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res4.
@@ -589,7 +596,7 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   for (int i = 0; i < 5; ++i) {
     if (b_soldier[i] != 0xFF) {
       const Position pos = b_soldier[i];
-      board[Row(pos)][Col(pos)] = Piece::B_SOLDIER;
+      board[pos] = Piece::B_SOLDIER;
     }
   }
 
@@ -599,7 +606,7 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
 Board<bool> PossibleMoves(const Board<Piece>& board, Position pos) {
   using namespace xq::internal::util;
   using enum Piece;
-  const Piece piece = board[Row(pos)][Col(pos)];
+  const Piece piece = board[pos];
   switch (piece) {
     case EMPTY:
       return PossibleMovesEmpty(board, pos);
@@ -634,13 +641,13 @@ Piece Move(Board<Piece>& board, Position from, Position to) {
   if (from == to) {
     return Piece::EMPTY;
   }
-  const Piece piece = board[Row(from)][Col(from)];
+  const Piece piece = board[from];
   if (piece == Piece::EMPTY) {
     return Piece::EMPTY;
   }
-  const Piece captured = board[Row(to)][Col(to)];
-  board[Row(to)][Col(to)] = piece;
-  board[Row(from)][Col(from)] = Piece::EMPTY;
+  const Piece captured = board[to];
+  board[to] = piece;
+  board[from] = Piece::EMPTY;
   return captured;
 }
 
