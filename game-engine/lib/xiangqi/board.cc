@@ -211,69 +211,36 @@ bool IsCheckMade(const Board<Piece>& board, Player player) {
   return false;
 }
 
-bool IsGameOver(const Board<Piece>& board) {
-  // The game is over if one or both generals have been captured.
-  bool redFound = false;
-  bool blackFound = false;
-  for (uint8_t r = 0; r < kTotalRow; ++r) {
-    for (uint8_t c = 0; c < kTotalCol; ++c) {
-      if (board[r][c] == Piece::R_GENERAL) {
-        redFound = true;
-      } else if (board[r][c] == Piece::B_GENERAL) {
-        blackFound = true;
-      }
-    }
-  }
-  return (!redFound || !blackFound);
-}
-
 Winner GetWinner(const Board<Piece>& board) {
-  if (!IsGameOver(board)) {
-    return Winner::NONE;
-  }
-
-  bool redFound = false;
-  bool blackFound = false;
-  for (uint8_t r = 0; r < kTotalRow; ++r) {
-    for (uint8_t c = 0; c < kTotalCol; ++c) {
-      if (board[r][c] == Piece::R_GENERAL) {
-        redFound = true;
-      } else if (board[r][c] == Piece::B_GENERAL) {
-        blackFound = true;
-      }
-    }
-  }
-
-  if (redFound && !blackFound) {
-    return Winner::RED;
-  } else if (!redFound && blackFound) {
+  using enum Piece;
+  if (!(board[66] == R_GENERAL || board[67] == R_GENERAL ||
+        board[68] == R_GENERAL || board[75] == R_GENERAL ||
+        board[76] == R_GENERAL || board[77] == R_GENERAL ||
+        board[84] == R_GENERAL || board[85] == R_GENERAL ||
+        board[86] == R_GENERAL)) {
     return Winner::BLACK;
-  } else if (!redFound && !blackFound) {
-    return Winner::DRAW;
   }
-  return Winner::DRAW;
+  if (!(board[3] == B_GENERAL || board[4] == B_GENERAL ||
+        board[5] == B_GENERAL || board[12] == B_GENERAL ||
+        board[13] == B_GENERAL || board[14] == B_GENERAL ||
+        board[21] == B_GENERAL || board[22] == B_GENERAL ||
+        board[23] == B_GENERAL)) {
+    return Winner::RED;
+  }
+  return Winner::NONE;
 }
 
-Position FlipPosition(Position position) {
-  return Pos(kTotalRow - 1 - Row(position), kTotalCol - 1 - Col(position));
+Position FlipPosition(const Position position) {
+  if (position == kNoPosition) {
+    return kNoPosition;
+  }
+  return kBoardSize - position - 1;
 }
 
 Board<Piece> FlipBoard(const Board<Piece>& board) {
-  Board<Piece> flipped;
-  // Iterate through every cell in the board.
-  for (uint8_t r = 0; r < kTotalRow; ++r) {
-    for (uint8_t c = 0; c < kTotalCol; ++c) {
-      // Get the original piece.
-      Piece orig = board[r][c];
-      int8_t orig_val = static_cast<int8_t>(orig);
-      // If not empty, flip its sign. EMPTY remains unchanged.
-      int8_t new_val = (orig_val == 0) ? 0 : -orig_val;
-      // Place the new piece into the rotated position.
-      flipped[kTotalRow - 1 - r][kTotalCol - 1 - c] =
-          static_cast<Piece>(new_val);
-    }
-  }
-  return flipped;
+  Board<Piece> result = board;
+  std::reverse(result.begin(), result.end());
+  return result;
 }
 
 std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
@@ -295,108 +262,105 @@ std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
   b_soldier_poses.fill(0xFF);
   uint8_t r_soldier_idx = 0, b_soldier_idx = 0;
 
-  for (uint8_t row = 0; row < kTotalRow; row++) {
-    for (uint8_t col = 0; col < kTotalCol; col++) {
-      const Position pos = Pos(row, col);
-      switch (board[row][col]) {
-        case EMPTY: {
-          continue;
-        }
-        case R_GENERAL: {
-          r_general_pos = pos;
-          break;
-        }
-        case B_GENERAL: {
-          b_general_pos = pos;
-          break;
-        }
-        case R_ADVISOR: {
-          const uint16_t left_byte = r_advisor_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          r_advisor_poses = (pos < cur_min)
-                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                : (left_byte | pos);
-          break;
-        }
-        case B_ADVISOR: {
-          const uint16_t left_byte = b_advisor_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          b_advisor_poses = (pos < cur_min)
-                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                : (left_byte | pos);
-          break;
-        }
-        case R_ELEPHANT: {
-          const uint16_t left_byte = r_elephant_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          r_elephant_poses = (pos < cur_min)
-                                 ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                 : (left_byte | pos);
-          break;
-        }
-        case B_ELEPHANT: {
-          const uint16_t left_byte = b_elephant_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          b_elephant_poses = (pos < cur_min)
-                                 ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                 : (left_byte | pos);
-          break;
-        }
-        case R_HORSE: {
-          const uint16_t left_byte = r_horse_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          r_horse_poses = (pos < cur_min)
-                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                              : (left_byte | pos);
-          break;
-        }
-        case B_HORSE: {
-          const uint16_t left_byte = b_horse_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          b_horse_poses = (pos < cur_min)
-                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                              : (left_byte | pos);
-          break;
-        }
-        case R_CHARIOT: {
-          const uint16_t left_byte = r_chariot_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          r_chariot_poses = (pos < cur_min)
-                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                : (left_byte | pos);
-          break;
-        }
-        case B_CHARIOT: {
-          const uint16_t left_byte = b_chariot_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          b_chariot_poses = (pos < cur_min)
-                                ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                                : (left_byte | pos);
-          break;
-        }
-        case R_CANNON: {
-          const uint16_t left_byte = r_cannon_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          r_cannon_poses = (pos < cur_min)
-                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                               : (left_byte | pos);
-          break;
-        }
-        case B_CANNON: {
-          const uint16_t left_byte = b_cannon_poses & 0xFF00;
-          const uint16_t cur_min = left_byte >> 8;
-          b_cannon_poses = (pos < cur_min)
-                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
-                               : (left_byte | pos);
-          break;
-        }
-        case R_SOLDIER:
-          r_soldier_poses[r_soldier_idx++] = pos;
-          break;
-        case B_SOLDIER:
-          b_soldier_poses[b_soldier_idx++] = pos;
-          break;
+  for (Position pos = 0; pos < kBoardSize; pos++) {
+    switch (board[pos]) {
+      case EMPTY: {
+        continue;
       }
+      case R_GENERAL: {
+        r_general_pos = pos;
+        break;
+      }
+      case B_GENERAL: {
+        b_general_pos = pos;
+        break;
+      }
+      case R_ADVISOR: {
+        const uint16_t left_byte = r_advisor_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        r_advisor_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+        break;
+      }
+      case B_ADVISOR: {
+        const uint16_t left_byte = b_advisor_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        b_advisor_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+        break;
+      }
+      case R_ELEPHANT: {
+        const uint16_t left_byte = r_elephant_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        r_elephant_poses = (pos < cur_min)
+                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                               : (left_byte | pos);
+        break;
+      }
+      case B_ELEPHANT: {
+        const uint16_t left_byte = b_elephant_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        b_elephant_poses = (pos < cur_min)
+                               ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                               : (left_byte | pos);
+        break;
+      }
+      case R_HORSE: {
+        const uint16_t left_byte = r_horse_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        r_horse_poses = (pos < cur_min)
+                            ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                            : (left_byte | pos);
+        break;
+      }
+      case B_HORSE: {
+        const uint16_t left_byte = b_horse_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        b_horse_poses = (pos < cur_min)
+                            ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                            : (left_byte | pos);
+        break;
+      }
+      case R_CHARIOT: {
+        const uint16_t left_byte = r_chariot_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        r_chariot_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+        break;
+      }
+      case B_CHARIOT: {
+        const uint16_t left_byte = b_chariot_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        b_chariot_poses = (pos < cur_min)
+                              ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                              : (left_byte | pos);
+        break;
+      }
+      case R_CANNON: {
+        const uint16_t left_byte = r_cannon_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        r_cannon_poses = (pos < cur_min)
+                             ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                             : (left_byte | pos);
+        break;
+      }
+      case B_CANNON: {
+        const uint16_t left_byte = b_cannon_poses & 0xFF00;
+        const uint16_t cur_min = left_byte >> 8;
+        b_cannon_poses = (pos < cur_min)
+                             ? (static_cast<uint16_t>(pos << 8) | cur_min)
+                             : (left_byte | pos);
+        break;
+      }
+      case R_SOLDIER:
+        r_soldier_poses[r_soldier_idx++] = pos;
+        break;
+      case B_SOLDIER:
+        b_soldier_poses[b_soldier_idx++] = pos;
+        break;
     }
   }
 
@@ -437,9 +401,7 @@ std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
 Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   // Initialize an empty board.
   Board<Piece> board;
-  for (auto& row : board) {
-    row.fill(Piece::EMPTY);
-  }
+  board.fill(Piece::EMPTY);
 
   // For red pieces, the encoded state is split between state[0] (res1) and
   // state[1] (res2).
@@ -654,22 +616,18 @@ Piece Move(Board<Piece>& board, Position from, Position to) {
 std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
                                            Player player) {
   std::vector<uint16_t> result;
-  for (uint8_t row = 0; row < kTotalRow; row++) {
-    for (uint8_t col = 0; col < kTotalCol; col++) {
-      const Piece piece = board[row][col];
-      if (piece == Piece::EMPTY || IsRed(piece) != (player == Player::RED)) {
+  for (Position pos = 0; pos < kBoardSize; pos++) {
+    const Piece piece = board[pos];
+    if (piece == Piece::EMPTY || IsRed(piece) != (player == Player::RED)) {
+      continue;
+    }
+    const Board<bool> possible_moves = PossibleMoves(board, pos);
+    for (uint8_t mpos = 0; mpos < kBoardSize; mpos++) {
+      if (!possible_moves[mpos]) {
         continue;
       }
-      const Board<bool> possible_moves = PossibleMoves(board, Pos(row, col));
-      for (uint8_t mrow = 0; mrow < kTotalRow; mrow++) {
-        for (uint8_t mcol = 0; mcol < kTotalCol; mcol++) {
-          if (!possible_moves[mrow][mcol]) {
-            continue;
-          }
-          result.emplace_back(static_cast<uint16_t>(Pos(row, col) << 8) |
-                              static_cast<uint16_t>(Pos(mrow, mcol)));
-        }
-      }
+      result.emplace_back(static_cast<uint16_t>(pos << 8) |
+                          static_cast<uint16_t>(mpos));
     }
   }
   return result;

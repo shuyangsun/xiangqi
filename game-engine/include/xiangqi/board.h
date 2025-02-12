@@ -13,11 +13,6 @@ namespace xq {
 // the general with their next move.
 bool IsCheckMade(const Board<Piece>& board, Player player);
 
-// Returns true if the game is over. For example, one of the generals has
-// been captured, or if there is no possible move for the current player's
-// general to not be captured.
-bool IsGameOver(const Board<Piece>& board);
-
 // Returns the winner if the game is over. Returns NONE if the game is not
 // over.
 Winner GetWinner(const Board<Piece>& board);
