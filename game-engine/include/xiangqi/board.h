@@ -2,6 +2,8 @@
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_BOARD_H_
 
 #include <cstdint>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "xiangqi/types.h"
@@ -30,6 +32,24 @@ constexpr Board<Piece> kStartingBoard = {
     R_CHARIOT, R_HORSE,    R_ELEPHANT, R_ADVISOR, R_GENERAL,
     R_ADVISOR, R_ELEPHANT, R_HORSE,    R_CHARIOT,  // Row 9
 };
+
+// Construct board from human-readable string.
+// Example:
+// "  A B C D E F G H I \n"
+// "0 r h e a g a e h r \n"
+// "1 . . . . . . . . . \n"
+// "2 . c . . . . . c . \n"
+// "3 s . s . s . s . s \n"
+// "4 . . . . . . . . . \n"
+// "5 . . . . . . . . . \n"
+// "7 S . S . S . S . S \n"
+// "7 . C . . . . . C . \n"
+// "8 . . . . . . . . . \n"
+// "9 R H E A G A E H R \n";
+Board<Piece> BoardFromString(std::string_view str);
+
+// Convert board to human-readable string.
+std::string BoardToString(const Board<Piece>& board);
 
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.

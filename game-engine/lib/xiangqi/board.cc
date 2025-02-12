@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "xiangqi/internal/moves.h"
@@ -118,6 +120,30 @@ bool ThreatensByCannon(const Board<Piece>& board, const Position pos,
 }
 
 }  // namespace
+
+Board<Piece> BoardFromString(const std::string_view str) {
+  using enum Piece;
+
+  Board<Piece> result;
+  result.fill(EMPTY);
+  // TODO: implemnetation.
+  return result;
+}
+
+std::string BoardToString(const Board<Piece>& board) {
+  // TODO: implemnetation.
+  return "  A B C D E F G H I \n"
+         "0 r h e a g a e h r \n"
+         "1 . . . . . . . . . \n"
+         "2 . c . . . . . c . \n"
+         "3 s . s . s . s . s \n"
+         "4 . . . . . . . . . \n"
+         "5 . . . . . . . . . \n"
+         "7 S . S . S . S . S \n"
+         "7 . C . . . . . C . \n"
+         "8 . . . . . . . . . \n"
+         "9 R H E A G A E H R \n";
+}
 
 bool IsCheckMade(const Board<Piece>& board, Player player) {
   using enum Piece;
