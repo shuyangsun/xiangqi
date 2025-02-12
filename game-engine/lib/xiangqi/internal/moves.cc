@@ -33,56 +33,51 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
     }
   }
 
-  int8_t row, col;
   if (piece == Piece::R_GENERAL) {
-    // Move down:
-    row = Row(pos) + 1;
-    col = Col(pos);
-    if (row <= kRedPalaceRowMax && !IsRed(board[row][col])) {
-      result[row][col] = true;
+    if (((pos >= 66 && pos <= 68) || (pos >= 75 && pos <= 77)) &&
+        !IsRed(board[pos + kTotalCol])) {
+      // move down
+      result[res_idx++] = pos + kTotalCol;
     }
-    // Move up:
-    row = Row(pos) - 1;
-    col = Col(pos);
-    if (row >= kRedPalaceRowMin && !IsRed(board[row][col])) {
-      result[row][col] = true;
+    if (((pos >= 75 && pos <= 77) || (pos >= 84 && pos <= 86)) &&
+        !IsRed(board[pos - kTotalCol])) {
+      // move down
+      result[res_idx++] = pos - kTotalCol;
     }
-    // Move left:
-    row = Row(pos);
-    col = Col(pos) - 1;
-    if (col >= kPalaceColMin && !IsRed(board[row][col])) {
-      result[row][col] = true;
+    if ((pos == 66 || pos == 67 || pos == 75 || pos == 76 || pos == 84 ||
+         pos == 85) &&
+        !IsRed(board[pos + 1])) {
+      // move right
+      result[res_idx++] = pos + 1;
     }
-    // Move right:
-    row = Row(pos);
-    col = Col(pos) + 1;
-    if (col <= kPalaceColMax && !IsRed(board[row][col])) {
-      result[row][col] = true;
+    if ((pos == 67 || pos == 68 || pos == 76 || pos == 77 || pos == 85 ||
+         pos == 86) &&
+        !IsRed(board[pos - 1])) {
+      // move left
+      result[res_idx++] = pos - 1;
     }
-  } else {
-    // Move down:
-    row = Row(pos) + 1;
-    col = Col(pos);
-    if (row <= kBlackPalaceRowMax && !IsBlack(board[row][col])) {
-      result[row][col] = true;
+  } else if (piece == Piece::B_GENERAL) {
+    if (((pos >= 3 && pos <= 5) || (pos >= 12 && pos <= 14)) &&
+        !IsBlack(board[pos + kTotalCol])) {
+      // move down
+      result[res_idx++] = pos + kTotalCol;
     }
-    // Move up:
-    row = Row(pos) - 1;
-    col = Col(pos);
-    if (row >= kBlackPalaceRowMin && !IsBlack(board[row][col])) {
-      result[row][col] = true;
+    if (((pos >= 12 && pos <= 14) || (pos >= 21 && pos <= 23)) &&
+        !IsBlack(board[pos - kTotalCol])) {
+      // move down
+      result[res_idx++] = pos - kTotalCol;
     }
-    // Move left:
-    row = Row(pos);
-    col = Col(pos) - 1;
-    if (col >= kPalaceColMin && !IsBlack(board[row][col])) {
-      result[row][col] = true;
+    if ((pos == 3 || pos == 4 || pos == 12 || pos == 13 || pos == 21 ||
+         pos == 22) &&
+        !IsBlack(board[pos + 1])) {
+      // move right
+      result[res_idx++] = pos + 1;
     }
-    // Move right:
-    row = Row(pos);
-    col = Col(pos) + 1;
-    if (col <= kPalaceColMax && !IsBlack(board[row][col])) {
-      result[row][col] = true;
+    if ((pos == 4 || pos == 5 || pos == 13 || pos == 14 || pos == 22 ||
+         pos == 23) &&
+        !IsBlack(board[pos - 1])) {
+      // move left
+      result[res_idx++] = pos - 1;
     }
   }
   return result;
