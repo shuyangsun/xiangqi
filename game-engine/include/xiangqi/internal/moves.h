@@ -8,7 +8,8 @@ namespace xq::internal::util {
 // General can move to a maximum of 5 positions: up, down, left, right and
 // flying general. Impossible positions are filled with kNoPosition.
 std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
-                                             Position pos);
+                                             Position pos,
+                                             Position opponent_general);
 
 // Advisor can move to at most 2 positions. Impossible positions are filled with
 // kNoPosition.

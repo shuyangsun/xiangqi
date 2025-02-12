@@ -31,6 +31,10 @@ constexpr Board<Piece> kStartingBoard = {
     R_ADVISOR, R_ELEPHANT, R_HORSE,    R_CHARIOT,  // Row 9
 };
 
+// Returns the position of a player's general. If the player's general was
+// captured, return kNoPosition.
+Position FindGeneral(const Board<Piece>& board, Player player);
+
 // Returns true if it's checkmade for the given player. I.e., if the
 // current player does not take certain actions, the opponent can capture
 // the general with their next move.

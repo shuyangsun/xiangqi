@@ -576,8 +576,14 @@ std::array<Position, 17> PossibleMoves(const Board<Piece>& board,
     case EMPTY:
       return result;
     case R_GENERAL:
+      memcpy(PossibleMovesGeneral(board, pos, FindGeneral(board, Player::BLACK))
+                 .data(),
+             result.data(), 5);
+      break;
     case B_GENERAL:
-      memcpy(PossibleMovesGeneral(board, pos).data(), result.data(), 5);
+      memcpy(PossibleMovesGeneral(board, pos, FindGeneral(board, Player::RED))
+                 .data(),
+             result.data(), 5);
       break;
     case R_ADVISOR:
     case B_ADVISOR:
@@ -722,6 +728,92 @@ std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
     result.emplace_back(std::move(next));
   }
   return result;
+}
+
+Position FindGeneral(const Board<Piece>& board, const Player player) {
+  const bool find_red = player == Player::RED;
+  const Piece general = find_red ? Piece::R_GENERAL : Piece::B_GENERAL;
+  if (find_red) {
+    // Find from bottom if find red.
+    if (board[66] == general) {
+      return 66;
+    } else if (board[67] == general) {
+      return 67;
+    } else if (board[68] == general) {
+      return 68;
+    } else if (board[75] == general) {
+      return 75;
+    } else if (board[76] == general) {
+      return 76;
+    } else if (board[77] == general) {
+      return 77;
+    } else if (board[84] == general) {
+      return 84;
+    } else if (board[85] == general) {
+      return 85;
+    } else if (board[86] == general) {
+      return 86;
+    } else if (board[3] == general) {
+      return 3;
+    } else if (board[4] == general) {
+      return 4;
+    } else if (board[5] == general) {
+      return 5;
+    } else if (board[12] == general) {
+      return 12;
+    } else if (board[13] == general) {
+      return 13;
+    } else if (board[14] == general) {
+      return 14;
+    } else if (board[21] == general) {
+      return 21;
+    } else if (board[22] == general) {
+      return 22;
+    } else if (board[23] == general) {
+      return 23;
+    }
+  } else {
+    // Find from top if find black.
+    if (board[3] == general) {
+      return 3;
+    } else if (board[4] == general) {
+      return 4;
+    } else if (board[5] == general) {
+      return 5;
+    } else if (board[12] == general) {
+      return 12;
+    } else if (board[13] == general) {
+      return 13;
+    } else if (board[14] == general) {
+      return 14;
+    } else if (board[21] == general) {
+      return 21;
+    } else if (board[22] == general) {
+      return 22;
+    } else if (board[23] == general) {
+      return 23;
+    } else if (board[66] == general) {
+      return 66;
+    } else if (board[67] == general) {
+      return 67;
+    } else if (board[68] == general) {
+      return 68;
+    } else if (board[75] == general) {
+      return 75;
+    } else if (board[76] == general) {
+      return 76;
+    } else if (board[77] == general) {
+      return 77;
+    } else if (board[84] == general) {
+      return 84;
+    } else if (board[85] == general) {
+      return 85;
+    } else if (board[86] == general) {
+      return 86;
+    } else if (board[3] == general) {
+    }
+    return kNoPosition;
+  }
 }
 
 }  // namespace xq

@@ -8,68 +8,28 @@
 
 namespace xq::internal::util {
 
-namespace {
+namespace {}  // namespace
 
-std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
-  if (find_red) {
-    for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
-      for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
-        if (board[row][col] == Piece::R_GENERAL) {
-          return {Pos(row, col)};
-        }
-      }
-    }
-    for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
-      for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
-        if (board[row][col] == Piece::R_GENERAL) {
-          return {Pos(row, col)};
-        }
-      }
-    }
-    return std::nullopt;
-  }
-
-  for (uint8_t row = kBlackPalaceRowMin; row <= kBlackPalaceRowMax; row++) {
-    for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
-      if (board[row][col] == Piece::B_GENERAL) {
-        return {Pos(row, col)};
-      }
-    }
-  }
-  for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
-    for (uint8_t col = kPalaceColMin; col <= kPalaceColMax; col++) {
-      if (board[row][col] == Piece::B_GENERAL) {
-        return {Pos(row, col)};
-      }
-    }
-  }
-  return std::nullopt;
-}
-
-}  // namespace
-
-Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
-  const Piece piece = board[pos];
-  Board<bool> result{false};
+std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
+                                             const Position pos,
+                                             const Position opponent_general) {
+  std::array<Position, 5> result;
+  result.fill(kNoPosition);
+  uint8_t res_idx = 0;
 
   // Flying general check.
-  const std::optional<Position> opponent_general =
-      FindGeneral(board, piece == Piece::B_GENERAL);
-  const uint8_t self_row = Row(pos);
-  const uint8_t self_col = Col(pos);
-  if (opponent_general.has_value() && Col(*opponent_general) == self_col) {
-    const uint8_t op_row = Row(*opponent_general);
-    const int8_t change = piece == Piece::B_GENERAL ? 1 : -1;
-    bool is_blocked = false;
-    // Start checking one square past the moving general.
-    for (uint8_t row = self_row + change; row != op_row; row += change) {
-      if (board[row][self_col] != Piece::EMPTY) {
+  const Piece piece = board[pos];
+  bool is_blocked = false;
+  if (opponent_general != kNoPosition && Col(opponent_general) == Col(pos)) {
+    for (Position cur = std::min(pos, opponent_general) + kTotalCol;
+         cur < std::max(pos, opponent_general); cur += kTotalCol) {
+      if (board[cur] != Piece::EMPTY) {
         is_blocked = true;
         break;
       }
     }
     if (!is_blocked) {
-      result[op_row][self_col] = true;
+      result[res_idx++] = opponent_general;
     }
   }
 
@@ -128,10 +88,12 @@ Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   return result;
 }
 
-Board<bool> PossibleMovesAdvisor(const Board<Piece>& board, Position pos) {
-  Board<bool> result = MakeEmptyBoard();
+std::array<Position, 2> PossibleMovesAdvisor(const Board<Piece>& board,
+                                             const Position pos) {
+  std::array<Position, 2> result;
+  result.fill(kNoPosition);
   const Piece piece = board[pos];
-  bool isRed = IsRed(piece);
+  const bool isRed = IsRed(piece);
 
   // Advisors move one square diagonally.
   int dr[4] = {-1, -1, 1, 1};
