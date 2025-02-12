@@ -85,20 +85,47 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
            ));
 }
 
-// The elephant moves two points diagonally. Its move is blocked if the midpoint
-// is occupied. (For these tests we do not enforce the “river” restriction.)
-bool ThreatensByElephant(const Board<Piece>& board, Piece elephant,
-                         Position pos, Position target) {
-  int dr = Row(target) - Row(pos);
-  int dc = Col(target) - Col(pos);
-  if (std::abs(dr) != 2 || std::abs(dc) != 2 ||
-      board[static_cast<uint8_t>(Row(pos) + dr / 2)]
-           [static_cast<uint8_t>(Col(pos) + dc / 2)] != Piece::EMPTY) {
-    return false;
+bool ThreatensByElephant(const Board<Piece>& board, const Piece elephant,
+                         const Position pos, const Position target) {
+  using enum Piece;
+  if ((elephant == R_ELEPHANT && target < kRedRiverStart + 2) ||
+      (elephant == B_ELEPHANT && target > kRedRiverStart - 3)) {
+    return false;  // across the river
   }
-  // (If you wish to enforce that elephants may not cross the river, add that
-  // check here.)
-  return true;
+  return (pos + 2 * kTotalCol + 2 == target       // down right
+          && board[pos + kTotalCol + 1] == EMPTY  // not blocking
+          &&
+          ((elephant == B_ELEPHANT && (pos == 2 || pos == 6 || pos == 18 ||
+                                       pos == 22)  // black can move down right
+            ) ||
+           (elephant == R_ELEPHANT && (pos == 47 || pos == 51 || pos == 63 ||
+                                       pos == 69)  // red can move down right
+            ))) ||
+         (pos + 2 * kTotalCol - 2 == target       // down left
+          && board[pos + kTotalCol - 1] == EMPTY  // not blocking
+          &&
+          ((elephant == B_ELEPHANT && (pos == 2 || pos == 6 || pos == 22 ||
+                                       pos == 26)  // black can move down left
+            ) ||
+           (elephant == R_ELEPHANT && (pos == 47 || pos == 51 || pos == 67 ||
+                                       pos == 71)  // red can move down left
+            ))) ||
+         (target + 2 * kTotalCol - 2 == pos       // up right
+          && board[pos - kTotalCol + 1] == EMPTY  // not blocking
+          && ((elephant == B_ELEPHANT && (pos == 18 || pos == 22 || pos == 38 ||
+                                          pos == 42)  // black can move up right
+               ) ||
+              (elephant == R_ELEPHANT && (pos == 63 || pos == 67 || pos == 83 ||
+                                          pos == 87)  // red can move up right
+               ))) ||
+         (target + 2 * kTotalCol + 2 == pos       // up left
+          && board[pos - kTotalCol - 1] == EMPTY  // not blocking
+          && ((elephant == B_ELEPHANT && (pos == 22 || pos == 26 || pos == 38 ||
+                                          pos == 42)  // black can move up left
+               ) ||
+              (elephant == R_ELEPHANT && (pos == 67 || pos == 71 || pos == 83 ||
+                                          pos == 87)  // red can move up left
+               )));
 }
 
 // The advisor moves one point diagonally but must remain within its palace.

@@ -24,7 +24,7 @@ constexpr uint8_t kPalaceColMin = 3;
 constexpr uint8_t kPalaceColMax = 5;
 
 // Starting position of red river.
-constexpr Position kRedRiverStart = 5 * kTotalCol + 1;
+constexpr Position kRedRiverStart = 5 * kTotalCol;
 
 // Row-major board in flat 1-D array.
 template <typename T>
