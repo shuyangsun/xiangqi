@@ -564,37 +564,48 @@ Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
   return board;
 }
 
-Board<bool> PossibleMoves(const Board<Piece>& board, Position pos) {
+std::array<Position, 17> PossibleMoves(const Board<Piece>& board,
+                                       Position pos) {
   using namespace xq::internal::util;
   using enum Piece;
   const Piece piece = board[pos];
+  std::array<Position, 17> result;
+  result.fill(kNoPosition);
   switch (piece) {
     case EMPTY:
-      return PossibleMovesEmpty(board, pos);
+      return result;
     case R_GENERAL:
     case B_GENERAL:
-      return PossibleMovesGeneral(board, pos);
+      memcpy(PossibleMovesGeneral(board, pos).data(), result.data(), 5);
+      break;
     case R_ADVISOR:
     case B_ADVISOR:
-      return PossibleMovesAdvisor(board, pos);
+      memcpy(PossibleMovesAdvisor(board, pos).data(), result.data(), 2);
+      break;
     case R_ELEPHANT:
     case B_ELEPHANT:
-      return PossibleMovesElephant(board, pos);
+      memcpy(PossibleMovesElephant(board, pos).data(), result.data(), 4);
+      break;
     case R_HORSE:
     case B_HORSE:
-      return PossibleMovesHorse(board, pos);
+      memcpy(PossibleMovesHorse(board, pos).data(), result.data(), 8);
+      break;
     case R_CHARIOT:
     case B_CHARIOT:
-      return PossibleMovesChariot(board, pos);
+      memcpy(PossibleMovesChariot(board, pos).data(), result.data(), 17);
+      break;
     case R_CANNON:
     case B_CANNON:
-      return PossibleMovesCannon(board, pos);
+      memcpy(PossibleMovesCannon(board, pos).data(), result.data(), 17);
+      break;
     case R_SOLDIER:
     case B_SOLDIER:
-      return PossibleMovesSoldier(board, pos);
+      memcpy(PossibleMovesSoldier(board, pos).data(), result.data(), 3);
+      break;
     default:
-      return {false};
+      return result;
   }
+  return result;
 }
 
 Piece Move(Board<Piece>& board, Position from, Position to) {

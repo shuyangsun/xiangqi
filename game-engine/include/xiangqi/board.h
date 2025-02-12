@@ -40,8 +40,9 @@ bool IsCheckMade(const Board<Piece>& board, Player player);
 // over.
 Winner GetWinner(const Board<Piece>& board);
 
-// Returns all possible moves for the player with piece at position.
-Board<bool> PossibleMoves(const Board<Piece>& board, Position pos);
+// Returns all possible moves for the player with piece at position. Impossible
+// moves are filled with kNoPosition.
+std::array<Position, 17> PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
