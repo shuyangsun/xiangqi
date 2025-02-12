@@ -64,6 +64,8 @@ std::string BoardToString(const Board<Piece>& board);
 // Check if two boards are identical.
 bool BoardEq(const Board<Piece>& a, const Board<Piece>& b);
 
+bool operator==(const Board<Piece>& lhs, const Board<Piece>& rhs);
+
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.
 Position FindGeneral(const Board<Piece>& board, Player player);

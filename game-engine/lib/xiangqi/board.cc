@@ -202,7 +202,7 @@ Board<Piece> BoardFromString(const std::string_view str) {
 
   Board<Piece> result;
   result.fill(EMPTY);
-  size_t idx = 24;
+  size_t idx = 23;
   for (uint8_t row = 0; row < kTotalRow; row++) {
     for (uint8_t col = 0; col < kTotalCol; col++) {
       result[Pos(row, col)] = ChToPiece(str[idx]);
@@ -221,7 +221,7 @@ std::string BoardToString(const Board<Piece>& board) {
     result.append(std::to_string(row));
     result.append(" ");
     for (uint8_t col = 0; col < kTotalCol; col++) {
-      result.append(std::to_string(PieceToCh(board[Pos(row, col)])));
+      result += PieceToCh(board[Pos(row, col)]);
       result.append(" ");
     }
     result.append("\n");
@@ -236,6 +236,10 @@ bool BoardEq(const Board<Piece>& a, const Board<Piece>& b) {
     }
   }
   return true;
+}
+
+bool operator==(const Board<Piece>& lhs, const Board<Piece>& rhs) {
+  return BoardEq(lhs, rhs);
 }
 
 bool IsCheckMade(const Board<Piece>& board, Player player) {
