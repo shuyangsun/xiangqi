@@ -78,7 +78,7 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "6 . . . . . . . . . \n"
       "7 . . . . . . . . . \n"
       "8 . . . . . . . . . \n"
-      "9 . . . G . a . . . \n");
+      "9 . . . G . A . . . \n");
   EXPECT_EQ(FindGeneral(board_1, Player::RED), PosStr("D9"));
   EXPECT_EQ(FindGeneral(board_1, Player::BLACK), PosStr("D0"));
 
@@ -96,6 +96,248 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "9 . . . A G A . . . \n");
   EXPECT_EQ(FindGeneral(board_2, Player::RED), PosStr("E9"));
   EXPECT_EQ(FindGeneral(board_2, Player::BLACK), PosStr("E0"));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a . g . . . \n"
+      "1 . . . . H . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . G . . . \n");
+  EXPECT_EQ(FindGeneral(board_3, Player::RED), PosStr("F9"));
+  EXPECT_EQ(FindGeneral(board_3, Player::BLACK), PosStr("F0"));
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . g . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . G . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_4, Player::RED), PosStr("D8"));
+  EXPECT_EQ(FindGeneral(board_4, Player::BLACK), PosStr("D1"));
+
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . g . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . G . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_5, Player::RED), PosStr("E8"));
+  EXPECT_EQ(FindGeneral(board_5, Player::BLACK), PosStr("E1"));
+
+  const Board<Piece> board_6 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . g . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . G . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_6, Player::RED), PosStr("F8"));
+  EXPECT_EQ(FindGeneral(board_6, Player::BLACK), PosStr("F1"));
+
+  const Board<Piece> board_7 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . g . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . G . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_7, Player::RED), PosStr("D7"));
+  EXPECT_EQ(FindGeneral(board_7, Player::BLACK), PosStr("D2"));
+
+  const Board<Piece> board_8 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . g . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . G . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_8, Player::RED), PosStr("E7"));
+  EXPECT_EQ(FindGeneral(board_8, Player::BLACK), PosStr("E2"));
+
+  const Board<Piece> board_9 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . g . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . G . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_9, Player::RED), PosStr("F7"));
+  EXPECT_EQ(FindGeneral(board_9, Player::BLACK), PosStr("F2"));
+}
+
+TEST(BoardTest, FindGeneralOpponentPalace) {
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . G . A . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . g . A . . . \n");
+  EXPECT_EQ(FindGeneral(board_1, Player::RED), PosStr("D0"));
+  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), PosStr("D9"));
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a G a . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . A g A . . . \n");
+  EXPECT_EQ(FindGeneral(board_2, Player::RED), PosStr("E0"));
+  EXPECT_EQ(FindGeneral(board_2, Player::BLACK), PosStr("E9"));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a . G . . . \n"
+      "1 . . . . H . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . g . . . \n");
+  EXPECT_EQ(FindGeneral(board_3, Player::RED), PosStr("F0"));
+  EXPECT_EQ(FindGeneral(board_3, Player::BLACK), PosStr("F9"));
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . G . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . g . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_4, Player::RED), PosStr("D1"));
+  EXPECT_EQ(FindGeneral(board_4, Player::BLACK), PosStr("D8"));
+
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . G . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . g . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_5, Player::RED), PosStr("E1"));
+  EXPECT_EQ(FindGeneral(board_5, Player::BLACK), PosStr("E8"));
+
+  const Board<Piece> board_6 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . G . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . g . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_6, Player::RED), PosStr("F1"));
+  EXPECT_EQ(FindGeneral(board_6, Player::BLACK), PosStr("F8"));
+
+  const Board<Piece> board_7 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . G . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . g . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_7, Player::RED), PosStr("D2"));
+  EXPECT_EQ(FindGeneral(board_7, Player::BLACK), PosStr("D7"));
+
+  const Board<Piece> board_8 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . G . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . g . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_8, Player::RED), PosStr("E2"));
+  EXPECT_EQ(FindGeneral(board_8, Player::BLACK), PosStr("E7"));
+
+  const Board<Piece> board_9 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . G . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . g . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(FindGeneral(board_9, Player::RED), PosStr("F2"));
+  EXPECT_EQ(FindGeneral(board_9, Player::BLACK), PosStr("F7"));
 }
 
 }  // namespace
