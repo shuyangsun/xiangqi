@@ -11,26 +11,36 @@
 namespace xq {
 
 constexpr Board<Piece> kStartingBoard = {
-    B_CHARIOT, B_HORSE,    B_ELEPHANT, B_ADVISOR, B_GENERAL,
-    B_ADVISOR, B_ELEPHANT, B_HORSE,    B_CHARIOT,  // Row 0
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 1
-    EMPTY,     B_CANNON,   EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      B_CANNON,   EMPTY,  // Row 2
-    B_SOLDIER, EMPTY,      B_SOLDIER,  EMPTY,     B_SOLDIER,
-    EMPTY,     B_SOLDIER,  EMPTY,      B_SOLDIER,  // Row 3
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 4
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 5
-    R_SOLDIER, EMPTY,      R_SOLDIER,  EMPTY,     R_SOLDIER,
-    EMPTY,     R_SOLDIER,  EMPTY,      R_SOLDIER,  // Row 6
-    EMPTY,     R_CANNON,   EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      R_CANNON,   EMPTY,  // Row 7
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 8
-    R_CHARIOT, R_HORSE,    R_ELEPHANT, R_ADVISOR, R_GENERAL,
-    R_ADVISOR, R_ELEPHANT, R_HORSE,    R_CHARIOT,  // Row 9
+    Piece::B_CHARIOT,  Piece::B_HORSE,   Piece::B_ELEPHANT,
+    Piece::B_ADVISOR,  Piece::B_GENERAL, Piece::B_ADVISOR,
+    Piece::B_ELEPHANT, Piece::B_HORSE,   Piece::B_CHARIOT,  // Row 0
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 1
+    Piece::EMPTY,      Piece::B_CANNON,  Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::B_CANNON,  Piece::EMPTY,  // Row 2
+    Piece::B_SOLDIER,  Piece::EMPTY,     Piece::B_SOLDIER,
+    Piece::EMPTY,      Piece::B_SOLDIER, Piece::EMPTY,
+    Piece::B_SOLDIER,  Piece::EMPTY,     Piece::B_SOLDIER,  // Row 3
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 4
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 5
+    Piece::R_SOLDIER,  Piece::EMPTY,     Piece::R_SOLDIER,
+    Piece::EMPTY,      Piece::R_SOLDIER, Piece::EMPTY,
+    Piece::R_SOLDIER,  Piece::EMPTY,     Piece::R_SOLDIER,  // Row 6
+    Piece::EMPTY,      Piece::R_CANNON,  Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::R_CANNON,  Piece::EMPTY,  // Row 7
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
+    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 8
+    Piece::R_CHARIOT,  Piece::R_HORSE,   Piece::R_ELEPHANT,
+    Piece::R_ADVISOR,  Piece::R_GENERAL, Piece::R_ADVISOR,
+    Piece::R_ELEPHANT, Piece::R_HORSE,   Piece::R_CHARIOT,  // Row 9
 };
 
 // Construct board from human-readable string.
@@ -50,6 +60,9 @@ Board<Piece> BoardFromString(std::string_view str);
 
 // Convert board to human-readable string.
 std::string BoardToString(const Board<Piece>& board);
+
+// Check if two boards are identical.
+bool BoardEq(const Board<Piece>& a, const Board<Piece>& b);
 
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.

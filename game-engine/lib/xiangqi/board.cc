@@ -119,6 +119,82 @@ bool ThreatensByCannon(const Board<Piece>& board, const Position pos,
   return false;
 }
 
+char PieceToCh(const Piece piece) {
+  using enum Piece;
+  switch (piece) {
+    case EMPTY:
+      return '.';
+    case R_GENERAL:
+      return 'G';
+    case R_ADVISOR:
+      return 'A';
+    case R_ELEPHANT:
+      return 'E';
+    case R_HORSE:
+      return 'H';
+    case R_CHARIOT:
+      return 'R';
+    case R_CANNON:
+      return 'C';
+    case R_SOLDIER:
+      return 'S';
+    case B_GENERAL:
+      return 'g';
+    case B_ADVISOR:
+      return 'a';
+    case B_ELEPHANT:
+      return 'e';
+    case B_HORSE:
+      return 'h';
+    case B_CHARIOT:
+      return 'r';
+    case B_CANNON:
+      return 'c';
+    case B_SOLDIER:
+      return 's';
+    default:
+      return '?';
+  }
+}
+
+Piece ChToPiece(const char ch) {
+  using enum Piece;
+  switch (ch) {
+    case '.':
+      return EMPTY;
+    case 'G':
+      return R_GENERAL;
+    case 'A':
+      return R_ADVISOR;
+    case 'E':
+      return R_ELEPHANT;
+    case 'H':
+      return R_HORSE;
+    case 'R':
+      return R_CHARIOT;
+    case 'C':
+      return R_CANNON;
+    case 'S':
+      return R_SOLDIER;
+    case 'g':
+      return B_GENERAL;
+    case 'a':
+      return B_ADVISOR;
+    case 'e':
+      return B_ELEPHANT;
+    case 'h':
+      return B_HORSE;
+    case 'r':
+      return B_CHARIOT;
+    case 'c':
+      return B_CANNON;
+    case 's':
+      return B_SOLDIER;
+    default:
+      return EMPTY;
+  }
+}
+
 }  // namespace
 
 Board<Piece> BoardFromString(const std::string_view str) {
@@ -126,23 +202,40 @@ Board<Piece> BoardFromString(const std::string_view str) {
 
   Board<Piece> result;
   result.fill(EMPTY);
-  // TODO: implemnetation.
+  size_t idx = 24;
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      result[Pos(row, col)] = ChToPiece(str[idx]);
+      idx += 2;
+    }
+    idx += 3;
+  }
   return result;
 }
 
 std::string BoardToString(const Board<Piece>& board) {
-  // TODO: implemnetation.
-  return "  A B C D E F G H I \n"
-         "0 r h e a g a e h r \n"
-         "1 . . . . . . . . . \n"
-         "2 . c . . . . . c . \n"
-         "3 s . s . s . s . s \n"
-         "4 . . . . . . . . . \n"
-         "5 . . . . . . . . . \n"
-         "7 S . S . S . S . S \n"
-         "7 . C . . . . . C . \n"
-         "8 . . . . . . . . . \n"
-         "9 R H E A G A E H R \n";
+  std::string result;
+  result.reserve(242);
+  result.append("  A B C D E F G H I \n");
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    result.append(std::to_string(row));
+    result.append(" ");
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      result.append(std::to_string(PieceToCh(board[Pos(row, col)])));
+      result.append(" ");
+    }
+    result.append("\n");
+  }
+  return result;
+}
+
+bool BoardEq(const Board<Piece>& a, const Board<Piece>& b) {
+  for (Position pos = 0; pos < kBoardSize; pos++) {
+    if (a[pos] != b[pos]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool IsCheckMade(const Board<Piece>& board, Player player) {
@@ -852,10 +945,9 @@ Position FindGeneral(const Board<Piece>& board, const Player player) {
       return 85;
     } else if (board[86] == general) {
       return 86;
-    } else if (board[3] == general) {
     }
-    return kNoPosition;
   }
+  return kNoPosition;
 }
 
 }  // namespace xq
