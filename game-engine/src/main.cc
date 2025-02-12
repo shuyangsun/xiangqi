@@ -19,7 +19,6 @@ using ::xq::Game;
 using ::xq::GetWinner;
 using ::xq::IAgent;
 using ::xq::IsCheckMade;
-using ::xq::IsGameOver;
 using ::xq::kTotalCol;
 using ::xq::kTotalRow;
 using ::xq::Piece;
@@ -157,7 +156,8 @@ int main() {
       /* depth = */ 20,
       /* exploration_constant = */ 5.0);
 
-  while (!IsGameOver(game.CurrentBoard())) {
+  Winner winner = Winner::NONE;
+  while (winner == Winner::NONE) {
     if (is_vs_human) {
       // Ask the user to enter the coordinates of a piece.
       std::cout
@@ -318,6 +318,7 @@ int main() {
       }
       PrintGame(game, is_vs_human);
     }
+    winner = GetWinner(game.CurrentBoard());
   }
 
   if (GetWinner(game.CurrentBoard()) == Winner::RED) {

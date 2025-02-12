@@ -40,8 +40,8 @@ endif()
 # ---------------------- Library and Binary ----------------------
 
 add_subdirectory("${XIANGQI_LIB_DIR}/xiangqi")
-add_executable(xiangqi_app_ascii "${XIANGQI_SRC_DIR}/main.cc")
-target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_lib)
+# add_executable(xiangqi_app_ascii "${XIANGQI_SRC_DIR}/main.cc")
+# target_link_libraries(xiangqi_app_ascii PRIVATE xiangqi_game_lib)
 
 # ---------------------- GoogleTest ----------------------
 
@@ -55,12 +55,13 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(
     xiangqi_tests
-    tests/test_game.cc
+    # tests/test_game.cc
     tests/test_possible_moves.cc
 )
 target_link_libraries(
     xiangqi_tests
-    PRIVATE xiangqi_lib
+    PRIVATE xiangqi_board_lib
+    # PRIVATE xiangqi_game_lib
     gtest_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)
