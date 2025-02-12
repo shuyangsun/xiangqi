@@ -77,14 +77,14 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
       return true;
     }
   }
-  return ((pos_col < kTotalCol - 2)            // can move right for 2 columns
-          && (board[pos + 1] == Piece::EMPTY)  // not blocked
+  return (pos_col < kTotalCol - 2            // can move right for 2 columns
+          && board[pos + 1] == Piece::EMPTY  // not blocked
           &&
           ((pos_row < kTotalRow - 1 && pos + kTotalCol + 2 == target)  // down 1
            || (pos_row > 0 && target + kTotalCol - 2 == pos)           // up 1
            )) ||
-         ((pos_col > 1)                        // can move left for 2 columns
-          && (board[pos - 1] == Piece::EMPTY)  // not blocked
+         (pos_col > 1                        // can move left for 2 columns
+          && board[pos - 1] == Piece::EMPTY  // not blocked
           &&
           ((pos_row < kTotalRow - 1 && pos + kTotalCol - 2 == target)  // down 1
            || (pos_row > 0 && target + kTotalCol + 2 == pos)           // up 1
