@@ -25,7 +25,7 @@ constexpr uint8_t kPalaceColMax = 5;
 constexpr uint8_t kTotalPieces = 32;
 
 template <typename T>
-using Board = std::array<std::array<T, kTotalCol>, kTotalRow>;
+using Board = std::array<T, kTotalCol * kTotalRow>;
 
 enum class Player : bool { RED = true, BLACK = false };
 enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1, NONE = -2 };
