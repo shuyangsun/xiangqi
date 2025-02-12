@@ -10,15 +10,6 @@ namespace xq::internal::util {
 
 namespace {
 
-// Helper function to create an empty (all false) board.
-Board<bool> MakeEmptyBoard() {
-  Board<bool> board;
-  for (auto& row : board) {
-    row.fill(false);
-  }
-  return board;
-}
-
 std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
   if (find_red) {
     for (uint8_t row = kRedPalaceRowMax; row >= kRedPalaceRowMin; row--) {
@@ -56,10 +47,6 @@ std::optional<Position> FindGeneral(const Board<Piece>& board, bool find_red) {
 }
 
 }  // namespace
-
-Board<bool> PossibleMovesEmpty(const Board<Piece>& board, Position pos) {
-  return MakeEmptyBoard();
-}
 
 Board<bool> PossibleMovesGeneral(const Board<Piece>& board, Position pos) {
   const Piece piece = board[pos];
