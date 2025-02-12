@@ -14,6 +14,7 @@ constexpr Position kNoPosition = 0xFF;
 
 constexpr uint8_t kTotalRow = 10;
 constexpr uint8_t kTotalCol = 9;
+constexpr uint8_t kBoardSize = kTotalRow * kTotalCol;
 constexpr uint8_t kTotalPieces = 32;
 
 constexpr uint8_t kRedPalaceRowMin = 7;
@@ -28,7 +29,7 @@ constexpr Position kRedRiverStart = 5 * kTotalCol;
 
 // Row-major board in flat 1-D array.
 template <typename T>
-using Board = std::array<T, kTotalCol * kTotalRow>;
+using Board = std::array<T, kBoardSize>;
 
 enum class Player : bool { RED = true, BLACK = false };
 enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1, NONE = -2 };

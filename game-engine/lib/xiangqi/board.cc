@@ -85,26 +85,34 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
            ));
 }
 
-// The cannon moves like a chariot but can only capture if exactly one piece
-// (the “screen”) lies between it and its target.
-bool ThreatensByCannon(const Board<Piece>& board, Position cannonPos,
-                       Position target) {
-  if (Row(cannonPos) == Row(target)) {
-    int start = std::min((int)Col(cannonPos), (int)Col(target)) + 1;
-    int end = std::max((int)Col(cannonPos), (int)Col(target));
-    int count = 0;
-    for (int c = start; c < end; ++c) {
-      if (board[Row(cannonPos)][c] != Piece::EMPTY) count++;
+bool ThreatensByCannon(const Board<Piece>& board, const Position pos,
+                       const Position target) {
+  if (Row(pos) == Row(target)) {
+    bool found_in_between = false;
+    for (uint8_t p = std::min(pos, target) + 1; p < std::max(pos, target);
+         p++) {
+      if (board[p] != Piece::EMPTY) {
+        if (found_in_between) {
+          return false;
+        } else {
+          found_in_between = true;
+        }
+      }
     }
-    return (count == 1);
-  } else if (Col(cannonPos) == Col(target)) {
-    int start = std::min((int)Row(cannonPos), (int)Row(target)) + 1;
-    int end = std::max((int)Row(cannonPos), (int)Row(target));
-    int count = 0;
-    for (int r = start; r < end; ++r) {
-      if (board[r][Col(cannonPos)] != Piece::EMPTY) count++;
+    return found_in_between;
+  } else if (Col(pos) == Col(target)) {
+    bool found_in_between = false;
+    for (uint8_t p = std::min(pos, target) + kTotalCol;
+         p < std::max(pos, target); p += kTotalCol) {
+      if (board[p] != Piece::EMPTY) {
+        if (found_in_between) {
+          return false;
+        } else {
+          found_in_between = true;
+        }
+      }
     }
-    return (count == 1);
+    return found_in_between;
   }
   return false;
 }
@@ -114,67 +122,90 @@ bool ThreatensByCannon(const Board<Piece>& board, Position cannonPos,
 bool IsCheckMade(const Board<Piece>& board, Player player) {
   using enum Piece;
   Position general_pos = kNoPosition;
-  bool found = false;
-  // Determine our own general based on whose turn it is.
-  Piece my_general =
+  const Piece general =
       (player == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
-  for (uint8_t r = 0; r < kTotalRow; ++r) {
-    for (uint8_t c = 0; c < kTotalCol; ++c) {
-      if (board[r][c] == my_general) {
-        general_pos = Pos(r, c);
-        found = true;
-        break;
-      }
+  if (player == Player::RED) {
+    if (board[66] == general) {
+      general_pos = 66;
+    } else if (board[67] == general) {
+      general_pos = 67;
+    } else if (board[68] == general) {
+      general_pos = 68;
+    } else if (board[75] == general) {
+      general_pos = 75;
+    } else if (board[76] == general) {
+      general_pos = 76;
+    } else if (board[77] == general) {
+      general_pos = 77;
+    } else if (board[84] == general) {
+      general_pos = 84;
+    } else if (board[85] == general) {
+      general_pos = 85;
+    } else if (board[86] == general) {
+      general_pos = 86;
     }
-    if (found) break;
+  } else if (player == Player::BLACK) {
+    if (board[3] == general) {
+      general_pos = 3;
+    } else if (board[4] == general) {
+      general_pos = 4;
+    } else if (board[5] == general) {
+      general_pos = 5;
+    } else if (board[12] == general) {
+      general_pos = 12;
+    } else if (board[13] == general) {
+      general_pos = 13;
+    } else if (board[14] == general) {
+      general_pos = 14;
+    } else if (board[21] == general) {
+      general_pos = 21;
+    } else if (board[22] == general) {
+      general_pos = 22;
+    } else if (board[23] == general) {
+      general_pos = 23;
+    }
   }
-  // (If the general is missing, you might want to signal game over. Here we
-  // simply return true.)
-  if (!found) return true;
+  if (general_pos == kNoPosition) {
+    return true;
+  }
 
-  // Now scan the board for enemy pieces that might be threatening our general.
-  for (uint8_t r = 0; r < kTotalRow; ++r) {
-    for (uint8_t c = 0; c < kTotalCol; ++c) {
-      Piece piece = board[r][c];
-      if (piece == Piece::EMPTY) continue;
-      int piece_val = static_cast<int>(piece);
-      const bool piece_is_red = piece_val > 0;
-      const bool player_is_red = player == Player::RED;
-      if (piece_is_red == player_is_red) continue;  // skip our own pieces
+  // Now scan the board for enemy pieces that might be threatening our
+  // general.
+  for (uint8_t pos = 0; pos < kBoardSize; ++pos) {
+    const Piece piece = board[pos];
+    if (piece == Piece::EMPTY) {
+      continue;
+    }
+    const bool piece_is_red = IsRed(piece);
+    const bool player_is_red = player == Player::RED;
+    if (piece_is_red == player_is_red) {
+      continue;  // Skip own piece
+    }
 
-      Position piece_pos = Pos(r, c);
-      switch (std::abs(piece_val)) {
-        case static_cast<uint8_t>(R_GENERAL):
-          // Enemy general: by the flying-general rule, if the two generals are
-          // on the same file with no piece between.
-          if (Col(piece_pos) == Col(general_pos) &&
-              IsPathClear(board, piece_pos, general_pos))
-            return true;
-          break;
-        case static_cast<uint8_t>(R_CHARIOT):
-          if ((Row(piece_pos) == Row(general_pos) ||
-               Col(piece_pos) == Col(general_pos)) &&
-              IsPathClear(board, piece_pos, general_pos))
-            return true;
-          break;
-        case static_cast<uint8_t>(R_SOLDIER):
-          if (ThreatensBySoldier(piece, piece_pos, general_pos)) return true;
-          break;
-        case static_cast<uint8_t>(R_HORSE):
-          if (ThreatensByHorse(board, piece_pos, general_pos)) return true;
-        case static_cast<uint8_t>(R_ELEPHANT):
-          if (ThreatensByElephant(board, piece, piece_pos, general_pos))
-            return true;
-          break;
-        case static_cast<uint8_t>(R_ADVISOR):
-          if (ThreatensByAdvisor(piece, piece_pos, general_pos)) return true;
-          break;
-        case static_cast<uint8_t>(R_CANNON):
-          if (ThreatensByCannon(board, piece_pos, general_pos)) return true;
-          break;
-        default:
-          break;
-      }
+    switch (std::abs(static_cast<std::underlying_type_t<Piece>>(piece))) {
+      case static_cast<std::underlying_type_t<Piece>>(R_GENERAL):
+      case static_cast<std::underlying_type_t<Piece>>(R_CHARIOT):
+        if (IsPathClear(board, pos, general_pos)) {
+          return true;
+        }
+        break;
+      case static_cast<std::underlying_type_t<Piece>>(R_SOLDIER):
+        if (ThreatensBySoldier(piece, pos, general_pos)) {
+          return true;
+        }
+        break;
+      case static_cast<std::underlying_type_t<Piece>>(R_HORSE):
+        if (ThreatensByHorse(board, pos, general_pos)) {
+          return true;
+        }
+        break;
+      case static_cast<std::underlying_type_t<Piece>>(R_CANNON):
+        if (ThreatensByCannon(board, pos, general_pos)) {
+          return true;
+        }
+        break;
+      default:
+        continue;
     }
   }
   return false;
