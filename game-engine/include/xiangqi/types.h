@@ -73,7 +73,7 @@ inline Player ChangePlayer(Player player) {
 
 inline Position Pos(uint8_t row, uint8_t col) { return row * kTotalCol + col; }
 inline uint8_t Row(Position position) { return position / kTotalCol; }
-inline uint8_t Col(Position position) { return position % kTotalRow; }
+inline uint8_t Col(Position position) { return position % kTotalCol; }
 inline Position PosStr(const std::string_view str) {
   if (str.size() != 2) {
     return kNoPosition;

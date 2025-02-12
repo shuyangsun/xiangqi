@@ -317,16 +317,16 @@ TEST(GameTest, ResetClearsHistory) {
 
 // ---------------------------------------------------------------------
 // Basic scenarios with only generals on board.
-TEST(IsCheckMadeTest, RedNotInCheck) {
+TEST(IsBeingCheckmateTest, RedNotInCheck) {
   Game game;
   game.ResetFromPos({
       {Pos(9, 4), R_GENERAL},
       {Pos(0, 3), B_GENERAL},
   });
-  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_FALSE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
+TEST(IsBeingCheckmateTest, GeneralsFacingEachOther) {
   // In Xiangqi, having the two generals directly facing each other with no
   // intervening piece is illegal. Here we assume the engine flags that as
   // check.
@@ -337,12 +337,12 @@ TEST(IsCheckMadeTest, GeneralsFacingEachOther) {
       {Pos(9, 4), R_GENERAL},
       {Pos(0, 4), B_GENERAL},
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests involving the Chariot.
-TEST(IsCheckMadeTest, RedInCheckByChariot) {
+TEST(IsBeingCheckmateTest, RedInCheckByChariot) {
   Game game;
   // Black chariot is vertically aligned with the red general with a clear
   game.ResetFromPos({
@@ -353,10 +353,10 @@ TEST(IsCheckMadeTest, RedInCheckByChariot) {
       {Pos(5, 4), B_CHARIOT},
 
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
+TEST(IsBeingCheckmateTest, RedNotInCheckByChariotBlocked) {
   Game game;
   // Even though the black chariot is aligned, a friendly piece blocks its line
   // of sight.
@@ -367,12 +367,12 @@ TEST(IsCheckMadeTest, RedNotInCheckByChariotBlocked) {
       {Pos(7, 4), R_SOLDIER},  // blocks the chariot's path to the general
 
   });
-  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_FALSE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests involving the Soldier.
-TEST(IsCheckMadeTest, RedInCheckBySoldier) {
+TEST(IsBeingCheckmateTest, RedInCheckBySoldier) {
   // For red, an enemy (black) soldier directly in front (i.e. one row above)
   // can capture the general. (Black soldier moves downward.)
   Game game;
@@ -381,12 +381,12 @@ TEST(IsCheckMadeTest, RedInCheckBySoldier) {
       {Pos(0, 3), B_GENERAL},
       {Pos(8, 4), B_SOLDIER},
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests involving the Horse.
-TEST(IsCheckMadeTest, RedInCheckByHorse) {
+TEST(IsBeingCheckmateTest, RedInCheckByHorse) {
   // A black horse positioned so that its legal L-shaped move can capture the
   // red general. For example, from (7,3) the horse can move to (9,4) provided
   // the intermediate square (8,3) is empty.
@@ -396,10 +396,10 @@ TEST(IsCheckMadeTest, RedInCheckByHorse) {
       {Pos(0, 3), B_GENERAL},
       {Pos(7, 3), B_HORSE},
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
+TEST(IsBeingCheckmateTest, RedNotInCheckByHorseWhenBlocked) {
   // The same configuration as above, but now a piece is placed in the horse's
   // "leg" at (8,3), which should block its move.
   Game game;
@@ -409,12 +409,12 @@ TEST(IsCheckMadeTest, RedNotInCheckByHorseWhenBlocked) {
       {Pos(7, 3), B_HORSE},
       {Pos(8, 3), R_SOLDIER},  // blocking the horse’s move
   });
-  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_FALSE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests involving the Elephant.
-TEST(IsCheckMadeTest, RedInCheckByElephant) {
+TEST(IsBeingCheckmateTest, RedInCheckByElephant) {
   // In Xiangqi, the elephant moves exactly two points diagonally.
   // Here, a black elephant from (7,2) can reach the red general at (9,4) if the
   // intermediate square (8,3) is empty.
@@ -424,10 +424,10 @@ TEST(IsCheckMadeTest, RedInCheckByElephant) {
       {Pos(0, 3), B_GENERAL},
       {Pos(7, 2), B_ELEPHANT},
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
+TEST(IsBeingCheckmateTest, RedNotInCheckByElephantBlocked) {
   // The same as above, but the intermediate square (8,3) is blocked.
   Game game;
   game.ResetFromPos({
@@ -436,12 +436,12 @@ TEST(IsCheckMadeTest, RedNotInCheckByElephantBlocked) {
       {Pos(7, 2), B_ELEPHANT},
       {Pos(8, 3), R_SOLDIER},  // blocks the elephant’s diagonal move
   });
-  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_FALSE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests involving the Cannon.
-TEST(IsCheckMadeTest, RedInCheckByCannon) {
+TEST(IsBeingCheckmateTest, RedInCheckByCannon) {
   // A cannon captures like a chariot but requires a single intervening piece (a
   // screen). Here, the black cannon at (7,4) can capture the red general at
   // (9,4) because a red soldier at (8,4) acts as a screen.
@@ -452,22 +452,22 @@ TEST(IsCheckMadeTest, RedInCheckByCannon) {
       {Pos(7, 4), B_CANNON},
       {Pos(8, 4), R_SOLDIER},  // screen piece for the cannon
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, RedNotInCheckByCannonMissingScreen) {
+TEST(IsBeingCheckmateTest, RedNotInCheckByCannonMissingScreen) {
   // Without any screen piece, the cannon cannot capture.
   Game game;
   game.ResetFromPos({
       {Pos(9, 4), R_GENERAL}, {Pos(0, 3), B_GENERAL}, {Pos(7, 4), B_CANNON}
       // No piece at (8,4)
   });
-  EXPECT_FALSE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_FALSE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 // ---------------------------------------------------------------------
 // Tests combining multiple enemy threats.
-TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
+TEST(IsBeingCheckmateTest, RedInCheckByMultipleThreats) {
   // Several enemy pieces simultaneously threaten the red general.
   // - A black soldier directly in front at (8,4).
   // - A black horse from (7,3) (with its leg at (8,3) clear).
@@ -482,10 +482,10 @@ TEST(IsCheckMadeTest, RedInCheckByMultipleThreats) {
       {Pos(7, 4), B_CANNON},
 
   });
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
-TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
+TEST(IsBeingCheckmateTest, BlackInCheckByMultipleThreats) {
   // Now test a scenario for black.
   // For black’s turn, the enemy red pieces are threatening the black general.
   // - Black general is at (0,4).
@@ -503,7 +503,7 @@ TEST(IsCheckMadeTest, BlackInCheckByMultipleThreats) {
       {Pos(2, 4), R_CANNON},
   });
   game.MakeBlackMoveFirst();
-  EXPECT_TRUE(IsCheckMade(game.CurrentBoard(), game.CurrentPlayer()));
+  EXPECT_TRUE(IsBeingCheckmate(game.CurrentBoard(), game.CurrentPlayer()));
 }
 
 TEST(GameHistory, ExportAndRestoreMoves) {

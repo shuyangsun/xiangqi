@@ -73,7 +73,7 @@ Position FindGeneral(const Board<Piece>& board, Player player);
 // Returns true if it's checkmade for the given player. I.e., if the
 // current player does not take certain actions, the opponent can capture
 // the general with their next move.
-bool IsCheckMade(const Board<Piece>& board, Player player);
+bool IsBeingCheckmate(const Board<Piece>& board, Player player);
 
 // Returns the winner if the game is over. Returns NONE if the game is not
 // over.

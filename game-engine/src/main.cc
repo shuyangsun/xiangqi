@@ -18,7 +18,7 @@ using ::xq::Board;
 using ::xq::Game;
 using ::xq::GetWinner;
 using ::xq::IAgent;
-using ::xq::IsCheckMade;
+using ::xq::IsBeingCheckmate;
 using ::xq::kTotalCol;
 using ::xq::kTotalRow;
 using ::xq::Piece;
@@ -111,7 +111,8 @@ void PrintGame(const Game& game, bool is_vs_human) {
             << (game.CurrentPlayer() == Player::RED ? "Red" : "Black")
             << std::endl;
   std::cout << "Check made: "
-            << (IsCheckMade(board, game.CurrentPlayer()) ? "true" : "false")
+            << (IsBeingCheckmate(board, game.CurrentPlayer()) ? "true"
+                                                              : "false")
             << std::endl;
   const std::optional<Winner> winner = GetWinner(board);
   std::cout << "Winner: "

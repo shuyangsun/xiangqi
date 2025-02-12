@@ -19,12 +19,16 @@ bool IsPathClear(const Board<Piece>& board, const Position from,
   const uint8_t end = std::max(from, to);
   if (end - start < kTotalCol) {  // same row
     for (uint8_t pos = start + 1; pos < end; pos++) {
-      if (board[pos] != Piece::EMPTY) return false;
+      if (board[pos] != Piece::EMPTY) {
+        return false;
+      }
     }
     return true;
   } else if (Col(from) == Col(to)) {
     for (uint8_t pos = start + kTotalCol; pos < end; pos += kTotalCol) {
-      if (board[pos] != Piece::EMPTY) return false;
+      if (board[pos] != Piece::EMPTY) {
+        return false;
+      }
     }
     return true;
   }
@@ -242,59 +246,18 @@ bool operator==(const Board<Piece>& lhs, const Board<Piece>& rhs) {
   return BoardEq(lhs, rhs);
 }
 
-bool IsCheckMade(const Board<Piece>& board, Player player) {
+bool IsBeingCheckmate(const Board<Piece>& board, Player player) {
   using enum Piece;
-  Position general_pos = kNoPosition;
   const Piece general =
       (player == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
-  if (player == Player::RED) {
-    if (board[66] == general) {
-      general_pos = 66;
-    } else if (board[67] == general) {
-      general_pos = 67;
-    } else if (board[68] == general) {
-      general_pos = 68;
-    } else if (board[75] == general) {
-      general_pos = 75;
-    } else if (board[76] == general) {
-      general_pos = 76;
-    } else if (board[77] == general) {
-      general_pos = 77;
-    } else if (board[84] == general) {
-      general_pos = 84;
-    } else if (board[85] == general) {
-      general_pos = 85;
-    } else if (board[86] == general) {
-      general_pos = 86;
-    }
-  } else if (player == Player::BLACK) {
-    if (board[3] == general) {
-      general_pos = 3;
-    } else if (board[4] == general) {
-      general_pos = 4;
-    } else if (board[5] == general) {
-      general_pos = 5;
-    } else if (board[12] == general) {
-      general_pos = 12;
-    } else if (board[13] == general) {
-      general_pos = 13;
-    } else if (board[14] == general) {
-      general_pos = 14;
-    } else if (board[21] == general) {
-      general_pos = 21;
-    } else if (board[22] == general) {
-      general_pos = 22;
-    } else if (board[23] == general) {
-      general_pos = 23;
-    }
-  }
+  const Position general_pos = FindGeneral(board, player);
   if (general_pos == kNoPosition) {
     return true;
   }
 
   // Now scan the board for enemy pieces that might be threatening our
   // general.
-  for (uint8_t pos = 0; pos < kBoardSize; ++pos) {
+  for (uint8_t pos = 0; pos < kBoardSize; pos++) {
     const Piece piece = board[pos];
     if (piece == Piece::EMPTY) {
       continue;
