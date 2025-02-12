@@ -14,29 +14,6 @@ namespace {
 
 using enum Piece;
 
-constexpr Board<Piece> kInitState = {
-    B_CHARIOT, B_HORSE,    B_ELEPHANT, B_ADVISOR, B_GENERAL,
-    B_ADVISOR, B_ELEPHANT, B_HORSE,    B_CHARIOT,  // Row 0
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 1
-    EMPTY,     B_CANNON,   EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      B_CANNON,   EMPTY,  // Row 2
-    B_SOLDIER, EMPTY,      B_SOLDIER,  EMPTY,     B_SOLDIER,
-    EMPTY,     B_SOLDIER,  EMPTY,      B_SOLDIER,  // Row 3
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 4
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 5
-    R_SOLDIER, EMPTY,      R_SOLDIER,  EMPTY,     R_SOLDIER,
-    EMPTY,     R_SOLDIER,  EMPTY,      R_SOLDIER,  // Row 6
-    EMPTY,     R_CANNON,   EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      R_CANNON,   EMPTY,  // Row 7
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
-    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 8
-    R_CHARIOT, R_HORSE,    R_ELEPHANT, R_ADVISOR, R_GENERAL,
-    R_ADVISOR, R_ELEPHANT, R_HORSE,    R_CHARIOT,  // Row 9
-};
-
 // Converts a piece map to a board. The resulting board will be completely empty
 // (all cells set to EMPTY) except for the positions specified in the map.
 Board<Piece> pieceMapToBoard(
@@ -57,7 +34,7 @@ Board<Piece> pieceMapToBoard(
 
 }  // namespace
 
-Game::Game() : history_{kInitState} {}
+Game::Game() : history_{kStartingBoard} {}
 
 void Game::ResetFromBoard(const Board<Piece>& board) {
   using enum Player;
@@ -67,7 +44,7 @@ void Game::ResetFromBoard(const Board<Piece>& board) {
   player_ = RED;
 }
 
-void Game::Reset() { ResetFromBoard(kInitState); }
+void Game::Reset() { ResetFromBoard(kStartingBoard); }
 
 void Game::ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece) {
   ResetFromBoard(pieceMapToBoard(pos_piece));

@@ -632,9 +632,8 @@ TEST(FlipBoardTest, FlipDefaultBoard) {
   Board<Piece> defaultBoard = game.CurrentBoard();
   Board<Piece> flipped = FlipBoard(defaultBoard);
 
-  // In the default board (kInitState), the red general (R_GENERAL) is at (9,4)
-  // and the black general (B_GENERAL) is at (0,4).
-  // After flipping:
+  // In the default board (kStartingBoard), the red general (R_GENERAL) is at
+  // (9,4) and the black general (B_GENERAL) is at (0,4). After flipping:
   //   - The red general should move to (0,4) and become B_GENERAL.
   //   - The black general should move to (9,4) and become R_GENERAL.
   EXPECT_EQ(flipped[0][4], B_GENERAL);

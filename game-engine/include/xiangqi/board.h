@@ -8,6 +8,29 @@
 
 namespace xq {
 
+constexpr Board<Piece> kStartingBoard = {
+    B_CHARIOT, B_HORSE,    B_ELEPHANT, B_ADVISOR, B_GENERAL,
+    B_ADVISOR, B_ELEPHANT, B_HORSE,    B_CHARIOT,  // Row 0
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 1
+    EMPTY,     B_CANNON,   EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      B_CANNON,   EMPTY,  // Row 2
+    B_SOLDIER, EMPTY,      B_SOLDIER,  EMPTY,     B_SOLDIER,
+    EMPTY,     B_SOLDIER,  EMPTY,      B_SOLDIER,  // Row 3
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 4
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 5
+    R_SOLDIER, EMPTY,      R_SOLDIER,  EMPTY,     R_SOLDIER,
+    EMPTY,     R_SOLDIER,  EMPTY,      R_SOLDIER,  // Row 6
+    EMPTY,     R_CANNON,   EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      R_CANNON,   EMPTY,  // Row 7
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,     EMPTY,
+    EMPTY,     EMPTY,      EMPTY,      EMPTY,  // Row 8
+    R_CHARIOT, R_HORSE,    R_ELEPHANT, R_ADVISOR, R_GENERAL,
+    R_ADVISOR, R_ELEPHANT, R_HORSE,    R_CHARIOT,  // Row 9
+};
+
 // Returns true if it's checkmade for the given player. I.e., if the
 // current player does not take certain actions, the opponent can capture
 // the general with their next move.
