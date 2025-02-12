@@ -60,17 +60,17 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
       && (pos_row < kTotalRow - 2)  // can move down for 2 rows
       && board[pos + kTotalCol] == Piece::EMPTY  // not blocked
   ) {
-    const uint8_t down_2_row = target + kTotalCol * 2;
+    const uint8_t down_2_row = pos + kTotalCol * 2;
     if ((pos_col > 0 && down_2_row - 1 == target)                 // left 1
         || (pos_col < kTotalCol - 1 && down_2_row + 1 == target)  // right 1
     ) {
-      return true;  // down right
+      return true;
     }
   } else if ((target + kTotalCol < pos)  // target at least one row above
              && (pos_row > 1)            // can move up for 2 rows
              && (board[pos - kTotalCol] == Piece::EMPTY)  // not blocked
   ) {
-    const uint8_t up_2_row = target - kTotalCol * 2;
+    const uint8_t up_2_row = pos - kTotalCol * 2;
     if ((pos_col > 0 && up_2_row == target + 1)                 // left 1
         || (pos_col < kTotalCol - 1 && up_2_row + 1 == target)  // right 1
     ) {
