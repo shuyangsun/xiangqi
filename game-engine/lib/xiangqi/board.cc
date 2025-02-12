@@ -568,6 +568,7 @@ std::array<Position, 17> PossibleMoves(const Board<Piece>& board,
                                        Position pos) {
   using namespace xq::internal::util;
   using enum Piece;
+
   const Piece piece = board[pos];
   std::array<Position, 17> result;
   result.fill(kNoPosition);
@@ -626,19 +627,82 @@ Piece Move(Board<Piece>& board, Position from, Position to) {
 // Returns a vector of all possible moves for player.
 std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
                                            Player player) {
+  using namespace xq::internal::util;
+  using enum Piece;
+
   std::vector<uint16_t> result;
   for (Position pos = 0; pos < kBoardSize; pos++) {
     const Piece piece = board[pos];
-    if (piece == Piece::EMPTY || IsRed(piece) != (player == Player::RED)) {
+    if (piece == EMPTY || IsRed(piece) != (player == Player::RED)) {
       continue;
     }
-    const Board<bool> possible_moves = PossibleMoves(board, pos);
-    for (uint8_t mpos = 0; mpos < kBoardSize; mpos++) {
-      if (!possible_moves[mpos]) {
+    const auto from_16bit = static_cast<uint16_t>(pos << 8);
+    switch (piece) {
+      case R_GENERAL:
+      case B_GENERAL:
+        for (const Position to : PossibleMovesGeneral(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_ADVISOR:
+      case B_ADVISOR:
+        for (const Position to : PossibleMovesAdvisor(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_ELEPHANT:
+      case B_ELEPHANT:
+        for (const Position to : PossibleMovesElephant(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_HORSE:
+      case B_HORSE:
+        for (const Position to : PossibleMovesHorse(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_CHARIOT:
+      case B_CHARIOT:
+        for (const Position to : PossibleMovesChariot(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_CANNON:
+      case B_CANNON:
+        for (const Position to : PossibleMovesCannon(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      case R_SOLDIER:
+      case B_SOLDIER:
+        for (const Position to : PossibleMovesSoldier(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
+        }
+        break;
+      default:
         continue;
-      }
-      result.emplace_back(static_cast<uint16_t>(pos << 8) |
-                          static_cast<uint16_t>(mpos));
     }
   }
   return result;
