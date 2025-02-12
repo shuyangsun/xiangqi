@@ -336,7 +336,7 @@ Board<Piece> FlipBoard(const Board<Piece>& board) {
   return result;
 }
 
-std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
+BoardState EncodeBoardState(const Board<Piece>& board) {
   using enum Piece;
 
   uint64_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
@@ -491,7 +491,7 @@ std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board) {
   return {res1, res2, res3, res4};
 }
 
-Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state) {
+Board<Piece> DecodeBoardState(const BoardState& state) {
   // Initialize an empty board.
   Board<Piece> board;
   board.fill(Piece::EMPTY);

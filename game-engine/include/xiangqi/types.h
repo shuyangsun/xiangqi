@@ -37,6 +37,8 @@ constexpr Position kRedRiverStart = 5 * kTotalCol;
 template <typename T>
 using Board = std::array<T, kBoardSize>;
 
+using BoardState = std::array<uint64_t, 4>;
+
 enum class Player : bool { RED = true, BLACK = false };
 enum class Winner : int8_t { DRAW = 0, RED = 1, BLACK = -1, NONE = -2 };
 

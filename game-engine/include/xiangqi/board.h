@@ -90,7 +90,7 @@ Piece Move(Board<Piece>& board, Position from, Position to);
 // Returns a vector of all possible moves for player. Each move is a 16-bit
 // integer, representing "from" and "to" positions, each being 8 bits
 // (Position).
-std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
+std::vector<Movement> AllPossibleNextMoves(const Board<Piece>& board,
                                            Player player);
 
 // Returns a vector of all possible boards for the given player after any valid
@@ -113,10 +113,10 @@ Board<Piece> FlipBoard(const Board<Piece>& board);
 // (4 bits for each). If the piece is not present, use 0xF to represent it.
 // To make sure the same piece for the same player is treated in the same way,
 // all byte representations of a group of piece is sorted.
-std::array<uint64_t, 4> EncodeBoardState(const Board<Piece>& board);
+BoardState EncodeBoardState(const Board<Piece>& board);
 
 // Decode the encoded board state back to its original state.
-Board<Piece> DecodeBoardState(const std::array<uint64_t, 4> state);
+Board<Piece> DecodeBoardState(const BoardState& state);
 
 }  // namespace xq
 
