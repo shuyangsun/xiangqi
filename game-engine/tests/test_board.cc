@@ -340,4 +340,62 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
   EXPECT_EQ(FindGeneral(board_9, Player::BLACK), PosStr("F7"));
 }
 
+TEST(BoardTest, FindGeneralNone) {
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . R . a . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . G . A . . . \n");
+  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), kNoPosition);
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . G . a . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . A . . . \n");
+  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), kNoPosition);
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . g . a . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . r . A . . . \n");
+  EXPECT_EQ(FindGeneral(board_3, Player::RED), kNoPosition);
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . a . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . G . A . . . \n");
+  EXPECT_EQ(FindGeneral(board_3, Player::RED), kNoPosition);
+}
+
 }  // namespace
