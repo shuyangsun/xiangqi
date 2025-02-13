@@ -115,7 +115,7 @@ TEST(BoardTest, FlipBoard) {
 TEST(BoardTest, Move) {
   Board<Piece> board = kStartingBoard;
 
-  Move(board, NewMovement(PosStr("B7"), PosStr("B0")));
+  Piece capture = Move(board, NewMovement(PosStr("B7"), PosStr("B0")));
   Board<Piece> expected_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 r C e a g a e h r \n"
@@ -129,8 +129,9 @@ TEST(BoardTest, Move) {
       "8 . . . * * * . . . \n"
       "9 R H E A G A E H R \n");
   EXPECT_EQ(board, expected_1);
+  EXPECT_EQ(capture, Piece::B_HORSE);
 
-  Move(board, NewMovement(PosStr("E0"), PosStr("E1")));
+  capture = Move(board, NewMovement(PosStr("E0"), PosStr("E1")));
   Board<Piece> expected_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 r C e a . a e h r \n"
@@ -144,6 +145,55 @@ TEST(BoardTest, Move) {
       "8 . . . * * * . . . \n"
       "9 R H E A G A E H R \n");
   EXPECT_EQ(board, expected_2);
+  EXPECT_EQ(capture, Piece::EMPTY);
+}
+
+// Make sure even invalid moves can be performed.
+//
+// The Move function should not check if the movement is valid, as that is
+// a much more expensive calculation. Possible moves should be explicitly
+// calculated beforehand and be checked against before calling Move.
+TEST(BoardTest, CanDoInvalidMove) {
+  Board<Piece> board = kStartingBoard;
+
+  // Move cannon to capture general at the beginning.
+  Piece capture = Move(board, NewMovement(PosStr("B7"), PosStr("E0")));
+  Board<Piece> expected_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a C a e h r \n"
+      "1 . . . * * * . . . \n"
+      "2 . c . * * * . c . \n"
+      "3 s . s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S . S . S . S . S \n"
+      "7 . . . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  EXPECT_EQ(board, expected_1);
+  EXPECT_EQ(capture, Piece::B_GENERAL);
+
+  // Move red again
+  capture = Move(board, NewMovement(PosStr("G6"), PosStr("I0")));
+  Board<Piece> expected_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a C a e h S \n"
+      "1 . . . * * * . . . \n"
+      "2 . c . * * * . c . \n"
+      "3 s . s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S . S . S . . . S \n"
+      "7 . . . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  EXPECT_EQ(board, expected_2);
+  EXPECT_EQ(capture, Piece::B_CHARIOT);
+
+  // Move black same position
+  capture = Move(board, NewMovement(PosStr("H0"), PosStr("H0")));
+  EXPECT_EQ(board, expected_2);  // nothing should change
+  EXPECT_EQ(capture, Piece::EMPTY);
 }
 
 // ---------------------------------------------------------------------
