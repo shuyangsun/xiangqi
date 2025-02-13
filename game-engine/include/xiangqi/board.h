@@ -79,13 +79,20 @@ bool IsBeingCheckmate(const Board<Piece>& board, Player player);
 // over.
 Winner GetWinner(const Board<Piece>& board);
 
-// Returns all possible moves for the player with piece at position. Impossible
-// moves are filled with kNoPosition.
-std::array<Position, 17> PossibleMoves(const Board<Piece>& board, Position pos);
+// Rotate the position so that it's from the opponent's perspective.
+Position FlipPosition(Position position);
+
+// Rotate the board 180 degrees so that it's from the opponent's perspective.
+// Red and black pieces are also flipped.
+Board<Piece> FlipBoard(const Board<Piece>& board);
 
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
 Piece Move(Board<Piece>& board, Position from, Position to);
+
+// Returns all possible moves for the player with piece at position. Impossible
+// moves are filled with kNoPosition.
+std::array<Position, 17> PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Returns a vector of all possible moves for player. Each move is a 16-bit
 // integer, representing "from" and "to" positions, each being 8 bits
@@ -97,13 +104,6 @@ std::vector<Movement> AllPossibleNextMoves(const Board<Piece>& board,
 // move.
 std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
                                                 Player player);
-
-// Rotate the position so that it's from the opponent's perspective.
-Position FlipPosition(Position position);
-
-// Rotate the board 180 degrees so that it's from the opponent's perspective.
-// Red and black pieces are also flipped.
-Board<Piece> FlipBoard(const Board<Piece>& board);
 
 // Encode the board state using a small number of bytes, mainly used for the
 // game AI to identify a unique board state.
