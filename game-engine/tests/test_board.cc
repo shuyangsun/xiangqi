@@ -982,4 +982,118 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
   EXPECT_FALSE(IsBeingCheckmate(board_5, Player::BLACK));
 }
 
+TEST(BoardTest, IsBeingCheckmateSoldier) {
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . g . . . . . \n"
+      "3 . . . S . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . G . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . g S . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . G . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_2, Player::BLACK));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . S g . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . G . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::BLACK));
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . S . . . \n"
+      "1 . . . . . g . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . G . . . . \n");
+  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::BLACK));
+
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . g . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . s . . . . . \n"
+      "7 . . . G . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_5, Player::RED));
+
+  const Board<Piece> board_6 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . g . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . G s . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_6, Player::RED));
+
+  const Board<Piece> board_7 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . g . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . s G . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_7, Player::RED));
+
+  const Board<Piece> board_8 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . g . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . G . . . \n"
+      "9 . . . . . s . . . \n");
+  EXPECT_FALSE(IsBeingCheckmate(board_8, Player::RED));
+}
+
 }  // namespace
