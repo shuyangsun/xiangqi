@@ -123,11 +123,11 @@ bool ThreatensByCannon(const Board<Piece>& board, const Position pos,
   return false;
 }
 
-char PieceToCh(const Piece piece) {
+char PieceToCh(const Piece piece, const uint8_t row) {
   using enum Piece;
   switch (piece) {
     case EMPTY:
-      return '.';
+      return (row == 4 || row == 5) ? '-' : '.';
     case R_GENERAL:
       return 'G';
     case R_ADVISOR:
@@ -225,7 +225,7 @@ std::string BoardToString(const Board<Piece>& board) {
     result.append(std::to_string(row));
     result.append(" ");
     for (uint8_t col = 0; col < kTotalCol; col++) {
-      result += PieceToCh(board[Pos(row, col)]);
+      result += PieceToCh(board[Pos(row, col)], row);
       result.append(" ");
     }
     result.append("\n");
