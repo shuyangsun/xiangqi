@@ -901,6 +901,7 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
 }
 
 TEST(BoardTest, IsBeingCheckmateCannon) {
+  // Right
   const Board<Piece> board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . g . a . C . \n"
@@ -916,6 +917,7 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
   EXPECT_FALSE(IsBeingCheckmate(board_1, Player::RED));
   EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
 
+  // Left
   const Board<Piece> board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . h C g . a . . . \n"
@@ -930,6 +932,54 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "9 c h . . G . . . . \n");
   EXPECT_TRUE(IsBeingCheckmate(board_2, Player::RED));
   EXPECT_FALSE(IsBeingCheckmate(board_2, Player::BLACK));
+
+  // Top
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . C . a . . . \n"
+      "1 . . . h . . . . . \n"
+      "2 . . . g c . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . G . . . . \n");
+  EXPECT_FALSE(IsBeingCheckmate(board_3, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::BLACK));
+
+  // Bottom
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . g . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . h . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . G . . . . \n"
+      "8 . . . . h . . . . \n"
+      "9 . . . C c . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_4, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_4, Player::BLACK));
+
+  // Not aligned
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . C h . . . . . . \n"
+      "2 . h . g . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . H c . \n"
+      "6 . . . . . . . H . \n"
+      "7 . . . . G . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_FALSE(IsBeingCheckmate(board_5, Player::RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_5, Player::BLACK));
 }
 
 }  // namespace
