@@ -1096,4 +1096,66 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
   EXPECT_FALSE(IsBeingCheckmate(board_8, Player::RED));
 }
 
+// ---------------------------------------------------------------------
+// Test GetWinner
+// ---------------------------------------------------------------------
+
+TEST(BoardTest, GetWinner) {
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . g . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . s . . . \n"
+      "8 . . . . . G . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(GetWinner(board_1), Winner::NONE);
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . R . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . G . . . . \n");
+  EXPECT_EQ(GetWinner(board_2), Winner::RED);
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . g . . . . \n");
+  EXPECT_EQ(GetWinner(board_3), Winner::BLACK);
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . . G . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . . . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_EQ(GetWinner(board_4), Winner::RED);
+}
+
 }  // namespace

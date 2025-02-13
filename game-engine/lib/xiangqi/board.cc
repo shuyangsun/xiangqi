@@ -298,20 +298,13 @@ bool IsBeingCheckmate(const Board<Piece>& board, Player player) {
 }
 
 Winner GetWinner(const Board<Piece>& board) {
-  using enum Piece;
-  if (!(board[66] == R_GENERAL || board[67] == R_GENERAL ||
-        board[68] == R_GENERAL || board[75] == R_GENERAL ||
-        board[76] == R_GENERAL || board[77] == R_GENERAL ||
-        board[84] == R_GENERAL || board[85] == R_GENERAL ||
-        board[86] == R_GENERAL)) {
-    return Winner::BLACK;
-  }
-  if (!(board[3] == B_GENERAL || board[4] == B_GENERAL ||
-        board[5] == B_GENERAL || board[12] == B_GENERAL ||
-        board[13] == B_GENERAL || board[14] == B_GENERAL ||
-        board[21] == B_GENERAL || board[22] == B_GENERAL ||
-        board[23] == B_GENERAL)) {
+  const Position black_general_pos = FindGeneral(board, Player::BLACK);
+  if (black_general_pos == kNoPosition) {
     return Winner::RED;
+  }
+  const Position red_general_pos = FindGeneral(board, Player::RED);
+  if (red_general_pos == kNoPosition) {
+    return Winner::BLACK;
   }
   return Winner::NONE;
 }
