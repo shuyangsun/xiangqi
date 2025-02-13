@@ -75,9 +75,16 @@ Position FindGeneral(const Board<Piece>& board, Player player);
 // the general with their next move.
 bool IsBeingCheckmate(const Board<Piece>& board, Player player);
 
-// Returns the winner if the game is over. Returns NONE if the game is not
-// over.
+// Returns the winner if one of the player's general is captured, returns NONE
+// if both generals are on the board.
+// Note that this function does not perform a future-looking search to check
+// if there is no possible move for one player to not be checkmate. To perform
+// future-looking winning evaluation, call the DidPlayerLose function.
 Winner GetWinner(const Board<Piece>& board);
+
+// Returns true if all possible moves of the given player still result in the
+// player being checkmate.
+bool DidPlayerLose(const Board<Piece>& board, Player player);
 
 // Rotate the position so that it's from the opponent's perspective.
 Position FlipPosition(Position position);
@@ -88,7 +95,7 @@ Board<Piece> FlipBoard(const Board<Piece>& board);
 
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
-Piece Move(Board<Piece>& board, Position from, Position to);
+Piece Move(Board<Piece>& board, Movement movement);
 
 // Returns all possible moves for the player with piece at position. Impossible
 // moves are filled with kNoPosition.

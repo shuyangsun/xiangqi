@@ -309,6 +309,133 @@ Winner GetWinner(const Board<Piece>& board) {
   return Winner::NONE;
 }
 
+bool DidPlayerLose(const Board<Piece>& board, Player player) {
+  using namespace xq::internal::util;
+  using enum Piece;
+
+  const Winner opponent = player == Player::RED ? Winner::BLACK : Winner::RED;
+  const Piece opponent_general = player == Player::RED ? B_GENERAL : R_GENERAL;
+  if (GetWinner(board) == opponent) {
+    return true;
+  }
+
+  for (Position pos = 0; pos < kBoardSize; pos++) {
+    const Piece piece = board[pos];
+    if (piece == EMPTY || IsRed(piece) != (player == Player::RED)) {
+      continue;
+    }
+    switch (piece) {
+      case R_GENERAL:
+        for (const Position to : PossibleMovesGeneral(
+                 board, pos, FindGeneral(board, Player::BLACK))) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case B_GENERAL:
+        for (const Position to : PossibleMovesGeneral(
+                 board, pos, FindGeneral(board, Player::RED))) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_ADVISOR:
+      case B_ADVISOR:
+        for (const Position to : PossibleMovesAdvisor(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_ELEPHANT:
+      case B_ELEPHANT:
+        for (const Position to : PossibleMovesElephant(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_HORSE:
+      case B_HORSE:
+        for (const Position to : PossibleMovesHorse(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_CHARIOT:
+      case B_CHARIOT:
+        for (const Position to : PossibleMovesChariot(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_CANNON:
+      case B_CANNON:
+        for (const Position to : PossibleMovesCannon(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_SOLDIER:
+      case B_SOLDIER:
+        for (const Position to : PossibleMovesSoldier(board, pos)) {
+          if (to == kNoPosition) {
+            break;
+          }
+          Board<Piece> next = board;
+          const Piece capture = Move(next, NewMovement(pos, to));
+          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
+            return false;
+          }
+        }
+        break;
+      default:
+        continue;
+    }
+  }
+  return true;
+}
+
 Position FlipPosition(const Position position) {
   if (position == kNoPosition) {
     return kNoPosition;
@@ -701,8 +828,10 @@ std::array<Position, 17> PossibleMoves(const Board<Piece>& board,
   return result;
 }
 
-Piece Move(Board<Piece>& board, Position from, Position to) {
+Piece Move(Board<Piece>& board, const Movement movement) {
   using enum Player;
+  const Position from = Orig(movement);
+  const Position to = Dest(movement);
   if (from == to) {
     return Piece::EMPTY;
   }
@@ -819,7 +948,7 @@ std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
     const Position from = static_cast<Position>((move & 0xFF00) >> 8);
     const Position to = static_cast<Position>(move & 0x00FF);
     Board<Piece> next = board;
-    Move(next, from, to);
+    Move(next, move);
     result.emplace_back(std::move(next));
   }
   return result;
