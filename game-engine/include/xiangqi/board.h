@@ -86,9 +86,6 @@ Winner GetWinner(const Board<Piece>& board);
 // player being checkmate.
 bool DidPlayerLose(const Board<Piece>& board, Player player);
 
-// Rotate the position so that it's from the opponent's perspective.
-Position FlipPosition(Position position);
-
 // Rotate the board 180 degrees so that it's from the opponent's perspective.
 // Red and black pieces are also flipped.
 Board<Piece> FlipBoard(const Board<Piece>& board);

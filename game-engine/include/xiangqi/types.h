@@ -60,6 +60,11 @@ enum class Piece : int8_t {
   B_SOLDIER = -7
 };
 
+// Rotate the position so that it's from the opponent's perspective.
+inline Position FlipPosition(Position position) {
+  return kBoardSize - 1 - position;
+}
+
 inline bool IsRed(const Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) > 0;
 }

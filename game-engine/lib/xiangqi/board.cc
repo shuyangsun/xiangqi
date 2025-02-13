@@ -436,13 +436,6 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
   return true;
 }
 
-Position FlipPosition(const Position position) {
-  if (position == kNoPosition) {
-    return kNoPosition;
-  }
-  return kBoardSize - position - 1;
-}
-
 Board<Piece> FlipBoard(const Board<Piece>& board) {
   Board<Piece> result = board;
   for (uint8_t pos = 0; pos < kBoardSize / 2; pos++) {
