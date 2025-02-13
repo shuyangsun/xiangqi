@@ -564,6 +564,66 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "8 . . . . . . . . . \n"
       "9 . . . . G A . . . \n");
   EXPECT_TRUE(IsBeingCheckmate(board_8, Player::RED));
+
+  const Board<Piece> board_10 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 R . . g . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . r G . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_10, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_10, Player::BLACK));
+
+  const Board<Piece> board_11 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . g R . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . G . . . r \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::BLACK));
+
+  const Board<Piece> board_12 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . R r . . . . \n"
+      "1 . . . g . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . . . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . G . . . . \n"
+      "9 . . . . . . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_12, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_12, Player::BLACK));
+
+  const Board<Piece> board_13 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . . . . . . . \n"
+      "1 . . . g . . . . . \n"
+      "2 . . . . . . . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 . . . . . . . . . \n"
+      "5 . . . R . . . . . \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . . . . . . . \n"
+      "8 . . . . G . . . r \n"
+      "9 . . . . r . . . . \n");
+  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::BLACK));
 }
 
 TEST(BoardTest, IsBeingCheckmateHorse) {
