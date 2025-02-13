@@ -824,7 +824,7 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
   EXPECT_FALSE(IsBeingCheckmate(board_16, Player::BLACK));
 
   // Too far
-  const Board<Piece> board_16 = BoardFromString(
+  const Board<Piece> board_17 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 H . . . . . . . H \n"
       "1 . . . g . . . . . \n"
@@ -836,8 +836,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . . . . . . . \n"
       "8 . . . . G . . . . \n"
       "9 h . . . . . . . h \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_16, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_16, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_17, Player::RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_17, Player::BLACK));
 }
 
 }  // namespace
