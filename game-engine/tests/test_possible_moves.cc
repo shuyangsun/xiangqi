@@ -315,6 +315,26 @@ TEST(TestPossibleMoves, General) {
   const MovesPerPiece moves_40 =
       PossibleMoves(board_10, PosStr("F9"), /*prevent_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_40), ToPos({"F8", "E9"}));
+
+  const Board<Piece> board_11 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a * g . . . \n"
+      "1 . . . * * * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . A G * . . . \n");
+
+  const MovesPerPiece moves_41 = PossibleMoves(board_11, PosStr("E9"));
+  EXPECT_EQ(ToVec(moves_41), ToPos({"F9"}));
+
+  const MovesPerPiece moves_42 =
+      PossibleMoves(board_11, PosStr("E9"), /*prevent_checkmate=*/true);
+  EXPECT_TRUE(ToVec(moves_42).empty());
 }
 
 }  // namespace
