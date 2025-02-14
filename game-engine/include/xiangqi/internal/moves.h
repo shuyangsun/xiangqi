@@ -13,7 +13,7 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
 
 // Advisor can move to at most 2 positions. Impossible positions are filled with
 // kNoPosition.
-std::array<Position, 2> PossibleMovesAdvisor(const Board<Piece>& board,
+std::array<Position, 4> PossibleMovesAdvisor(const Board<Piece>& board,
                                              Position pos);
 
 // Elephant can move to at most 4 positions. Impossible positions are filled

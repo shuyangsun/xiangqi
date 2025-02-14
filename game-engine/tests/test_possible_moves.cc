@@ -327,7 +327,7 @@ TEST(TestPossibleMoves, General) {
       "6 . . . . . . . . . \n"
       "7 . . . * * * . . . \n"
       "8 . . . * A * . . . \n"
-      "9 . . . A G * . . . \n");
+      "9 . . . A G h . . . \n");
 
   const MovesPerPiece moves_41 = PossibleMoves(board_11, PosStr("E9"));
   EXPECT_EQ(ToVec(moves_41), ToPos({"F9"}));
@@ -335,6 +335,49 @@ TEST(TestPossibleMoves, General) {
   const MovesPerPiece moves_42 =
       PossibleMoves(board_11, PosStr("E9"), /*prevent_checkmate=*/true);
   EXPECT_TRUE(ToVec(moves_42).empty());
+}
+
+// ---------------------------------------------------------------------
+// Test Advisor
+// ---------------------------------------------------------------------
+
+TEST(TestPossibleMoves, Advisor) {
+  const MovesPerPiece moves_1 = PossibleMoves(kStartingBoard, PosStr("D0"));
+  EXPECT_EQ(ToVec(moves_1), ToPos({"E1"}));
+
+  const MovesPerPiece moves_2 = PossibleMoves(kStartingBoard, PosStr("F0"));
+  EXPECT_EQ(ToVec(moves_2), ToPos({"E1"}));
+
+  const MovesPerPiece moves_3 = PossibleMoves(kStartingBoard, PosStr("D9"));
+  EXPECT_EQ(ToVec(moves_3), ToPos({"E8"}));
+
+  const MovesPerPiece moves_4 = PossibleMoves(kStartingBoard, PosStr("F9"));
+  EXPECT_EQ(ToVec(moves_4), ToPos({"E8"}));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a * g . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * G * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . A * * . . . \n");
+
+  const MovesPerPiece moves_5 = PossibleMoves(board_1, PosStr("D0"));
+  EXPECT_TRUE(ToVec(moves_5).empty());
+
+  const MovesPerPiece moves_6 = PossibleMoves(board_1, PosStr("E1"));
+  EXPECT_EQ(ToVec(moves_6), ToPos({"D2", "F2"}));
+
+  const MovesPerPiece moves_7 = PossibleMoves(board_1, PosStr("E8"));
+  EXPECT_EQ(ToVec(moves_7), ToPos({"F9", "D7", "F7"}));
+
+  const MovesPerPiece moves_8 = PossibleMoves(board_1, PosStr("D9"));
+  EXPECT_TRUE(ToVec(moves_8).empty());
 }
 
 }  // namespace

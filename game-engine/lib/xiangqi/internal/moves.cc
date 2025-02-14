@@ -81,38 +81,64 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 2> PossibleMovesAdvisor(const Board<Piece>& board,
+std::array<Position, 4> PossibleMovesAdvisor(const Board<Piece>& board,
                                              const Position pos) {
-  std::array<Position, 2> result;
+  std::array<Position, 4> result;
   result.fill(kNoPosition);
-  const Piece piece = board[pos];
-  const bool isRed = IsRed(piece);
+  uint8_t res_idx = 0;
 
-  // // Advisors move one square diagonally.
-  // int dr[4] = {-1, -1, 1, 1};
-  // int dc[4] = {-1, 1, -1, 1};
+  if (IsRed(board[pos])) {
+    switch (pos) {
+      case 84:  // D9
+      case 86:  // F9
+      case 66:  // D7
+      case 68:  // F7
+        if (!IsRed(board[76])) {
+          result[res_idx++] = 76;  // E8
+        }
+        break;
+      case 76:  // E8
+        if (!IsRed(board[84])) {
+          result[res_idx++] = 84;
+        }
+        if (!IsRed(board[86])) {
+          result[res_idx++] = 86;
+        }
+        if (!IsRed(board[66])) {
+          result[res_idx++] = 66;
+        }
+        if (!IsRed(board[68])) {
+          result[res_idx++] = 68;
+        }
+        break;
+    }
+  } else {
+    switch (pos) {
+      case 3:   // D0
+      case 5:   // F0
+      case 21:  // D2
+      case 23:  // F2
+        if (!IsBlack(board[13])) {
+          result[res_idx++] = 13;  // E1
+        }
+        break;
+      case 13:  // E1
+        if (!IsBlack(board[3])) {
+          result[res_idx++] = 3;
+        }
+        if (!IsBlack(board[5])) {
+          result[res_idx++] = 5;
+        }
+        if (!IsBlack(board[21])) {
+          result[res_idx++] = 21;
+        }
+        if (!IsBlack(board[23])) {
+          result[res_idx++] = 23;
+        }
+        break;
+    }
+  }
 
-  // // Palace boundaries.
-  // int minRow = isRed ? 7 : 0;
-  // int maxRow = isRed ? 9 : 2;
-  // int minCol = 3, maxCol = 5;
-
-  // for (int i = 0; i < 4; i++) {
-  //   int newRow = Row(pos) + dr[i];
-  //   int newCol = Col(pos) + dc[i];
-  //   if (newRow >= minRow && newRow <= maxRow && newCol >= minCol &&
-  //       newCol <= maxCol) {
-  //     if (isRed) {
-  //       if (!IsRed(board[newRow][newCol])) {
-  //         result[newRow][newCol] = true;
-  //       }
-  //     } else {
-  //       if (!IsBlack(board[newRow][newCol])) {
-  //         result[newRow][newCol] = true;
-  //       }
-  //     }
-  //   }
-  // }
   return result;
 }
 

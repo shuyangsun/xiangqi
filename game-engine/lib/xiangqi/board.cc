@@ -802,7 +802,7 @@ MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
       break;
     case R_ADVISOR:
     case B_ADVISOR:
-      memcpy(result.data(), PossibleMovesAdvisor(board, pos).data(), 2);
+      memcpy(result.data(), PossibleMovesAdvisor(board, pos).data(), 4);
       break;
     case R_ELEPHANT:
     case B_ELEPHANT:
