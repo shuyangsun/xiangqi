@@ -10,6 +10,8 @@
 
 namespace xq {
 
+using MovesPerPiece = std::array<Position, 17>;
+
 constexpr Board<Piece> kStartingBoard = {
     Piece::B_CHARIOT,  Piece::B_HORSE,   Piece::B_ELEPHANT,
     Piece::B_ADVISOR,  Piece::B_GENERAL, Piece::B_ADVISOR,
@@ -96,7 +98,7 @@ Piece Move(Board<Piece>& board, Movement movement);
 
 // Returns all possible moves for the player with piece at position. Impossible
 // moves are filled with kNoPosition.
-std::array<Position, 17> PossibleMoves(const Board<Piece>& board, Position pos);
+MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos);
 
 // Returns a vector of all possible moves for player. Each move is a 16-bit
 // integer, representing "from" and "to" positions, each being 8 bits

@@ -41,7 +41,7 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
     }
     if (((pos >= 75 && pos <= 77) || (pos >= 84 && pos <= 86)) &&
         !IsRed(board[pos - kTotalCol])) {
-      // move down
+      // move up
       result[res_idx++] = pos - kTotalCol;
     }
     if ((pos == 66 || pos == 67 || pos == 75 || pos == 76 || pos == 84 ||
@@ -64,7 +64,7 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
     }
     if (((pos >= 12 && pos <= 14) || (pos >= 21 && pos <= 23)) &&
         !IsBlack(board[pos - kTotalCol])) {
-      // move down
+      // move up
       result[res_idx++] = pos - kTotalCol;
     }
     if ((pos == 3 || pos == 4 || pos == 12 || pos == 13 || pos == 21 ||

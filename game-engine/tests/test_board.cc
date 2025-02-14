@@ -11,7 +11,6 @@ namespace {
 namespace {
 
 using namespace ::xq;
-using enum ::xq::Piece;
 
 constexpr std::string_view kStartingBoardStr =
     "  A B C D E F G H I \n"
@@ -44,7 +43,7 @@ TEST(BoardTest, BoardEqual) {
 TEST(BoardTest, BoardNotEqual) {
   const Board<Piece> a = kStartingBoard;
   Board<Piece> b = kStartingBoard;
-  b[Pos(0, 0)] = EMPTY;
+  b[Pos(0, 0)] = Piece::EMPTY;
   EXPECT_NE(a, b);
 }
 

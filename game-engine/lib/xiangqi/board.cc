@@ -777,50 +777,51 @@ Board<Piece> DecodeBoardState(const BoardState& state) {
   return board;
 }
 
-std::array<Position, 17> PossibleMoves(const Board<Piece>& board,
-                                       Position pos) {
+MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos) {
   using namespace xq::internal::util;
   using enum Piece;
 
   const Piece piece = board[pos];
-  std::array<Position, 17> result;
+  MovesPerPiece result;
   result.fill(kNoPosition);
   switch (piece) {
     case EMPTY:
       return result;
     case R_GENERAL:
-      memcpy(PossibleMovesGeneral(board, pos, FindGeneral(board, Player::BLACK))
+      memcpy(result.data(),
+             PossibleMovesGeneral(board, pos, FindGeneral(board, Player::BLACK))
                  .data(),
-             result.data(), 5);
+             5);
       break;
     case B_GENERAL:
-      memcpy(PossibleMovesGeneral(board, pos, FindGeneral(board, Player::RED))
+      memcpy(result.data(),
+             PossibleMovesGeneral(board, pos, FindGeneral(board, Player::RED))
                  .data(),
-             result.data(), 5);
+             5);
       break;
     case R_ADVISOR:
     case B_ADVISOR:
-      memcpy(PossibleMovesAdvisor(board, pos).data(), result.data(), 2);
+      memcpy(result.data(), PossibleMovesAdvisor(board, pos).data(), 2);
       break;
     case R_ELEPHANT:
     case B_ELEPHANT:
-      memcpy(PossibleMovesElephant(board, pos).data(), result.data(), 4);
+      memcpy(result.data(), PossibleMovesElephant(board, pos).data(), 4);
       break;
     case R_HORSE:
     case B_HORSE:
-      memcpy(PossibleMovesHorse(board, pos).data(), result.data(), 8);
+      memcpy(result.data(), PossibleMovesHorse(board, pos).data(), 8);
       break;
     case R_CHARIOT:
     case B_CHARIOT:
-      memcpy(PossibleMovesChariot(board, pos).data(), result.data(), 17);
+      memcpy(result.data(), PossibleMovesChariot(board, pos).data(), 17);
       break;
     case R_CANNON:
     case B_CANNON:
-      memcpy(PossibleMovesCannon(board, pos).data(), result.data(), 17);
+      memcpy(result.data(), PossibleMovesCannon(board, pos).data(), 17);
       break;
     case R_SOLDIER:
     case B_SOLDIER:
-      memcpy(PossibleMovesSoldier(board, pos).data(), result.data(), 3);
+      memcpy(result.data(), PossibleMovesSoldier(board, pos).data(), 3);
       break;
     default:
       return result;
