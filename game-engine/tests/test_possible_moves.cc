@@ -378,6 +378,92 @@ TEST(TestPossibleMoves, Advisor) {
 
   const MovesPerPiece moves_8 = PossibleMoves(board_1, PosStr("D9"));
   EXPECT_TRUE(ToVec(moves_8).empty());
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a * a . . . \n"
+      "1 . . . * * g . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . G * * . . . \n"
+      "9 . . . A * A . . . \n");
+
+  const MovesPerPiece moves_9 = PossibleMoves(board_2, PosStr("D0"));
+  EXPECT_EQ(ToVec(moves_9), ToPos({"E1"}));
+
+  const MovesPerPiece moves_10 = PossibleMoves(board_2, PosStr("F0"));
+  EXPECT_EQ(ToVec(moves_10), ToPos({"E1"}));
+
+  const MovesPerPiece moves_11 = PossibleMoves(board_2, PosStr("D9"));
+  EXPECT_EQ(ToVec(moves_11), ToPos({"E8"}));
+
+  const MovesPerPiece moves_12 = PossibleMoves(board_2, PosStr("F9"));
+  EXPECT_EQ(ToVec(moves_12), ToPos({"E8"}));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . * * * . . . \n"
+      "1 . . . * * g . . . \n"
+      "2 . . . a * a . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . A * A . . . \n"
+      "8 . . . G * * . . . \n"
+      "9 . . . * * * . . . \n");
+
+  const MovesPerPiece moves_13 = PossibleMoves(board_3, PosStr("D2"));
+  EXPECT_EQ(ToVec(moves_13), ToPos({"E1"}));
+
+  const MovesPerPiece moves_14 = PossibleMoves(board_3, PosStr("F2"));
+  EXPECT_EQ(ToVec(moves_14), ToPos({"E1"}));
+
+  const MovesPerPiece moves_15 = PossibleMoves(board_3, PosStr("D7"));
+  EXPECT_EQ(ToVec(moves_15), ToPos({"E8"}));
+
+  const MovesPerPiece moves_16 = PossibleMoves(board_3, PosStr("F7"));
+  EXPECT_EQ(ToVec(moves_16), ToPos({"E8"}));
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . * * * . . . \n"
+      "1 . . . * a g . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . G A * . . . \n"
+      "9 . . . * * * . . . \n");
+
+  const MovesPerPiece moves_17 = PossibleMoves(board_4, PosStr("E1"));
+  EXPECT_EQ(ToVec(moves_17), ToPos({"D0", "F0", "D2", "F2"}));
+
+  const MovesPerPiece moves_18 = PossibleMoves(board_4, PosStr("E8"));
+  EXPECT_EQ(ToVec(moves_18), ToPos({"D9", "F9", "D7", "F7"}));
+
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . * g * . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * G * . . . \n"
+      "8 . . . * * * . . . \n"
+      "9 . . . * * * . . . \n");
+
+  const MovesPerPiece moves_19 =
+      PossibleMoves(board_5, PosStr("E1"), /*prevent_checkmate=*/true);
+  EXPECT_TRUE(ToVec(moves_19).empty());
 }
 
 }  // namespace
