@@ -8,8 +8,6 @@
 
 namespace xq::internal::util {
 
-namespace {}  // namespace
-
 std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
                                              const Position pos,
                                              const Position opponent_general) {

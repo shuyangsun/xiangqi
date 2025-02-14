@@ -777,7 +777,8 @@ Board<Piece> DecodeBoardState(const BoardState& state) {
   return board;
 }
 
-MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos) {
+MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
+                            const bool prevent_checkmate) {
   using namespace xq::internal::util;
   using enum Piece;
 
@@ -826,6 +827,20 @@ MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos) {
     default:
       return result;
   }
+  if (prevent_checkmate) {
+    const Player player = IsRed(piece) ? Player::RED : Player::BLACK;
+    for (size_t i = 0; i < result.size() && result[i] != kNoPosition; i++) {
+      Board<Piece> next = board;
+      const Piece captured = Move(next, NewMovement(pos, result[i]));
+      if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL) {
+        continue;
+      }
+      if (IsBeingCheckmate(next, player)) {
+        result[i] = kNoPosition;
+      }
+    }
+    std::sort(result.begin(), result.end());
+  }
   return result;
 }
 
@@ -848,7 +863,8 @@ Piece Move(Board<Piece>& board, const Movement movement) {
 
 // Returns a vector of all possible moves for player.
 std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
-                                           Player player) {
+                                           const Player player,
+                                           const bool prevent_checkmate) {
   using namespace xq::internal::util;
   using enum Piece;
 
@@ -940,9 +956,10 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
 }
 
 std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
-                                                Player player) {
+                                                const Player player,
+                                                const bool prevent_checkmate) {
   const std::vector<uint16_t> possible_moves =
-      AllPossibleNextMoves(board, player);
+      AllPossibleNextMoves(board, player, prevent_checkmate);
   std::vector<Board<Piece>> result;
   result.reserve(possible_moves.size());
   for (const uint16_t move : possible_moves) {
