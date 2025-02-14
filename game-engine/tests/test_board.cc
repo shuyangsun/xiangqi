@@ -1292,4 +1292,12 @@ TEST(BoardTest, GetWinner) {
   EXPECT_EQ(GetWinner(board_4), Winner::RED);
 }
 
+// ---------------------------------------------------------------------
+// Test EncodeBoardState and DecodeBoardState
+// ---------------------------------------------------------------------
+
+TEST(BoardTest, EncodeBoardState) {
+  EXPECT_EQ(DecodeBoardState(EncodeBoardState(kStartingBoard)), kStartingBoard);
+}
+
 }  // namespace
