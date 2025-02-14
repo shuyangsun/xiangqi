@@ -556,7 +556,7 @@ TEST(TestPossibleMoves, Elephant) {
 
   EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A2"))), ToPos({"C0", "C4"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("I2"))), ToPos({"G0", "G4"}));
-  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A7"))), ToPos({"C5", "C7"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A7"))), ToPos({"C5", "C9"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("I7"))), ToPos({"G5", "G9"}));
 
   const Board<Piece> board_6 = BoardFromString(

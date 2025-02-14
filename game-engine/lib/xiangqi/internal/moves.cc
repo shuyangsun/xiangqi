@@ -151,7 +151,7 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
 
   if (IsRed(board[pos])) {
     switch (pos) {
-      case 84:  // C9
+      case 83:  // C9
         if (!IsRed(board[63]) && IsEmpty(board[73])) {
           result[res_idx++] = 63;
         }
@@ -159,12 +159,58 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
           result[res_idx++] = 67;
         }
         break;
-      case 88:  // G9
+      case 87:  // G9
         if (!IsRed(board[71]) && IsEmpty(board[79])) {
           result[res_idx++] = 71;
         }
         if (!IsRed(board[67]) && IsEmpty(board[77])) {
           result[res_idx++] = 67;
+        }
+        break;
+      case 63:  // A7
+        if (!IsRed(board[47]) && IsEmpty(board[55])) {
+          result[res_idx++] = 47;
+        }
+        if (!IsRed(board[83]) && IsEmpty(board[73])) {
+          result[res_idx++] = 83;
+        }
+        break;
+      case 71:  // I7
+        if (!IsRed(board[51]) && IsEmpty(board[61])) {
+          result[res_idx++] = 51;
+        }
+        if (!IsRed(board[87]) && IsEmpty(board[79])) {
+          result[res_idx++] = 87;
+        }
+        break;
+      case 47:  // C5
+        if (!IsRed(board[63]) && IsEmpty(board[55])) {
+          result[res_idx++] = 63;
+        }
+        if (!IsRed(board[67]) && IsEmpty(board[57])) {
+          result[res_idx++] = 67;
+        }
+        break;
+      case 51:  // G5
+        if (!IsRed(board[71]) && IsEmpty(board[61])) {
+          result[res_idx++] = 71;
+        }
+        if (!IsRed(board[67]) && IsEmpty(board[59])) {
+          result[res_idx++] = 67;
+        }
+        break;
+      case 67:  // E7
+        if (!IsRed(board[47]) && IsEmpty(board[57])) {
+          result[res_idx++] = 47;
+        }
+        if (!IsRed(board[83]) && IsEmpty(board[75])) {
+          result[res_idx++] = 83;
+        }
+        if (!IsRed(board[51]) && IsEmpty(board[59])) {
+          result[res_idx++] = 51;
+        }
+        if (!IsRed(board[87]) && IsEmpty(board[77])) {
+          result[res_idx++] = 87;
         }
         break;
     }
@@ -184,6 +230,52 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
         }
         if (!IsBlack(board[22]) && IsEmpty(board[14])) {
           result[res_idx++] = 22;
+        }
+        break;
+      case 18:  // A2
+        if (!IsBlack(board[2]) && IsEmpty(board[10])) {
+          result[res_idx++] = 2;
+        }
+        if (!IsBlack(board[38]) && IsEmpty(board[28])) {
+          result[res_idx++] = 38;
+        }
+        break;
+      case 26:  // I2
+        if (!IsBlack(board[6]) && IsEmpty(board[16])) {
+          result[res_idx++] = 6;
+        }
+        if (!IsBlack(board[42]) && IsEmpty(board[34])) {
+          result[res_idx++] = 42;
+        }
+        break;
+      case 38:  // C4
+        if (!IsBlack(board[18]) && IsEmpty(board[28])) {
+          result[res_idx++] = 18;
+        }
+        if (!IsBlack(board[22]) && IsEmpty(board[30])) {
+          result[res_idx++] = 22;
+        }
+        break;
+      case 42:  // G4
+        if (!IsBlack(board[26]) && IsEmpty(board[34])) {
+          result[res_idx++] = 26;
+        }
+        if (!IsBlack(board[22]) && IsEmpty(board[32])) {
+          result[res_idx++] = 22;
+        }
+        break;
+      case 22:  // E2
+        if (!IsBlack(board[2]) && IsEmpty(board[12])) {
+          result[res_idx++] = 2;
+        }
+        if (!IsBlack(board[6]) && IsEmpty(board[14])) {
+          result[res_idx++] = 6;
+        }
+        if (!IsBlack(board[38]) && IsEmpty(board[30])) {
+          result[res_idx++] = 38;
+        }
+        if (!IsBlack(board[42]) && IsEmpty(board[32])) {
+          result[res_idx++] = 42;
         }
         break;
     }
