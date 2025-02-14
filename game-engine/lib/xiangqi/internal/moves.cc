@@ -146,38 +146,48 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
                                               Position pos) {
   std::array<Position, 4> result;
   result.fill(kNoPosition);
-  const Piece piece = board[pos];
-  const bool isRed = IsRed(piece);
 
-  // // Elephants move two squares diagonally.
-  // int dr[4] = {-2, -2, 2, 2};
-  // int dc[4] = {-2, 2, -2, 2};
+  uint8_t res_idx = 0;
 
-  // for (int i = 0; i < 4; i++) {
-  //   int newRow = Row(pos) + dr[i];
-  //   int newCol = Col(pos) + dc[i];
-  //   // Check board bounds.
-  //   if (newRow < 0 || newRow >= kTotalRow || newCol < 0 || newCol >=
-  //   kTotalCol)
-  //     continue;
-  //   // Elephants cannot cross the river.
-  //   if (isRed && newRow < 5) continue;
-  //   if (!isRed && newRow > 4) continue;
-  //   // Check the intermediate square ("the eye").
-  //   int midRow = Row(pos) + dr[i] / 2;
-  //   int midCol = Col(pos) + dc[i] / 2;
-  //   if (board[midRow][midCol] != Piece::EMPTY) continue;
-  //   // Allow move if destination is empty or holds an enemy.
-  //   if (isRed) {
-  //     if (!IsRed(board[newRow][newCol])) {
-  //       result[newRow][newCol] = true;
-  //     }
-  //   } else {
-  //     if (!IsBlack(board[newRow][newCol])) {
-  //       result[newRow][newCol] = true;
-  //     }
-  //   }
-  // }
+  if (IsRed(board[pos])) {
+    switch (pos) {
+      case 84:  // C9
+        if (!IsRed(board[63]) && IsEmpty(board[73])) {
+          result[res_idx++] = 63;
+        }
+        if (!IsRed(board[67]) && IsEmpty(board[75])) {
+          result[res_idx++] = 67;
+        }
+        break;
+      case 88:  // G9
+        if (!IsRed(board[71]) && IsEmpty(board[79])) {
+          result[res_idx++] = 71;
+        }
+        if (!IsRed(board[67]) && IsEmpty(board[77])) {
+          result[res_idx++] = 67;
+        }
+        break;
+    }
+  } else {
+    switch (pos) {
+      case 2:  // C0
+        if (!IsBlack(board[18]) && IsEmpty(board[10])) {
+          result[res_idx++] = 18;
+        }
+        if (!IsBlack(board[22]) && IsEmpty(board[12])) {
+          result[res_idx++] = 22;
+        }
+        break;
+      case 6:  // G0
+        if (!IsBlack(board[26]) && IsEmpty(board[16])) {
+          result[res_idx++] = 26;
+        }
+        if (!IsBlack(board[22]) && IsEmpty(board[14])) {
+          result[res_idx++] = 22;
+        }
+        break;
+    }
+  }
   return result;
 }
 

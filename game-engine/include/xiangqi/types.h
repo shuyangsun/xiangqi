@@ -65,6 +65,7 @@ inline Position FlipPosition(Position position) {
   return kBoardSize - 1 - position;
 }
 
+inline bool IsEmpty(const Piece piece) { return piece == Piece::EMPTY; }
 inline bool IsRed(const Piece piece) {
   return static_cast<std::underlying_type_t<Piece>>(piece) > 0;
 }
