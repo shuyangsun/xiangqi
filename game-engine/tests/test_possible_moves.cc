@@ -69,11 +69,16 @@ TEST(TestPossibleMoves, General) {
   const MovesPerPiece moves_3 = PossibleMoves(board_1, PosStr("F0"));
   EXPECT_EQ(ToVec(moves_3), ToPos({"F1", "E0"}));
 
-  const MovesPerPiece moves_4 = PossibleMoves(board_1, PosStr("E9"));
-  EXPECT_EQ(ToVec(moves_4), ToPos({"E8", "D9", "F9"}));
+  const MovesPerPiece moves_4 =
+      PossibleMoves(board_1, PosStr("F0"), /*prevent_checkmate=*/true);
+  EXPECT_EQ(ToVec(moves_4), ToPos({"F1", "E0"}));
 
-  const MovesPerPiece moves_5 = PossibleMoves(board_1, PosStr("E9"), true);
-  EXPECT_EQ(ToVec(moves_5), ToPos({"E8", "D9"}));
+  const MovesPerPiece moves_5 = PossibleMoves(board_1, PosStr("E9"));
+  EXPECT_EQ(ToVec(moves_5), ToPos({"E8", "D9", "F9"}));
+
+  const MovesPerPiece moves_6 =
+      PossibleMoves(board_1, PosStr("E9"), /*prevent_checkmate=*/true);
+  EXPECT_EQ(ToVec(moves_6), ToPos({"E8", "D9"}));
 }
 
 }  // namespace
