@@ -541,7 +541,42 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_TRUE(ToVec(PossibleMoves(board_4, PosStr("C5"))).empty());
   EXPECT_TRUE(ToVec(PossibleMoves(board_4, PosStr("G5"))).empty());
 
+  const Board<Piece> board_5 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . R a g * C . . \n"
+      "1 . . . * a * . . . \n"
+      "2 e . . * * * . . e \n"
+      "3 . . . . . . . . . \n"
+      "4 - - H - - - H - - \n"
+      "5 - - h - - - h - - \n"
+      "6 . . . . . . . . . \n"
+      "7 E . . * h * . . E \n"
+      "8 . . . * A * . . . \n"
+      "9 . . c * G A r . . \n");
+
+  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A2"))), ToPos({"C0", "C4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("I2"))), ToPos({"G0", "G4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A7"))), ToPos({"C5", "C7"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("I7"))), ToPos({"G5", "G9"}));
+
   const Board<Piece> board_6 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a g * . . . \n"
+      "1 . r . * a * . c . \n"
+      "2 e . . * * * . . e \n"
+      "3 . H . . . . . H . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . H . . . . . H . \n"
+      "7 E . . * h * . . E \n"
+      "8 . C . * A * . R . \n"
+      "9 . . . * G A . . . \n");
+  EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("A2"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("I2"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("A7"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("I7"))).empty());
+
+  const Board<Piece> board_7 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . R a g * C . . \n"
       "1 . . . * a * . . . \n"
@@ -553,12 +588,12 @@ TEST(TestPossibleMoves, Elephant) {
       "7 . . . * E * . . . \n"
       "8 . . . * A * . . . \n"
       "9 . . c * G A r . . \n");
-  EXPECT_EQ(ToVec(PossibleMoves(board_6, PosStr("E2"))),
+  EXPECT_EQ(ToVec(PossibleMoves(board_7, PosStr("E2"))),
             ToPos({"C0", "G0", "C4", "G4"}));
-  EXPECT_EQ(ToVec(PossibleMoves(board_6, PosStr("E7"))),
+  EXPECT_EQ(ToVec(PossibleMoves(board_7, PosStr("E7"))),
             ToPos({"C9", "G9", "C5", "G5"}));
 
-  const Board<Piece> board_7 = BoardFromString(
+  const Board<Piece> board_8 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . H a H . . . \n"
@@ -570,8 +605,8 @@ TEST(TestPossibleMoves, Elephant) {
       "7 . . . * E * . . . \n"
       "8 . . . h A h . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(ToVec(PossibleMoves(board_7, PosStr("E2"))).empty());
-  EXPECT_TRUE(ToVec(PossibleMoves(board_7, PosStr("E7"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_8, PosStr("E2"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_8, PosStr("E7"))).empty());
 }
 
 }  // namespace
