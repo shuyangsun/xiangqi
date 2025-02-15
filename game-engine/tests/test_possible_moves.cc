@@ -641,6 +641,57 @@ TEST(TestPossibleMoves, Horse) {
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("D4"))),
             ToPos({"B5", "B3", "C2", "E2", "F3", "F5", "E6", "C6"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("A0"))), ToPos({"C1", "B2"}));
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a g * . . h \n"
+      "1 . . C * a * . . . \n"
+      "2 h . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 H - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . * G A . . H \n");
+
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("I0"))), ToPos({"G1", "H2"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("A2"))),
+            ToPos({"B0", "B4", "C1", "C3"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("A5"))),
+            ToPos({"B3", "B7", "C4", "C6"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("I9"))), ToPos({"H7", "G8"}));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . * g * . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . a h S . . . \n"
+      "3 . . . . S . . . . \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . S . . . . \n"
+      "7 . . . S H A . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . * G * . . . \n");
+  EXPECT_TRUE(ToVec(PossibleMoves(board_3, PosStr("E2"))).empty());
+  EXPECT_TRUE(ToVec(PossibleMoves(board_3, PosStr("E7"))).empty());
+
+  const Board<Piece> board_4 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . * * g . . . \n"
+      "1 . . . * * * . . . \n"
+      "2 . . . * * R . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - h - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . * G * . . . \n");
+  EXPECT_EQ(
+      ToVec(PossibleMoves(board_4, PosStr("E4"), /*prevent_checkmate=*/true)),
+      ToPos({"F2"}));
 }
 
 }  // namespace
