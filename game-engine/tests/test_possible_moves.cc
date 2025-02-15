@@ -795,6 +795,22 @@ TEST(TestPossibleMoves, Cannon) {
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("H7"))),
             ToPos({"H8", "H6", "H5", "H4", "H3", "H0", "I7", "G7", "F7", "E7",
                    "D7", "C7"}));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a g * . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . S . . . \n"
+      "4 - - - - S - - - - \n"
+      "5 R - R H c c h - - \n"
+      "6 . . . . h . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A H . . . \n"
+      "9 . . . * G A . . . \n");
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("E5"))), ToPos({"C5", "E8"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("F5"))),
+            ToPos({"D5", "F4", "F6", "F7", "F9"}));
 }
 
 }  // namespace
