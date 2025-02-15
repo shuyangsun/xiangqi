@@ -732,6 +732,50 @@ TEST(TestPossibleMoves, Chariot) {
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("G4"))),
             ToPos({"G0", "G1", "G2", "G3", "G5", "G6", "G7", "G8", "G9", "A4",
                    "B4", "C4", "D4", "E4", "F4", "H4", "I4"}));
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 R c . a g * . . . \n"
+      "1 c . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . H . . \n"
+      "4 - - s - - H r S - \n"
+      "5 - s R h - - S - - \n"
+      "6 . . h . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . C \n"
+      "9 . . . * G A . C r \n");
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("A0"))), ToPos({"A1", "B0"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("I9"))), ToPos({"I8", "H9"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("C5"))),
+            ToPos({"C4", "C6", "B5", "D5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("G4"))),
+            ToPos({"G3", "G5", "F4", "H4"}));
+
+  const Board<Piece> board_3 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r C . a g * . . . \n"
+      "1 C . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . H . . \n"
+      "4 - - s - - H r S - \n"
+      "5 - s R h - - S - - \n"
+      "6 . . h . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . c \n"
+      "9 . . . * G A . c R \n");
+  EXPECT_EQ(
+      ToVec(PossibleMoves(board_3, PosStr("A0"), /*avoid_checkmate=*/true)),
+      ToPos({"B0"}));
+  EXPECT_EQ(
+      ToVec(PossibleMoves(board_3, PosStr("I9"), /*avoid_checkmate=*/true)),
+      ToPos({"H9"}));
+  EXPECT_TRUE(
+      ToVec(PossibleMoves(board_3, PosStr("C5"), /*avoid_checkmate=*/true))
+          .empty());
+  EXPECT_TRUE(
+      ToVec(PossibleMoves(board_3, PosStr("G4"), /*avoid_checkmate=*/true))
+          .empty());
 }
 
 }  // namespace
