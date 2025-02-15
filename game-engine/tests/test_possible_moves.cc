@@ -694,4 +694,44 @@ TEST(TestPossibleMoves, Horse) {
       ToPos({"F2"}));
 }
 
+// ---------------------------------------------------------------------
+// Test Chariot
+// ---------------------------------------------------------------------
+
+TEST(TestPossibleMoves, Chariot) {
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("A0"))),
+            ToPos({"A1", "A2"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I0"))),
+            ToPos({"I1", "I2"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("A9"))),
+            ToPos({"A8", "A7"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I9"))),
+            ToPos({"I8", "I7"}));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 R . . a g * . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - r - - \n"
+      "5 - - R - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . * G A . . r \n");
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("A0"))),
+            ToPos({"A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "B0",
+                   "C0", "D0"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("C5"))),
+            ToPos({"C0", "C1", "C2", "C3", "C4", "C6", "C7", "C8", "C9", "A5",
+                   "B5", "D5", "E5", "F5", "G5", "H5", "I5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("I9"))),
+            ToPos({"I0", "I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "H9",
+                   "G9", "F9"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("G4"))),
+            ToPos({"G0", "G1", "G2", "G3", "G5", "G6", "G7", "G8", "G9", "A4",
+                   "B4", "C4", "D4", "E4", "F4", "H4", "I4"}));
+}
+
 }  // namespace
