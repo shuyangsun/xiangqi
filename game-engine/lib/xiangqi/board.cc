@@ -952,6 +952,19 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
         continue;
     }
   }
+  if (avoid_checkmate) {
+    std::vector<Movement> final_result;
+    for (const Movement move : result) {
+      const Player player =
+          IsRed(board[Orig(move)]) ? Player::RED : Player::BLACK;
+      Board<Piece> next = board;
+      const Piece captured = Move(next, move);
+      if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL ||
+          !IsBeingCheckmate(next, player)) {
+        final_result.emplace_back(move);
+      }
+    }
+  }
   return result;
 }
 
