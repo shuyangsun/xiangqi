@@ -828,6 +828,52 @@ TEST(TestPossibleMoves, Soldier) {
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("E6"))), ToPos({"E5"}));
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("G6"))), ToPos({"G5"}));
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I6"))), ToPos({"I5"}));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a g * . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . H . * * * . . . \n"
+      "3 R S R r S c h . . \n"
+      "4 - - - - - - S - S \n"
+      "5 S - - - - - - - - \n"
+      "6 . . . . . . . . . \n"
+      "7 . . . * * * . . . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . G * A . . . \n");
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("A5"))), ToPos({"A4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("I4"))), ToPos({"I3", "H4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("G4"))),
+            ToPos({"G3", "F4", "H4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("E3"))),
+            ToPos({"E2", "D3", "F3"}));
+  EXPECT_EQ(
+      ToVec(PossibleMoves(board_1, PosStr("E3"), /*avoid_checkmate=*/true)),
+      ToPos({"D3"}));
+  EXPECT_TRUE(ToVec(PossibleMoves(board_1, PosStr("B3"))).empty());
+
+  const Board<Piece> board_2 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 . . . a * g . . . \n"
+      "1 . . . * a * . . . \n"
+      "2 . . . * * * . . . \n"
+      "3 . . . . . . . . . \n"
+      "4 - - - - - - - - s \n"
+      "5 s C s H - - - - - \n"
+      "6 . . . C s R r s r \n"
+      "7 . . . * * * . h . \n"
+      "8 . . . * A * . . . \n"
+      "9 . . . G * A . . . \n");
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("I4"))), ToPos({"I5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("A5"))), ToPos({"A6", "B5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("C5"))),
+            ToPos({"C6", "B5", "D5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("E6"))),
+            ToPos({"E7", "D6", "F6"}));
+  EXPECT_EQ(
+      ToVec(PossibleMoves(board_2, PosStr("E6"), /*avoid_checkmate=*/true)),
+      ToPos({"F6"}));
+  EXPECT_TRUE(ToVec(PossibleMoves(board_2, PosStr("H6"))).empty());
 }
 
 }  // namespace

@@ -507,35 +507,35 @@ std::array<Position, 3> PossibleMovesSoldier(const Board<Piece>& board,
   size_t res_idx = 0;
 
   if (is_red) {
-    if (pos >= kRedRiverStart) {
+    if (pos >= kRedRiverStart && CanCapture(board[pos - kTotalCol], is_red)) {
       result[0] = pos - kTotalCol;
       return result;
     } else {
-      if (pos >= kTotalCol) {
+      if (pos >= kTotalCol && CanCapture(board[pos - kTotalCol], is_red)) {
         result[res_idx++] = pos - kTotalCol;
       }
       const uint8_t col = Col(pos);
-      if (col > 0) {
+      if (col > 0 && CanCapture(board[pos - 1], is_red)) {
         result[res_idx++] = pos - 1;
       }
-      if (col < kTotalCol - 1) {
+      if (col < kTotalCol - 1 && CanCapture(board[pos + 1], is_red)) {
         result[res_idx++] = pos + 1;
       }
       return result;
     }
   } else {
-    if (pos < kRedRiverStart) {
+    if (pos < kRedRiverStart && CanCapture(board[pos + kTotalCol], is_red)) {
       result[0] = pos + kTotalCol;
       return result;
     } else {
-      if (pos < 81) {
+      if (pos < 81 && CanCapture(board[pos + kTotalCol], is_red)) {
         result[res_idx++] = pos + kTotalCol;
       }
       const uint8_t col = Col(pos);
-      if (col > 0) {
+      if (col > 0 && CanCapture(board[pos - 1], is_red)) {
         result[res_idx++] = pos - 1;
       }
-      if (col < kTotalCol - 1) {
+      if (col < kTotalCol - 1 && CanCapture(board[pos + 1], is_red)) {
         result[res_idx++] = pos + 1;
       }
       return result;
