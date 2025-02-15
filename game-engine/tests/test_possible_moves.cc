@@ -778,4 +778,23 @@ TEST(TestPossibleMoves, Chariot) {
           .empty());
 }
 
+// ---------------------------------------------------------------------
+// Test Cannon
+// ---------------------------------------------------------------------
+
+TEST(TestPossibleMoves, Cannon) {
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("B2"))),
+            ToPos({"B1", "B3", "B4", "B5", "B6", "B9", "A2", "C2", "D2", "E2",
+                   "F2", "G2"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("H2"))),
+            ToPos({"H1", "H3", "H4", "H5", "H6", "H9", "I2", "G2", "F2", "E2",
+                   "D2", "C2"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("B7"))),
+            ToPos({"B8", "B6", "B5", "B4", "B3", "B0", "A7", "C7", "D7", "E7",
+                   "F7", "G7"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("H7"))),
+            ToPos({"H8", "H6", "H5", "H4", "H3", "H0", "I7", "G7", "F7", "E7",
+                   "D7", "C7"}));
+}
+
 }  // namespace

@@ -413,105 +413,88 @@ std::array<Position, 17> PossibleMovesCannon(const Board<Piece>& board,
                                              Position pos) {
   std::array<Position, 17> result;
   result.fill(kNoPosition);
-  const Piece piece = board[pos];
-  const bool isRed = IsRed(piece);
+  const bool is_red = IsRed(board[pos]);
+  uint8_t res_idx = 0;
 
-  // // For each direction, first mark all empty squares.
-  // // Then, once a non-empty square (screen) is encountered,
-  // // continue until the first non-empty square after the screen which is
-  // // capturable.
+  // Up
+  bool blocked = false;
+  for (int8_t cur = static_cast<int8_t>(pos) - kTotalCol; cur >= 0;
+       cur -= kTotalCol) {
+    if (IsEmpty(board[cur])) {
+      if (!blocked) {
+        result[res_idx++] = static_cast<Position>(cur);
+      }
+    } else {
+      if (blocked) {
+        if (CanCapture(board[cur], is_red)) {
+          result[res_idx++] = static_cast<Position>(cur);
+        }
+        break;
+      } else {
+        blocked = true;
+      }
+    }
+  }
 
-  // // Upwards.
-  // {
-  //   bool screen_found = false;
-  //   for (int r = Row(pos) - 1; r >= 0; r--) {
-  //     if (!screen_found) {
-  //       if (board[r][Col(pos)] == Piece::EMPTY) {
-  //         result[r][Col(pos)] = true;
-  //       } else {
-  //         screen_found = true;
-  //       }
-  //     } else {
-  //       if (board[r][Col(pos)] != Piece::EMPTY) {
-  //         if (isRed) {
-  //           if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
-  //         } else {
-  //           if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
-  //         }
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
+  // Down
+  blocked = false;
+  for (int8_t cur = static_cast<int8_t>(pos) + kTotalCol; cur < kBoardSize;
+       cur += kTotalCol) {
+    if (IsEmpty(board[cur])) {
+      if (!blocked) {
+        result[res_idx++] = static_cast<Position>(cur);
+      }
+    } else {
+      if (blocked) {
+        if (CanCapture(board[cur], is_red)) {
+          result[res_idx++] = static_cast<Position>(cur);
+        }
+        break;
+      } else {
+        blocked = true;
+      }
+    }
+  }
 
-  // // Downwards.
-  // {
-  //   bool screen_found = false;
-  //   for (int r = Row(pos) + 1; r < kTotalRow; r++) {
-  //     if (!screen_found) {
-  //       if (board[r][Col(pos)] == Piece::EMPTY) {
-  //         result[r][Col(pos)] = true;
-  //       } else {
-  //         screen_found = true;
-  //       }
-  //     } else {
-  //       if (board[r][Col(pos)] != Piece::EMPTY) {
-  //         if (isRed) {
-  //           if (IsBlack(board[r][Col(pos)])) result[r][Col(pos)] = true;
-  //         } else {
-  //           if (IsRed(board[r][Col(pos)])) result[r][Col(pos)] = true;
-  //         }
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
+  // Left
+  blocked = false;
+  for (int8_t cur = static_cast<int8_t>(pos) - 1;
+       cur >= (pos - pos % kTotalCol); cur--) {
+    if (IsEmpty(board[cur])) {
+      if (!blocked) {
+        result[res_idx++] = static_cast<Position>(cur);
+      }
+    } else {
+      if (blocked) {
+        if (CanCapture(board[cur], is_red)) {
+          result[res_idx++] = static_cast<Position>(cur);
+        }
+        break;
+      } else {
+        blocked = true;
+      }
+    }
+  }
 
-  // // Leftwards.
-  // {
-  //   bool screen_found = false;
-  //   for (int c = Col(pos) - 1; c >= 0; c--) {
-  //     if (!screen_found) {
-  //       if (board[Row(pos)][c] == Piece::EMPTY) {
-  //         result[Row(pos)][c] = true;
-  //       } else {
-  //         screen_found = true;
-  //       }
-  //     } else {
-  //       if (board[Row(pos)][c] != Piece::EMPTY) {
-  //         if (isRed) {
-  //           if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
-  //         } else {
-  //           if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
-  //         }
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // // Rightwards.
-  // {
-  //   bool screen_found = false;
-  //   for (int c = Col(pos) + 1; c < kTotalCol; c++) {
-  //     if (!screen_found) {
-  //       if (board[Row(pos)][c] == Piece::EMPTY) {
-  //         result[Row(pos)][c] = true;
-  //       } else {
-  //         screen_found = true;
-  //       }
-  //     } else {
-  //       if (board[Row(pos)][c] != Piece::EMPTY) {
-  //         if (isRed) {
-  //           if (IsBlack(board[Row(pos)][c])) result[Row(pos)][c] = true;
-  //         } else {
-  //           if (IsRed(board[Row(pos)][c])) result[Row(pos)][c] = true;
-  //         }
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
+  // Right
+  blocked = false;
+  for (int8_t cur = static_cast<int8_t>(pos) + 1;
+       cur < ((pos / kTotalCol + 1) * kTotalCol); cur++) {
+    if (IsEmpty(board[cur])) {
+      if (!blocked) {
+        result[res_idx++] = static_cast<Position>(cur);
+      }
+    } else {
+      if (blocked) {
+        if (CanCapture(board[cur], is_red)) {
+          result[res_idx++] = static_cast<Position>(cur);
+        }
+        break;
+      } else {
+        blocked = true;
+      }
+    }
+  }
 
   return result;
 }
