@@ -778,7 +778,7 @@ Board<Piece> DecodeBoardState(const BoardState& state) {
 }
 
 MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
-                            const bool prevent_checkmate) {
+                            const bool avoid_checkmate) {
   using namespace xq::internal::util;
   using enum Piece;
 
@@ -827,7 +827,7 @@ MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
     default:
       return result;
   }
-  if (prevent_checkmate) {
+  if (avoid_checkmate) {
     const Player player = IsRed(piece) ? Player::RED : Player::BLACK;
     for (size_t i = 0; i < result.size() && result[i] != kNoPosition; i++) {
       Board<Piece> next = board;
@@ -864,7 +864,7 @@ Piece Move(Board<Piece>& board, const Movement movement) {
 // Returns a vector of all possible moves for player.
 std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
                                            const Player player,
-                                           const bool prevent_checkmate) {
+                                           const bool avoid_checkmate) {
   using namespace xq::internal::util;
   using enum Piece;
 
@@ -957,9 +957,9 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
 
 std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
                                                 const Player player,
-                                                const bool prevent_checkmate) {
+                                                const bool avoid_checkmate) {
   const std::vector<uint16_t> possible_moves =
-      AllPossibleNextMoves(board, player, prevent_checkmate);
+      AllPossibleNextMoves(board, player, avoid_checkmate);
   std::vector<Board<Piece>> result;
   result.reserve(possible_moves.size());
   for (const uint16_t move : possible_moves) {

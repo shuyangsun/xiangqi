@@ -98,25 +98,25 @@ Piece Move(Board<Piece>& board, Movement movement);
 
 // Returns all possible moves for the player with piece at position. Impossible
 // moves are filled with kNoPosition.
-// If prevent_checkmate is set to true, moves that result in being checkmade
+// If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
 MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos,
-                            bool prevent_checkmate = false);
+                            bool avoid_checkmate = false);
 
 // Returns a vector of all possible moves for player. Each move is a 16-bit
 // integer, representing "from" and "to" positions, each being 8 bits
 // (Position).
 std::vector<Movement> AllPossibleNextMoves(const Board<Piece>& board,
                                            Player player,
-                                           bool prevent_checkmate = false);
+                                           bool avoid_checkmate = false);
 
 // Returns a vector of all possible boards for the given player after any valid
 // move.
-// If prevent_checkmate is set to true, moves that result in being checkmade
+// If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
 std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
                                                 Player player,
-                                                bool prevent_checkmate = false);
+                                                bool avoid_checkmate = false);
 
 // Encode the board state using a small number of bytes, mainly used for the
 // game AI to identify a unique board state.
