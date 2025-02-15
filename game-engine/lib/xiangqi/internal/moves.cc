@@ -8,6 +8,14 @@
 
 namespace xq::internal::util {
 
+namespace {
+
+inline bool CanCapture(const Piece piece, const bool is_red) {
+  return is_red ? !IsRed(piece) : !IsBlack(piece);
+}
+
+}  // namespace
+
 std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
                                              const Position pos,
                                              const Position opponent_general) {
@@ -143,7 +151,7 @@ std::array<Position, 4> PossibleMovesAdvisor(const Board<Piece>& board,
 }
 
 std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
-                                              Position pos) {
+                                              const Position pos) {
   std::array<Position, 4> result;
   result.fill(kNoPosition);
 
@@ -284,98 +292,58 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
 }
 
 std::array<Position, 8> PossibleMovesHorse(const Board<Piece>& board,
-                                           Position pos) {
+                                           const Position pos) {
   std::array<Position, 8> result;
   result.fill(kNoPosition);
-  const Piece piece = board[pos];
-  const bool isRed = IsRed(piece);
+  const bool is_red = IsRed(board[pos]);
+  const uint8_t col = Col(pos);
+  uint8_t res_idx = 0;
 
-  //   // For each of the four orthogonal directions, check if the "leg" is
-  //   free.
-  //   // Upward:
-  //   if (Row(pos) - 1 >= 0 && board[Row(pos) - 1][Col(pos)] == Piece::EMPTY) {
-  //     int candRow = Row(pos) - 2;
-  //     if (candRow >= 0) {
-  //       int candCols[2] = {Col(pos) - 1, Col(pos) + 1};
-  //       for (int i = 0; i < 2; i++) {
-  //         int candCol = candCols[i];
-  //         if (candCol >= 0 && candCol < kTotalCol) {
-  //           if (isRed) {
-  //             if (!IsRed(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           } else {
-  //             if (!IsBlack(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   // Downward:
-  //   if (Row(pos) + 1 < kTotalRow &&
-  //       board[Row(pos) + 1][Col(pos)] == Piece::EMPTY) {
-  //     int candRow = Row(pos) + 2;
-  //     if (candRow < kTotalRow) {
-  //       int candCols[2] = {Col(pos) - 1, Col(pos) + 1};
-  //       for (int i = 0; i < 2; i++) {
-  //         int candCol = candCols[i];
-  //         if (candCol >= 0 && candCol < kTotalCol) {
-  //           if (isRed) {
-  //             if (!IsRed(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           } else {
-  //             if (!IsBlack(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   // Leftward:
-  //   if (Col(pos) - 1 >= 0 && board[Row(pos)][Col(pos) - 1] == Piece::EMPTY) {
-  //     int candCol = Col(pos) - 2;
-  //     if (candCol >= 0) {
-  //       int candRows[2] = {Row(pos) - 1, Row(pos) + 1};
-  //       for (int i = 0; i < 2; i++) {
-  //         int candRow = candRows[i];
-  //         if (candRow >= 0 && candRow < kTotalRow) {
-  //           if (isRed) {
-  //             if (!IsRed(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           } else {
-  //             if (!IsBlack(board[candRow][candCol])) {
-  //               result[candRow][candCol] = true;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   // Rightward:
-  //   if (Col(pos) + 1 < kTotalCol &&
-  //       board[Row(pos)][Col(pos) + 1] == Piece::EMPTY) {
-  //     int candCol = Col(pos) + 2;
-  //     if (candCol < kTotalCol) {
-  //       int candRows[2] = {Row(pos) - 1, Row(pos) + 1};
-  //       for (int i = 0; i < 2; i++) {
-  //         int candRow = candRows[i];
-  //         if (candRow >= 0 && candRow < kTotalRow) {
-  //           if (isRed) {
-  //             if (!IsRed(board[candRow][candCol]))
-  //               result[candRow][candCol] = true;
-  //           } else {
-  //             if (!IsBlack(board[candRow][candCol]))
-  //               result[candRow][candCol] = true;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
+  if (pos > 17) {                           // can move up 2
+    if (IsEmpty(board[pos - kTotalCol])) {  // non-blocking
+      const Position up = pos - 2 * kTotalCol;
+      if (col > 0 && CanCapture(board[up - 1], is_red)) {
+        result[res_idx++] = up - 1;
+      }
+      if (col < kTotalCol - 1 && CanCapture(board[up + 1], is_red)) {
+        result[res_idx++] = up + 1;
+      }
+    }
+  }
+  if (pos < 72) {                           // can move down 2
+    if (IsEmpty(board[pos + kTotalCol])) {  // non-blocking
+      const Position down = pos + 2 * kTotalCol;
+      if (col > 0 && CanCapture(board[down - 1], is_red)) {
+        result[res_idx++] = down - 1;
+      }
+      if (col < kTotalCol - 1 && CanCapture(board[down + 1], is_red)) {
+        result[res_idx++] = down + 1;
+      }
+    }
+  }
+  if (col > 1) {                    // can move left 2
+    if (IsEmpty(board[pos - 1])) {  // non-blocking
+      const Position left = pos - 2;
+      if (pos > 8 && CanCapture(board[left - kTotalCol], is_red)) {
+        result[res_idx++] = left - kTotalCol;
+      }
+      if (pos < 81 && CanCapture(board[left + kTotalCol], is_red)) {
+        result[res_idx++] = left + kTotalCol;
+      }
+    }
+  }
+  if (col < kTotalCol - 2) {        // can move right 2
+    if (IsEmpty(board[pos + 1])) {  // non-blocking
+      const Position right = pos + 2;
+      if (pos > 8 && CanCapture(board[right - kTotalCol], is_red)) {
+        result[res_idx++] = right - kTotalCol;
+      }
+      if (pos < 81 && CanCapture(board[right + kTotalCol], is_red)) {
+        result[res_idx++] = right + kTotalCol;
+      }
+    }
+  }
+
   return result;
 }
 
