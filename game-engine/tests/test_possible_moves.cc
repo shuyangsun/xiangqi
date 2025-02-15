@@ -813,4 +813,21 @@ TEST(TestPossibleMoves, Cannon) {
             ToPos({"D5", "F4", "F6", "F7", "F9"}));
 }
 
+// ---------------------------------------------------------------------
+// Test Soldier
+// ---------------------------------------------------------------------
+
+TEST(TestPossibleMoves, Soldier) {
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("A3"))), ToPos({"A4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("C3"))), ToPos({"C4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("E3"))), ToPos({"E4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("G3"))), ToPos({"G4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I3"))), ToPos({"I4"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("A6"))), ToPos({"A5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("C6"))), ToPos({"C5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("E6"))), ToPos({"E5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("G6"))), ToPos({"G5"}));
+  EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I6"))), ToPos({"I5"}));
+}
+
 }  // namespace

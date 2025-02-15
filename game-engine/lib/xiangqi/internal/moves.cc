@@ -348,7 +348,7 @@ std::array<Position, 8> PossibleMovesHorse(const Board<Piece>& board,
 }
 
 std::array<Position, 17> PossibleMovesChariot(const Board<Piece>& board,
-                                              Position pos) {
+                                              const Position pos) {
   std::array<Position, 17> result;
   result.fill(kNoPosition);
   const bool is_red = IsRed(board[pos]);
@@ -410,7 +410,7 @@ std::array<Position, 17> PossibleMovesChariot(const Board<Piece>& board,
 }
 
 std::array<Position, 17> PossibleMovesCannon(const Board<Piece>& board,
-                                             Position pos) {
+                                             const Position pos) {
   std::array<Position, 17> result;
   result.fill(kNoPosition);
   const bool is_red = IsRed(board[pos]);
@@ -500,52 +500,47 @@ std::array<Position, 17> PossibleMovesCannon(const Board<Piece>& board,
 }
 
 std::array<Position, 3> PossibleMovesSoldier(const Board<Piece>& board,
-                                             Position pos) {
+                                             const Position pos) {
   std::array<Position, 3> result;
   result.fill(kNoPosition);
-  const Piece piece = board[pos];
-  const bool isRed = IsRed(piece);
+  const bool is_red = IsRed(board[pos]);
+  size_t res_idx = 0;
 
-  // // Forward move.
-  // int forwardRow = isRed ? Row(pos) - 1 : Row(pos) + 1;
-  // if (forwardRow >= 0 && forwardRow < kTotalRow) {
-  //   if (isRed) {
-  //     if (!IsRed(board[forwardRow][Col(pos)]))
-  //       result[forwardRow][Col(pos)] = true;
-  //   } else {
-  //     if (!IsBlack(board[forwardRow][Col(pos)]))
-  //       result[forwardRow][Col(pos)] = true;
-  //   }
-  // }
-
-  // // Once soldier has crossed the river, add sideways moves.
-  // if (isRed) {
-  //   // For red, crossing the river means row <= 4.
-  //   if (Row(pos) <= 4) {
-  //     if (Col(pos) - 1 >= 0) {
-  //       if (!IsRed(board[Row(pos)][Col(pos) - 1]))
-  //         result[Row(pos)][Col(pos) - 1] = true;
-  //     }
-  //     if (Col(pos) + 1 < kTotalCol) {
-  //       if (!IsRed(board[Row(pos)][Col(pos) + 1]))
-  //         result[Row(pos)][Col(pos) + 1] = true;
-  //     }
-  //   }
-  // } else {
-  //   // For black, crossing the river means row >= 5.
-  //   if (Row(pos) >= 5) {
-  //     if (Col(pos) - 1 >= 0) {
-  //       if (!IsBlack(board[Row(pos)][Col(pos) - 1]))
-  //         result[Row(pos)][Col(pos) - 1] = true;
-  //     }
-  //     if (Col(pos) + 1 < kTotalCol) {
-  //       if (!IsBlack(board[Row(pos)][Col(pos) + 1]))
-  //         result[Row(pos)][Col(pos) + 1] = true;
-  //     }
-  //   }
-  // }
-
-  return result;
+  if (is_red) {
+    if (pos >= kRedRiverStart) {
+      result[0] = pos - kTotalCol;
+      return result;
+    } else {
+      if (pos >= kTotalCol) {
+        result[res_idx++] = pos - kTotalCol;
+      }
+      const uint8_t col = Col(pos);
+      if (col > 0) {
+        result[res_idx++] = pos - 1;
+      }
+      if (col < kTotalCol - 1) {
+        result[res_idx++] = pos + 1;
+      }
+      return result;
+    }
+  } else {
+    if (pos < kRedRiverStart) {
+      result[0] = pos + kTotalCol;
+      return result;
+    } else {
+      if (pos < 81) {
+        result[res_idx++] = pos + kTotalCol;
+      }
+      const uint8_t col = Col(pos);
+      if (col > 0) {
+        result[res_idx++] = pos - 1;
+      }
+      if (col < kTotalCol - 1) {
+        result[res_idx++] = pos + 1;
+      }
+      return result;
+    }
+  }
 }
 
 }  // namespace xq::internal::util
