@@ -55,6 +55,10 @@ enum Winner GetWinner_C(const BoardC board);
 // piece. If no piece was captured, return EMPTY.
 enum Piece Move_C(BoardC board, Movement movement);
 
+// Rotate the board 180 degrees so that it's from the opponent's perspective.
+// Red and black pieces are also flipped.
+void FlipBoard_C(BoardC dest, const BoardC src);
+
 #ifdef __cplusplus
 }
 #endif

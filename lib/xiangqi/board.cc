@@ -274,15 +274,8 @@ bool DidPlayerLose(const Board& board, Player player) {
 }
 
 Board FlipBoard(const Board& board) {
-  Board result = board;
-  for (uint8_t pos = 0; pos < K_BOARD_SIZE / 2; pos++) {
-    const uint8_t pos_mirror = K_BOARD_SIZE - 1 - pos;
-    const Piece left_flipped = static_cast<Piece>(
-        -static_cast<std::underlying_type_t<Piece>>(board[pos]));
-    result[pos] = static_cast<Piece>(
-        -static_cast<std::underlying_type_t<Piece>>(board[pos_mirror]));
-    result[pos_mirror] = left_flipped;
-  }
+  Board result;
+  FlipBoard_C(result.data(), board.data());
   return result;
 }
 

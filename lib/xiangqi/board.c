@@ -282,3 +282,12 @@ enum Piece Move_C(BoardC board, const Movement movement) {
   board[from] = PIECE_EMPTY;
   return captured;
 }
+
+void FlipBoard_C(BoardC dest, const BoardC src) {
+  for (uint8_t pos = 0; pos < K_BOARD_SIZE / 2; pos++) {
+    const uint8_t pos_mirror = K_BOARD_SIZE - 1 - pos;
+    const enum Piece left_flipped = -src[pos];
+    dest[pos] = -src[pos_mirror];
+    dest[pos_mirror] = left_flipped;
+  }
+}

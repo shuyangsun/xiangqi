@@ -71,8 +71,7 @@ Winner GetWinner(const Board& board);
 // player being checkmate.
 bool DidPlayerLose(const Board& board, Player player);
 
-// Rotate the board 180 degrees so that it's from the opponent's perspective.
-// Red and black pieces are also flipped.
+// C++ wrapper of FlipBoard_C.
 Board FlipBoard(const Board& board);
 
 // Flip the board left and right.
