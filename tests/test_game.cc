@@ -14,10 +14,11 @@
 
 namespace {
 
-using namespace ::xq;
-using enum ::xq::Piece;
+namespace {
 
-namespace {}  // namespace
+using namespace ::xq;
+
+}  // namespace
 
 TEST(GameTest, InitialState) {
   Game game;

@@ -17,16 +17,16 @@ namespace {
 bool IsPathClear(const Board& board, const Position from, const Position to) {
   const uint8_t start = std::min(from, to);
   const uint8_t end = std::max(from, to);
-  if (end - start < kTotalCol) {  // same row
+  if (end - start < K_TOTAL_COL) {  // same row
     for (uint8_t pos = start + 1; pos < end; pos++) {
-      if (board[pos] != Piece::EMPTY) {
+      if (board[pos] != PIECE_EMPTY) {
         return false;
       }
     }
     return true;
   } else if (Col(from) == Col(to)) {
-    for (uint8_t pos = start + kTotalCol; pos < end; pos += kTotalCol) {
-      if (board[pos] != Piece::EMPTY) {
+    for (uint8_t pos = start + K_TOTAL_COL; pos < end; pos += K_TOTAL_COL) {
+      if (board[pos] != PIECE_EMPTY) {
         return false;
       }
     }
@@ -38,17 +38,17 @@ bool IsPathClear(const Board& board, const Position from, const Position to) {
 bool ThreatensBySoldier(const Piece soldier, const Position pos,
                         const Position target) {
   const uint8_t pos_col = Col(pos);
-  return ((soldier == Piece::R_SOLDIER) &&
-          ((pos == target + kTotalCol) ||                    // up
-           (pos < kRedRiverStart &&                          // crossed river
-            ((pos_col < kTotalCol - 1 && pos + 1 == target)  // right
-             || (pos_col > 0 && target + 1 == pos)           // left
+  return ((soldier == R_SOLDIER) &&
+          ((pos == target + K_TOTAL_COL) ||                    // up
+           (pos < K_RED_RIVER_START &&                         // crossed river
+            ((pos_col < K_TOTAL_COL - 1 && pos + 1 == target)  // right
+             || (pos_col > 0 && target + 1 == pos)             // left
              )))) ||
-         ((soldier == Piece::B_SOLDIER) &&
-          ((pos + kTotalCol == target) ||                    // down
-           (pos >= kRedRiverStart &&                         // crossed river
-            ((pos_col < kTotalCol - 1 && pos + 1 == target)  // right
-             || (pos_col > 0 && target + 1 == pos)           // left
+         ((soldier == B_SOLDIER) &&
+          ((pos + K_TOTAL_COL == target) ||                    // down
+           (pos >= K_RED_RIVER_START &&                        // crossed river
+            ((pos_col < K_TOTAL_COL - 1 && pos + 1 == target)  // right
+             || (pos_col > 0 && target + 1 == pos)             // left
              ))));
 }
 
@@ -56,39 +56,39 @@ bool ThreatensByHorse(const Board& board, const Position pos,
                       const Position target) {
   const uint8_t pos_row = Row(pos);
   const uint8_t pos_col = Col(pos);
-  if ((target > pos + kTotalCol)    // target at least one row below
-      && (pos_row < kTotalRow - 2)  // can move down for 2 rows
-      && board[pos + kTotalCol] == Piece::EMPTY  // not blocked
+  if ((target > pos + K_TOTAL_COL)    // target at least one row below
+      && (pos_row < K_TOTAL_ROW - 2)  // can move down for 2 rows
+      && board[pos + K_TOTAL_COL] == PIECE_EMPTY  // not blocked
   ) {
-    const uint8_t down_2_row = pos + kTotalCol * 2;
-    if ((pos_col > 0 && down_2_row - 1 == target)                 // left 1
-        || (pos_col < kTotalCol - 1 && down_2_row + 1 == target)  // right 1
+    const uint8_t down_2_row = pos + K_TOTAL_COL * 2;
+    if ((pos_col > 0 && down_2_row - 1 == target)                   // left 1
+        || (pos_col < K_TOTAL_COL - 1 && down_2_row + 1 == target)  // right 1
     ) {
       return true;
     }
-  } else if ((target + kTotalCol < pos)  // target at least one row above
-             && (pos_row > 1)            // can move up for 2 rows
-             && (board[pos - kTotalCol] == Piece::EMPTY)  // not blocked
+  } else if ((target + K_TOTAL_COL < pos)  // target at least one row above
+             && (pos_row > 1)              // can move up for 2 rows
+             && (board[pos - K_TOTAL_COL] == PIECE_EMPTY)  // not blocked
   ) {
-    const uint8_t up_2_row = pos - kTotalCol * 2;
-    if ((pos_col > 0 && up_2_row == target + 1)                 // left 1
-        || (pos_col < kTotalCol - 1 && up_2_row + 1 == target)  // right 1
+    const uint8_t up_2_row = pos - K_TOTAL_COL * 2;
+    if ((pos_col > 0 && up_2_row == target + 1)                   // left 1
+        || (pos_col < K_TOTAL_COL - 1 && up_2_row + 1 == target)  // right 1
     ) {
       return true;
     }
   }
-  return (pos_col < kTotalCol - 2            // can move right for 2 columns
-          && board[pos + 1] == Piece::EMPTY  // not blocked
-          &&
-          ((pos_row < kTotalRow - 1 && pos + kTotalCol + 2 == target)  // down 1
-           || (pos_row > 0 && target + kTotalCol - 2 == pos)           // up 1
-           )) ||
-         (pos_col > 1                        // can move left for 2 columns
-          && board[pos - 1] == Piece::EMPTY  // not blocked
-          &&
-          ((pos_row < kTotalRow - 1 && pos + kTotalCol - 2 == target)  // down 1
-           || (pos_row > 0 && target + kTotalCol + 2 == pos)           // up 1
-           ));
+  return (pos_col < K_TOTAL_COL - 2         // can move right for 2 columns
+          && board[pos + 1] == PIECE_EMPTY  // not blocked
+          && ((pos_row < K_TOTAL_ROW - 1 &&
+               pos + K_TOTAL_COL + 2 == target)                    // down 1
+              || (pos_row > 0 && target + K_TOTAL_COL - 2 == pos)  // up 1
+              )) ||
+         (pos_col > 1                       // can move left for 2 columns
+          && board[pos - 1] == PIECE_EMPTY  // not blocked
+          && ((pos_row < K_TOTAL_ROW - 1 &&
+               pos + K_TOTAL_COL - 2 == target)                    // down 1
+              || (pos_row > 0 && target + K_TOTAL_COL + 2 == pos)  // up 1
+              ));
 }
 
 bool ThreatensByCannon(const Board& board, const Position pos,
@@ -97,7 +97,7 @@ bool ThreatensByCannon(const Board& board, const Position pos,
     bool found_in_between = false;
     for (uint8_t p = std::min(pos, target) + 1; p < std::max(pos, target);
          p++) {
-      if (board[p] != Piece::EMPTY) {
+      if (board[p] != PIECE_EMPTY) {
         if (found_in_between) {
           return false;
         } else {
@@ -108,9 +108,9 @@ bool ThreatensByCannon(const Board& board, const Position pos,
     return found_in_between;
   } else if (Col(pos) == Col(target)) {
     bool found_in_between = false;
-    for (uint8_t p = std::min(pos, target) + kTotalCol;
-         p < std::max(pos, target); p += kTotalCol) {
-      if (board[p] != Piece::EMPTY) {
+    for (uint8_t p = std::min(pos, target) + K_TOTAL_COL;
+         p < std::max(pos, target); p += K_TOTAL_COL) {
+      if (board[p] != PIECE_EMPTY) {
         if (found_in_between) {
           return false;
         } else {
@@ -124,9 +124,8 @@ bool ThreatensByCannon(const Board& board, const Position pos,
 }
 
 char PieceToCh(const Piece piece, const uint8_t row, const uint8_t col) {
-  using enum Piece;
   switch (piece) {
-    case EMPTY:
+    case PIECE_EMPTY:
       if (row == 4 || row == 5) {
         return '-';
       } else if (col >= 3 && col <= 5 &&
@@ -169,10 +168,9 @@ char PieceToCh(const Piece piece, const uint8_t row, const uint8_t col) {
 }
 
 Piece ChToPiece(const char ch) {
-  using enum Piece;
   switch (ch) {
     case '.':
-      return EMPTY;
+      return PIECE_EMPTY;
     case 'G':
       return R_GENERAL;
     case 'A':
@@ -202,20 +200,18 @@ Piece ChToPiece(const char ch) {
     case 's':
       return B_SOLDIER;
     default:
-      return EMPTY;
+      return PIECE_EMPTY;
   }
 }
 
 }  // namespace
 
 Board BoardFromString(const std::string_view str) {
-  using enum Piece;
-
   Board result;
-  result.fill(EMPTY);
+  result.fill(PIECE_EMPTY);
   size_t idx = 23;
-  for (uint8_t row = 0; row < kTotalRow; row++) {
-    for (uint8_t col = 0; col < kTotalCol; col++) {
+  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
+    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
       result[Pos(row, col)] = ChToPiece(str[idx]);
       idx += 2;
     }
@@ -228,10 +224,10 @@ std::string BoardToString(const Board& board) {
   std::string result;
   result.reserve(242);
   result.append("  A B C D E F G H I \n");
-  for (uint8_t row = 0; row < kTotalRow; row++) {
+  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
     result.append(std::to_string(row));
     result.append(" ");
-    for (uint8_t col = 0; col < kTotalCol; col++) {
+    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
       result += PieceToCh(board[Pos(row, col)], row, col);
       result.append(" ");
     }
@@ -241,7 +237,7 @@ std::string BoardToString(const Board& board) {
 }
 
 bool BoardEq(const Board& a, const Board& b) {
-  for (Position pos = 0; pos < kBoardSize; pos++) {
+  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
     if (a[pos] != b[pos]) {
       return false;
     }
@@ -254,23 +250,21 @@ bool operator==(const Board& lhs, const Board& rhs) {
 }
 
 bool IsBeingCheckmate(const Board& board, Player player) {
-  using enum Piece;
-  const Piece general =
-      (player == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
+  const Piece general = (player == PLAYER_RED) ? R_GENERAL : B_GENERAL;
   const Position general_pos = FindGeneral(board, player);
-  if (general_pos == kNoPosition) {
+  if (general_pos == K_NO_POSITION) {
     return true;
   }
 
   // Now scan the board for enemy pieces that might be threatening our
   // general.
-  for (uint8_t pos = 0; pos < kBoardSize; pos++) {
+  for (uint8_t pos = 0; pos < K_BOARD_SIZE; pos++) {
     const Piece piece = board[pos];
-    if (piece == Piece::EMPTY) {
+    if (piece == PIECE_EMPTY) {
       continue;
     }
     const bool piece_is_red = IsRed(piece);
-    const bool player_is_red = player == Player::RED;
+    const bool player_is_red = player == PLAYER_RED;
     if (piece_is_red == player_is_red) {
       continue;  // Skip own piece
     }
@@ -305,37 +299,36 @@ bool IsBeingCheckmate(const Board& board, Player player) {
 }
 
 Winner GetWinner(const Board& board) {
-  const Position black_general_pos = FindGeneral(board, Player::BLACK);
-  if (black_general_pos == kNoPosition) {
-    return Winner::RED;
+  const Position black_general_pos = FindGeneral(board, PLAYER_BLACK);
+  if (black_general_pos == K_NO_POSITION) {
+    return WINNER_RED;
   }
-  const Position red_general_pos = FindGeneral(board, Player::RED);
-  if (red_general_pos == kNoPosition) {
-    return Winner::BLACK;
+  const Position red_general_pos = FindGeneral(board, PLAYER_RED);
+  if (red_general_pos == K_NO_POSITION) {
+    return WINNER_BLACK;
   }
-  return Winner::NONE;
+  return WINNER_NONE;
 }
 
 bool DidPlayerLose(const Board& board, Player player) {
   using namespace xq::internal::util;
-  using enum Piece;
 
-  const Winner opponent = player == Player::RED ? Winner::BLACK : Winner::RED;
-  const Piece opponent_general = player == Player::RED ? B_GENERAL : R_GENERAL;
+  const Winner opponent = player == PLAYER_RED ? WINNER_BLACK : WINNER_RED;
+  const Piece opponent_general = player == PLAYER_RED ? B_GENERAL : R_GENERAL;
   if (GetWinner(board) == opponent) {
     return true;
   }
 
-  for (Position pos = 0; pos < kBoardSize; pos++) {
+  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
     const Piece piece = board[pos];
-    if (piece == EMPTY || IsRed(piece) != (player == Player::RED)) {
+    if (piece == PIECE_EMPTY || IsRed(piece) != (player == PLAYER_RED)) {
       continue;
     }
     switch (piece) {
       case R_GENERAL:
         for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, Player::BLACK))) {
-          if (to == kNoPosition) {
+                 board, pos, FindGeneral(board, PLAYER_BLACK))) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -346,9 +339,9 @@ bool DidPlayerLose(const Board& board, Player player) {
         }
         break;
       case B_GENERAL:
-        for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, Player::RED))) {
-          if (to == kNoPosition) {
+        for (const Position to :
+             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -361,7 +354,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_ADVISOR:
       case B_ADVISOR:
         for (const Position to : PossibleMovesAdvisor(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -374,7 +367,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_ELEPHANT:
       case B_ELEPHANT:
         for (const Position to : PossibleMovesElephant(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -387,7 +380,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_HORSE:
       case B_HORSE:
         for (const Position to : PossibleMovesHorse(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -400,7 +393,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_CHARIOT:
       case B_CHARIOT:
         for (const Position to : PossibleMovesChariot(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -413,7 +406,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_CANNON:
       case B_CANNON:
         for (const Position to : PossibleMovesCannon(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -426,7 +419,7 @@ bool DidPlayerLose(const Board& board, Player player) {
       case R_SOLDIER:
       case B_SOLDIER:
         for (const Position to : PossibleMovesSoldier(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           Board next = board;
@@ -445,8 +438,8 @@ bool DidPlayerLose(const Board& board, Player player) {
 
 Board FlipBoard(const Board& board) {
   Board result = board;
-  for (uint8_t pos = 0; pos < kBoardSize / 2; pos++) {
-    const uint8_t pos_mirror = kBoardSize - 1 - pos;
+  for (uint8_t pos = 0; pos < K_BOARD_SIZE / 2; pos++) {
+    const uint8_t pos_mirror = K_BOARD_SIZE - 1 - pos;
     const Piece left_flipped = static_cast<Piece>(
         -static_cast<std::underlying_type_t<Piece>>(board[pos]));
     result[pos] = static_cast<Piece>(
@@ -458,11 +451,11 @@ Board FlipBoard(const Board& board) {
 
 Board MirrorBoardHorizontal(const Board& board) {
   Board result = board;
-  for (uint8_t row = 0; row < kTotalRow; row++) {
-    const Position row_start = row * kTotalCol;
-    for (uint8_t col = 0; col < kTotalCol / 2; col++) {
+  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
+    const Position row_start = row * K_TOTAL_COL;
+    for (uint8_t col = 0; col < K_TOTAL_COL / 2; col++) {
       const Position left_pos = row_start + col;
-      const Position right_pos = row_start + kTotalCol - 1 - col;
+      const Position right_pos = row_start + K_TOTAL_COL - 1 - col;
       const Piece left_piece = board[left_pos];
       result[left_pos] = board[right_pos];
       result[right_pos] = left_piece;
@@ -473,15 +466,15 @@ Board MirrorBoardHorizontal(const Board& board) {
 
 Board MirrorBoardVertical(const Board& board) {
   Board result = board;
-  result.fill(Piece::EMPTY);
-  for (uint8_t row = 0; row < kTotalRow / 2; row++) {
-    const size_t top_start = row * kTotalCol;
-    const size_t bottom_start = (kTotalRow - 1 - row) * kTotalCol;
+  result.fill(PIECE_EMPTY);
+  for (uint8_t row = 0; row < K_TOTAL_ROW / 2; row++) {
+    const size_t top_start = row * K_TOTAL_COL;
+    const size_t bottom_start = (K_TOTAL_ROW - 1 - row) * K_TOTAL_COL;
     std::memcpy(result.data() + top_start, board.data() + bottom_start,
-                kTotalCol);
+                K_TOTAL_COL);
     std::memcpy(result.data() + bottom_start, board.data() + top_start,
-                kTotalCol);
-    for (uint8_t col = 0; col < kTotalCol; col++) {
+                K_TOTAL_COL);
+    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
       result[top_start + col] = Piece(
           -static_cast<std::underlying_type_t<Piece>>(result[top_start + col]));
       result[bottom_start + col] =
@@ -493,8 +486,6 @@ Board MirrorBoardVertical(const Board& board) {
 }
 
 BoardState EncodeBoardState(const Board& board) {
-  using enum Piece;
-
   uint64_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
 
   // Initialize all pieces as missing.
@@ -511,9 +502,9 @@ BoardState EncodeBoardState(const Board& board) {
   b_soldier_poses.fill(0xFF);
   uint8_t r_soldier_idx = 0, b_soldier_idx = 0;
 
-  for (Position pos = 0; pos < kBoardSize; pos++) {
+  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
     switch (board[pos]) {
-      case EMPTY: {
+      case PIECE_EMPTY: {
         continue;
       }
       case R_GENERAL: {
@@ -650,7 +641,7 @@ BoardState EncodeBoardState(const Board& board) {
 Board DecodeBoardState(const BoardState& state) {
   // Initialize an empty board.
   Board board;
-  board.fill(Piece::EMPTY);
+  board.fill(PIECE_EMPTY);
 
   // For red pieces, the encoded state is split between state[0] (res1) and
   // state[1] (res2).
@@ -662,59 +653,59 @@ Board DecodeBoardState(const BoardState& state) {
   // Red General: bits 56-63 of res1.
   uint8_t r_general = (res1 >> 56) & 0xFF;
   if (r_general != 0xFF) {
-    board[r_general] = Piece::R_GENERAL;
+    board[r_general] = R_GENERAL;
   }
 
   // Red Advisors: bits 48-55 and 40-47 of res1.
   uint8_t r_adv1 = (res1 >> 48) & 0xFF;
   if (r_adv1 != 0xFF) {
-    board[r_adv1] = Piece::R_ADVISOR;
+    board[r_adv1] = R_ADVISOR;
   }
   uint8_t r_adv2 = (res1 >> 40) & 0xFF;
   if (r_adv2 != 0xFF) {
-    board[r_adv2] = Piece::R_ADVISOR;
+    board[r_adv2] = R_ADVISOR;
   }
 
   // Red Elephants: bits 32-39 and 24-31 of res1.
   uint8_t r_ele1 = (res1 >> 32) & 0xFF;
   if (r_ele1 != 0xFF) {
-    board[r_ele1] = Piece::R_ELEPHANT;
+    board[r_ele1] = R_ELEPHANT;
   }
   uint8_t r_ele2 = (res1 >> 24) & 0xFF;
   if (r_ele2 != 0xFF) {
-    board[r_ele2] = Piece::R_ELEPHANT;
+    board[r_ele2] = R_ELEPHANT;
   }
 
   // Red Horses: bits 16-23 and 8-15 of res1.
   uint8_t r_horse1 = (res1 >> 16) & 0xFF;
   if (r_horse1 != 0xFF) {
-    board[r_horse1] = Piece::R_HORSE;
+    board[r_horse1] = R_HORSE;
   }
   uint8_t r_horse2 = (res1 >> 8) & 0xFF;
   if (r_horse2 != 0xFF) {
-    board[r_horse2] = Piece::R_HORSE;
+    board[r_horse2] = R_HORSE;
   }
 
   // Red Chariots:
   //   - One chariot: bits 0-7 of res1.
   uint8_t r_chariot1 = res1 & 0xFF;
   if (r_chariot1 != 0xFF) {
-    board[r_chariot1] = Piece::R_CHARIOT;
+    board[r_chariot1] = R_CHARIOT;
   }
   //   - The other chariot: bits 56-63 of res2.
   uint8_t r_chariot2 = (res2 >> 56) & 0xFF;
   if (r_chariot2 != 0xFF) {
-    board[r_chariot2] = Piece::R_CHARIOT;
+    board[r_chariot2] = R_CHARIOT;
   }
 
   // Red Cannons: bits 48-55 and 40-47 of res2.
   uint8_t r_cannon1 = (res2 >> 48) & 0xFF;
   if (r_cannon1 != 0xFF) {
-    board[r_cannon1] = Piece::R_CANNON;
+    board[r_cannon1] = R_CANNON;
   }
   uint8_t r_cannon2 = (res2 >> 40) & 0xFF;
   if (r_cannon2 != 0xFF) {
-    board[r_cannon2] = Piece::R_CANNON;
+    board[r_cannon2] = R_CANNON;
   }
 
   // Red Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res2.
@@ -727,7 +718,7 @@ Board DecodeBoardState(const BoardState& state) {
   for (int i = 0; i < 5; ++i) {
     if (r_soldier[i] != 0xFF) {
       const Position pos = r_soldier[i];
-      board[pos] = Piece::R_SOLDIER;
+      board[pos] = R_SOLDIER;
     }
   }
 
@@ -741,59 +732,59 @@ Board DecodeBoardState(const BoardState& state) {
   // Black General: bits 56-63 of res3.
   uint8_t b_general = (res3 >> 56) & 0xFF;
   if (b_general != 0xFF) {
-    board[b_general] = Piece::B_GENERAL;
+    board[b_general] = B_GENERAL;
   }
 
   // Black Advisors: bits 48-55 and 40-47 of res3.
   uint8_t b_adv1 = (res3 >> 48) & 0xFF;
   if (b_adv1 != 0xFF) {
-    board[b_adv1] = Piece::B_ADVISOR;
+    board[b_adv1] = B_ADVISOR;
   }
   uint8_t b_adv2 = (res3 >> 40) & 0xFF;
   if (b_adv2 != 0xFF) {
-    board[b_adv2] = Piece::B_ADVISOR;
+    board[b_adv2] = B_ADVISOR;
   }
 
   // Black Elephants: bits 32-39 and 24-31 of res3.
   uint8_t b_ele1 = (res3 >> 32) & 0xFF;
   if (b_ele1 != 0xFF) {
-    board[b_ele1] = Piece::B_ELEPHANT;
+    board[b_ele1] = B_ELEPHANT;
   }
   uint8_t b_ele2 = (res3 >> 24) & 0xFF;
   if (b_ele2 != 0xFF) {
-    board[b_ele2] = Piece::B_ELEPHANT;
+    board[b_ele2] = B_ELEPHANT;
   }
 
   // Black Horses: bits 16-23 and 8-15 of res3.
   uint8_t b_horse1 = (res3 >> 16) & 0xFF;
   if (b_horse1 != 0xFF) {
-    board[b_horse1] = Piece::B_HORSE;
+    board[b_horse1] = B_HORSE;
   }
   uint8_t b_horse2 = (res3 >> 8) & 0xFF;
   if (b_horse2 != 0xFF) {
-    board[b_horse2] = Piece::B_HORSE;
+    board[b_horse2] = B_HORSE;
   }
 
   // Black Chariots:
   //   - One from res3: bits 0-7.
   uint8_t b_chariot1 = res3 & 0xFF;
   if (b_chariot1 != 0xFF) {
-    board[b_chariot1] = Piece::B_CHARIOT;
+    board[b_chariot1] = B_CHARIOT;
   }
   //   - The other from res4: bits 56-63.
   uint8_t b_chariot2 = (res4 >> 56) & 0xFF;
   if (b_chariot2 != 0xFF) {
-    board[b_chariot2] = Piece::B_CHARIOT;
+    board[b_chariot2] = B_CHARIOT;
   }
 
   // Black Cannons: bits 48-55 and 40-47 of res4.
   uint8_t b_cannon1 = (res4 >> 48) & 0xFF;
   if (b_cannon1 != 0xFF) {
-    board[b_cannon1] = Piece::B_CANNON;
+    board[b_cannon1] = B_CANNON;
   }
   uint8_t b_cannon2 = (res4 >> 40) & 0xFF;
   if (b_cannon2 != 0xFF) {
-    board[b_cannon2] = Piece::B_CANNON;
+    board[b_cannon2] = B_CANNON;
   }
 
   // Black Soldiers: bits 32-39, 24-31, 16-23, 8-15, and 0-7 of res4.
@@ -806,7 +797,7 @@ Board DecodeBoardState(const BoardState& state) {
   for (int i = 0; i < 5; ++i) {
     if (b_soldier[i] != 0xFF) {
       const Position pos = b_soldier[i];
-      board[pos] = Piece::B_SOLDIER;
+      board[pos] = B_SOLDIER;
     }
   }
 
@@ -816,23 +807,22 @@ Board DecodeBoardState(const BoardState& state) {
 MovesPerPiece PossibleMoves(const Board& board, const Position pos,
                             const bool avoid_checkmate) {
   using namespace xq::internal::util;
-  using enum Piece;
 
   const Piece piece = board[pos];
   MovesPerPiece result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   switch (piece) {
-    case EMPTY:
+    case PIECE_EMPTY:
       return result;
     case R_GENERAL:
       memcpy(result.data(),
-             PossibleMovesGeneral(board, pos, FindGeneral(board, Player::BLACK))
+             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_BLACK))
                  .data(),
              5);
       break;
     case B_GENERAL:
       memcpy(result.data(),
-             PossibleMovesGeneral(board, pos, FindGeneral(board, Player::RED))
+             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))
                  .data(),
              5);
       break;
@@ -864,15 +854,15 @@ MovesPerPiece PossibleMoves(const Board& board, const Position pos,
       return result;
   }
   if (avoid_checkmate) {
-    const Player player = IsRed(piece) ? Player::RED : Player::BLACK;
-    for (size_t i = 0; i < result.size() && result[i] != kNoPosition; i++) {
+    const Player player = IsRed(piece) ? PLAYER_RED : PLAYER_BLACK;
+    for (size_t i = 0; i < result.size() && result[i] != K_NO_POSITION; i++) {
       Board next = board;
       const Piece captured = Move(next, NewMovement(pos, result[i]));
-      if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL) {
+      if (captured == R_GENERAL || captured == B_GENERAL) {
         continue;
       }
       if (IsBeingCheckmate(next, player)) {
-        result[i] = kNoPosition;
+        result[i] = K_NO_POSITION;
       }
     }
     std::sort(result.begin(), result.end());
@@ -881,19 +871,18 @@ MovesPerPiece PossibleMoves(const Board& board, const Position pos,
 }
 
 Piece Move(Board& board, const Movement movement) {
-  using enum Player;
   const Position from = Orig(movement);
   const Position to = Dest(movement);
   if (from == to) {
-    return Piece::EMPTY;
+    return PIECE_EMPTY;
   }
   const Piece piece = board[from];
-  if (piece == Piece::EMPTY) {
-    return Piece::EMPTY;
+  if (piece == PIECE_EMPTY) {
+    return PIECE_EMPTY;
   }
   const Piece captured = board[to];
   board[to] = piece;
-  board[from] = Piece::EMPTY;
+  board[from] = PIECE_EMPTY;
   return captured;
 }
 
@@ -902,29 +891,28 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
                                            const Player player,
                                            const bool avoid_checkmate) {
   using namespace xq::internal::util;
-  using enum Piece;
 
   std::vector<uint16_t> result;
-  for (Position pos = 0; pos < kBoardSize; pos++) {
+  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
     const Piece piece = board[pos];
-    if (piece == EMPTY || IsRed(piece) != (player == Player::RED)) {
+    if (piece == PIECE_EMPTY || IsRed(piece) != (player == PLAYER_RED)) {
       continue;
     }
     const auto from_16bit = static_cast<uint16_t>(pos << 8);
     switch (piece) {
       case R_GENERAL:
         for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, Player::BLACK))) {
-          if (to == kNoPosition) {
+                 board, pos, FindGeneral(board, PLAYER_BLACK))) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
         }
         break;
       case B_GENERAL:
-        for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, Player::RED))) {
-          if (to == kNoPosition) {
+        for (const Position to :
+             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -933,7 +921,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_ADVISOR:
       case B_ADVISOR:
         for (const Position to : PossibleMovesAdvisor(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -942,7 +930,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_ELEPHANT:
       case B_ELEPHANT:
         for (const Position to : PossibleMovesElephant(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -951,7 +939,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_HORSE:
       case B_HORSE:
         for (const Position to : PossibleMovesHorse(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -960,7 +948,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_CHARIOT:
       case B_CHARIOT:
         for (const Position to : PossibleMovesChariot(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -969,7 +957,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_CANNON:
       case B_CANNON:
         for (const Position to : PossibleMovesCannon(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -978,7 +966,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
       case R_SOLDIER:
       case B_SOLDIER:
         for (const Position to : PossibleMovesSoldier(board, pos)) {
-          if (to == kNoPosition) {
+          if (to == K_NO_POSITION) {
             break;
           }
           result.emplace_back(from_16bit | static_cast<uint16_t>(to));
@@ -992,10 +980,10 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
     std::vector<Movement> final_result;
     for (const Movement move : result) {
       const Player player =
-          IsRed(board[Orig(move)]) ? Player::RED : Player::BLACK;
+          IsRed(board[Orig(move)]) ? PLAYER_RED : PLAYER_BLACK;
       Board next = board;
       const Piece captured = Move(next, move);
-      if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL ||
+      if (captured == R_GENERAL || captured == B_GENERAL ||
           !IsBeingCheckmate(next, player)) {
         final_result.emplace_back(move);
       }
@@ -1022,8 +1010,8 @@ std::vector<Board> AllPossibleNextBoards(const Board& board,
 }
 
 Position FindGeneral(const Board& board, const Player player) {
-  const bool find_red = player == Player::RED;
-  const Piece general = find_red ? Piece::R_GENERAL : Piece::B_GENERAL;
+  const bool find_red = player == PLAYER_RED;
+  const Piece general = find_red ? R_GENERAL : B_GENERAL;
   if (find_red) {
     // Find from bottom if find red.
     if (board[66] == general) {
@@ -1103,7 +1091,7 @@ Position FindGeneral(const Board& board, const Player player) {
       return 86;
     }
   }
-  return kNoPosition;
+  return K_NO_POSITION;
 }
 
 }  // namespace xq

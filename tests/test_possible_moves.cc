@@ -21,7 +21,7 @@ using namespace ::xq;
 std::vector<Position> ToVec(const MovesPerPiece& moves) {
   std::vector<Position> result;
   for (const Position move : moves) {
-    if (move == kNoPosition) {
+    if (move == K_NO_POSITION) {
       break;
     }
     result.emplace_back(move);
@@ -34,7 +34,7 @@ std::vector<Position> ToPos(const std::vector<std::string_view>& positions) {
   std::vector<Position> result;
   result.reserve(positions.size());
   for (const std::string_view& pos : positions) {
-    result.emplace_back(PosStr(pos));
+    result.emplace_back(PosStr(pos.data()));
   }
   std::sort(result.begin(), result.end());
   return result;

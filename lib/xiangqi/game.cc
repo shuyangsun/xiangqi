@@ -29,7 +29,7 @@ void Game::MakeBlackMoveFirst() {
   if (moves_.size() > 1) {
     return;
   }
-  player_ = Player::BLACK;
+  player_ = PLAYER_BLACK;
 }
 
 BoardState Game::InitialBoardState() const {
@@ -55,7 +55,7 @@ Movement Game::Undo() {
   using enum Player;
 
   if (!CanUndo()) {
-    return kNoMovement;
+    return K_NO_MOVEMENT;
   }
   Movement result = moves_.back();
   const Piece captured = captured_.back();
@@ -78,14 +78,14 @@ void Game::RestoreBoard(const BoardState& state) {
   board_ = DecodeBoardState(state);
   moves_.clear();
   captured_.clear();
-  player_ = Player::RED;
+  player_ = PLAYER_RED;
 }
 
 void Game::RestoreMoves(const std::vector<Movement>& moves) {
   if (moves.empty()) {
     return;
   }
-  player_ = IsRed(board_[Orig(moves.back())]) ? Player::BLACK : Player::RED;
+  player_ = IsRed(board_[Orig(moves.back())]) ? PLAYER_BLACK : PLAYER_RED;
   moves_ = moves;
   captured_.clear();
   captured_.reserve(moves.size());

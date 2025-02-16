@@ -43,7 +43,7 @@ TEST(BoardTest, BoardEqual) {
 TEST(BoardTest, BoardNotEqual) {
   const Board a = kStartingBoard;
   Board b = kStartingBoard;
-  b[Pos(0, 0)] = Piece::EMPTY;
+  b[Pos(0, 0)] = PIECE_EMPTY;
   EXPECT_NE(a, b);
 }
 
@@ -229,7 +229,7 @@ TEST(BoardTest, Move) {
       "8 . . . * * * . . . \n"
       "9 R H E A G A E H R \n");
   EXPECT_EQ(board, expected_2);
-  EXPECT_EQ(capture, Piece::EMPTY);
+  EXPECT_EQ(capture, PIECE_EMPTY);
 }
 
 // Make sure even invalid moves can be performed.
@@ -277,7 +277,7 @@ TEST(BoardTest, CanDoInvalidMove) {
   // Move black same position
   capture = Move(board, NewMovement(PosStr("H0"), PosStr("H0")));
   EXPECT_EQ(board, expected_2);  // nothing should change
-  EXPECT_EQ(capture, Piece::EMPTY);
+  EXPECT_EQ(capture, PIECE_EMPTY);
 }
 
 // ---------------------------------------------------------------------
@@ -297,8 +297,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_1, Player::RED), PosStr("D9"));
-  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), PosStr("D0"));
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_RED), PosStr("D9"));
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_BLACK), PosStr("D0"));
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -312,8 +312,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . A G A . . . \n");
-  EXPECT_EQ(FindGeneral(board_2, Player::RED), PosStr("E9"));
-  EXPECT_EQ(FindGeneral(board_2, Player::BLACK), PosStr("E0"));
+  EXPECT_EQ(FindGeneral(board_2, PLAYER_RED), PosStr("E9"));
+  EXPECT_EQ(FindGeneral(board_2, PLAYER_BLACK), PosStr("E0"));
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -327,8 +327,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * G . . . \n");
-  EXPECT_EQ(FindGeneral(board_3, Player::RED), PosStr("F9"));
-  EXPECT_EQ(FindGeneral(board_3, Player::BLACK), PosStr("F0"));
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_RED), PosStr("F9"));
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_BLACK), PosStr("F0"));
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -342,8 +342,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . G * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_4, Player::RED), PosStr("D8"));
-  EXPECT_EQ(FindGeneral(board_4, Player::BLACK), PosStr("D1"));
+  EXPECT_EQ(FindGeneral(board_4, PLAYER_RED), PosStr("D8"));
+  EXPECT_EQ(FindGeneral(board_4, PLAYER_BLACK), PosStr("D1"));
 
   const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -357,8 +357,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_5, Player::RED), PosStr("E8"));
-  EXPECT_EQ(FindGeneral(board_5, Player::BLACK), PosStr("E1"));
+  EXPECT_EQ(FindGeneral(board_5, PLAYER_RED), PosStr("E8"));
+  EXPECT_EQ(FindGeneral(board_5, PLAYER_BLACK), PosStr("E1"));
 
   const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -372,8 +372,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * G . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_6, Player::RED), PosStr("F8"));
-  EXPECT_EQ(FindGeneral(board_6, Player::BLACK), PosStr("F1"));
+  EXPECT_EQ(FindGeneral(board_6, PLAYER_RED), PosStr("F8"));
+  EXPECT_EQ(FindGeneral(board_6, PLAYER_BLACK), PosStr("F1"));
 
   const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -387,8 +387,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . G * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_7, Player::RED), PosStr("D7"));
-  EXPECT_EQ(FindGeneral(board_7, Player::BLACK), PosStr("D2"));
+  EXPECT_EQ(FindGeneral(board_7, PLAYER_RED), PosStr("D7"));
+  EXPECT_EQ(FindGeneral(board_7, PLAYER_BLACK), PosStr("D2"));
 
   const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -402,8 +402,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * G * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_8, Player::RED), PosStr("E7"));
-  EXPECT_EQ(FindGeneral(board_8, Player::BLACK), PosStr("E2"));
+  EXPECT_EQ(FindGeneral(board_8, PLAYER_RED), PosStr("E7"));
+  EXPECT_EQ(FindGeneral(board_8, PLAYER_BLACK), PosStr("E2"));
 
   const Board board_9 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -417,8 +417,8 @@ TEST(BoardTest, FindGeneralOwnPalace) {
       "7 . . . * * G . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_9, Player::RED), PosStr("F7"));
-  EXPECT_EQ(FindGeneral(board_9, Player::BLACK), PosStr("F2"));
+  EXPECT_EQ(FindGeneral(board_9, PLAYER_RED), PosStr("F7"));
+  EXPECT_EQ(FindGeneral(board_9, PLAYER_BLACK), PosStr("F2"));
 }
 
 TEST(BoardTest, FindGeneralOpponentPalace) {
@@ -434,8 +434,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . g * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_1, Player::RED), PosStr("D0"));
-  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), PosStr("D9"));
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_RED), PosStr("D0"));
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_BLACK), PosStr("D9"));
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -449,8 +449,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . A g A . . . \n");
-  EXPECT_EQ(FindGeneral(board_2, Player::RED), PosStr("E0"));
-  EXPECT_EQ(FindGeneral(board_2, Player::BLACK), PosStr("E9"));
+  EXPECT_EQ(FindGeneral(board_2, PLAYER_RED), PosStr("E0"));
+  EXPECT_EQ(FindGeneral(board_2, PLAYER_BLACK), PosStr("E9"));
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -464,8 +464,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * g . . . \n");
-  EXPECT_EQ(FindGeneral(board_3, Player::RED), PosStr("F0"));
-  EXPECT_EQ(FindGeneral(board_3, Player::BLACK), PosStr("F9"));
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_RED), PosStr("F0"));
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_BLACK), PosStr("F9"));
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -479,8 +479,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . g * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_4, Player::RED), PosStr("D1"));
-  EXPECT_EQ(FindGeneral(board_4, Player::BLACK), PosStr("D8"));
+  EXPECT_EQ(FindGeneral(board_4, PLAYER_RED), PosStr("D1"));
+  EXPECT_EQ(FindGeneral(board_4, PLAYER_BLACK), PosStr("D8"));
 
   const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -494,8 +494,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * g * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_5, Player::RED), PosStr("E1"));
-  EXPECT_EQ(FindGeneral(board_5, Player::BLACK), PosStr("E8"));
+  EXPECT_EQ(FindGeneral(board_5, PLAYER_RED), PosStr("E1"));
+  EXPECT_EQ(FindGeneral(board_5, PLAYER_BLACK), PosStr("E8"));
 
   const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -509,8 +509,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * * . . . \n"
       "8 . . . * * g . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_6, Player::RED), PosStr("F1"));
-  EXPECT_EQ(FindGeneral(board_6, Player::BLACK), PosStr("F8"));
+  EXPECT_EQ(FindGeneral(board_6, PLAYER_RED), PosStr("F1"));
+  EXPECT_EQ(FindGeneral(board_6, PLAYER_BLACK), PosStr("F8"));
 
   const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -524,8 +524,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . g * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_7, Player::RED), PosStr("D2"));
-  EXPECT_EQ(FindGeneral(board_7, Player::BLACK), PosStr("D7"));
+  EXPECT_EQ(FindGeneral(board_7, PLAYER_RED), PosStr("D2"));
+  EXPECT_EQ(FindGeneral(board_7, PLAYER_BLACK), PosStr("D7"));
 
   const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -539,8 +539,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * g * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_8, Player::RED), PosStr("E2"));
-  EXPECT_EQ(FindGeneral(board_8, Player::BLACK), PosStr("E7"));
+  EXPECT_EQ(FindGeneral(board_8, PLAYER_RED), PosStr("E2"));
+  EXPECT_EQ(FindGeneral(board_8, PLAYER_BLACK), PosStr("E7"));
 
   const Board board_9 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -554,8 +554,8 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
       "7 . . . * * g . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(FindGeneral(board_9, Player::RED), PosStr("F2"));
-  EXPECT_EQ(FindGeneral(board_9, Player::BLACK), PosStr("F7"));
+  EXPECT_EQ(FindGeneral(board_9, PLAYER_RED), PosStr("F2"));
+  EXPECT_EQ(FindGeneral(board_9, PLAYER_BLACK), PosStr("F7"));
 }
 
 TEST(BoardTest, FindGeneralNone) {
@@ -571,7 +571,7 @@ TEST(BoardTest, FindGeneralNone) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), kNoPosition);
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_BLACK), K_NO_POSITION);
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -585,7 +585,7 @@ TEST(BoardTest, FindGeneralNone) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_1, Player::BLACK), kNoPosition);
+  EXPECT_EQ(FindGeneral(board_1, PLAYER_BLACK), K_NO_POSITION);
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -599,7 +599,7 @@ TEST(BoardTest, FindGeneralNone) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . r * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_3, Player::RED), kNoPosition);
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_RED), K_NO_POSITION);
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -613,7 +613,7 @@ TEST(BoardTest, FindGeneralNone) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_3, Player::RED), kNoPosition);
+  EXPECT_EQ(FindGeneral(board_3, PLAYER_RED), K_NO_POSITION);
 }
 
 // ---------------------------------------------------------------------
@@ -633,8 +633,8 @@ TEST(BoardTest, IsBeingCheckmateFlyingGeneral) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_BLACK));
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -648,8 +648,8 @@ TEST(BoardTest, IsBeingCheckmateFlyingGeneral) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * A . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 }
 
 TEST(BoardTest, IsBeingCheckmateChariot) {
@@ -665,8 +665,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_1, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_1, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_BLACK));
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -680,8 +680,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -695,8 +695,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_3, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_3, PLAYER_BLACK));
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -710,8 +710,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_4, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_4, PLAYER_BLACK));
 
   const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -725,7 +725,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_5, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_5, PLAYER_BLACK));
 
   const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -739,7 +739,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_6, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_6, PLAYER_BLACK));
 
   const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -753,7 +753,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . r G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_7, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_7, PLAYER_RED));
 
   const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -767,7 +767,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * r * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_8, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_8, PLAYER_RED));
 
   const Board board_9 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -781,7 +781,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_8, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_8, PLAYER_RED));
 
   const Board board_10 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -795,8 +795,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . r G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_10, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_10, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_10, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_10, PLAYER_BLACK));
 
   const Board board_11 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -810,8 +810,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . r \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_11, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_11, PLAYER_BLACK));
 
   const Board board_12 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -825,8 +825,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_12, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_12, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_12, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_12, PLAYER_BLACK));
 
   const Board board_13 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -840,8 +840,8 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . r \n"
       "9 . . . * r * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_13, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_13, PLAYER_BLACK));
 }
 
 TEST(BoardTest, IsBeingCheckmateHorse) {
@@ -858,8 +858,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * h . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_BLACK));
 
   // Down left blocked
   const Board board_2 = BoardFromString(
@@ -874,8 +874,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * h . . . \n"
       "8 . . . * * C . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 
   // Down right
   const Board board_3 = BoardFromString(
@@ -890,8 +890,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . h * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, PLAYER_BLACK));
 
   // Down right blocked
   const Board board_4 = BoardFromString(
@@ -906,8 +906,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . h * * . . . \n"
       "8 . . . C * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_4, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_4, PLAYER_BLACK));
 
   // Up left
   const Board board_5 = BoardFromString(
@@ -922,8 +922,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * G * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * h . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_5, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_5, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_5, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_5, PLAYER_BLACK));
 
   // Up left blocked
   const Board board_6 = BoardFromString(
@@ -938,8 +938,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * G * . . . \n"
       "8 . . . * * R . . . \n"
       "9 . . . * * h . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_6, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_6, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_6, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_6, PLAYER_BLACK));
 
   // Up right
   const Board board_7 = BoardFromString(
@@ -954,8 +954,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * G * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . h * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_7, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_7, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_7, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_7, PLAYER_BLACK));
 
   // Up right blocked
   const Board board_8 = BoardFromString(
@@ -970,8 +970,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * G * . . . \n"
       "8 . . . R * * . . . \n"
       "9 . . . h * * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_8, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_8, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_8, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_8, PLAYER_BLACK));
 
   // Left up
   const Board board_9 = BoardFromString(
@@ -986,8 +986,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * * h . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_9, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_9, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_9, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_9, PLAYER_BLACK));
 
   // Left up blocked
   const Board board_10 = BoardFromString(
@@ -1002,8 +1002,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * H h . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_10, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_10, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_10, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_10, PLAYER_BLACK));
 
   // Left down
   const Board board_11 = BoardFromString(
@@ -1018,8 +1018,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * h . . \n"
       "8 . . . * G H . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_11, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_11, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_11, PLAYER_BLACK));
 
   // Left down blocked
   const Board board_12 = BoardFromString(
@@ -1034,8 +1034,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * H h . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_12, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_12, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_12, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_12, PLAYER_BLACK));
 
   // Right up
   const Board board_13 = BoardFromString(
@@ -1050,8 +1050,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * . . . \n"
       "8 . . . H G * . . . \n"
       "9 . . h * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_13, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_13, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_13, PLAYER_BLACK));
 
   // Right up blocked
   const Board board_14 = BoardFromString(
@@ -1066,8 +1066,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . h H * * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_14, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_14, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_14, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_14, PLAYER_BLACK));
 
   // Right down
   const Board board_15 = BoardFromString(
@@ -1082,8 +1082,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . h * * * . . . \n"
       "8 . . . H G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_15, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_15, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_15, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_15, PLAYER_BLACK));
 
   // Right down blocked
   const Board board_16 = BoardFromString(
@@ -1098,8 +1098,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . h H * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_16, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_16, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_16, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_16, PLAYER_BLACK));
 
   // Too far
   const Board board_17 = BoardFromString(
@@ -1114,8 +1114,8 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
       "7 . . . * * * . . . \n"
       "8 . . . * G * . . . \n"
       "9 h . . * * * . . h \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_17, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_17, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_17, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_17, PLAYER_BLACK));
 }
 
 TEST(BoardTest, IsBeingCheckmateCannon) {
@@ -1132,8 +1132,8 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G c h . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_1, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_1, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_BLACK));
 
   // Left
   const Board board_2 = BoardFromString(
@@ -1148,8 +1148,8 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 c h . * G * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_2, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_2, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_2, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 
   // Top
   const Board board_3 = BoardFromString(
@@ -1164,8 +1164,8 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_3, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_3, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, PLAYER_BLACK));
 
   // Bottom
   const Board board_4 = BoardFromString(
@@ -1180,8 +1180,8 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "7 . . . * G * . . . \n"
       "8 . . . * h * . . . \n"
       "9 . . . C c * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_4, Player::RED));
-  EXPECT_TRUE(IsBeingCheckmate(board_4, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_4, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_4, PLAYER_BLACK));
 
   // Not aligned
   const Board board_5 = BoardFromString(
@@ -1196,8 +1196,8 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
       "7 . . . * G * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_5, Player::RED));
-  EXPECT_FALSE(IsBeingCheckmate(board_5, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_5, PLAYER_RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_5, PLAYER_BLACK));
 }
 
 TEST(BoardTest, IsBeingCheckmateSoldier) {
@@ -1213,7 +1213,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_1, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_1, PLAYER_BLACK));
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1227,7 +1227,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . G * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_2, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1241,7 +1241,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_3, Player::BLACK));
+  EXPECT_TRUE(IsBeingCheckmate(board_3, PLAYER_BLACK));
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1255,7 +1255,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_4, Player::BLACK));
+  EXPECT_FALSE(IsBeingCheckmate(board_4, PLAYER_BLACK));
 
   const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1269,7 +1269,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . G * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_5, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_5, PLAYER_RED));
 
   const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1283,7 +1283,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . G s * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_6, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_6, PLAYER_RED));
 
   const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1297,7 +1297,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * s G . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_7, Player::RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_7, PLAYER_RED));
 
   const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1311,7 +1311,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
       "7 . . . * * * . . . \n"
       "8 . . . * * G . . . \n"
       "9 . . . * * s . . . \n");
-  EXPECT_FALSE(IsBeingCheckmate(board_8, Player::RED));
+  EXPECT_FALSE(IsBeingCheckmate(board_8, PLAYER_RED));
 }
 
 // ---------------------------------------------------------------------
@@ -1331,7 +1331,7 @@ TEST(BoardTest, GetWinner) {
       "7 . . . * * s . . . \n"
       "8 . . . * * G . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(GetWinner(board_1), Winner::NONE);
+  EXPECT_EQ(GetWinner(board_1), WINNER_NONE);
 
   const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1345,7 +1345,7 @@ TEST(BoardTest, GetWinner) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G * . . . \n");
-  EXPECT_EQ(GetWinner(board_2), Winner::RED);
+  EXPECT_EQ(GetWinner(board_2), WINNER_RED);
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1359,7 +1359,7 @@ TEST(BoardTest, GetWinner) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * g * . . . \n");
-  EXPECT_EQ(GetWinner(board_3), Winner::BLACK);
+  EXPECT_EQ(GetWinner(board_3), WINNER_BLACK);
 
   const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1373,7 +1373,7 @@ TEST(BoardTest, GetWinner) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * * . . . \n");
-  EXPECT_EQ(GetWinner(board_4), Winner::RED);
+  EXPECT_EQ(GetWinner(board_4), WINNER_RED);
 }
 
 // ---------------------------------------------------------------------

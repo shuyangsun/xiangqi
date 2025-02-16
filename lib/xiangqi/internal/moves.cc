@@ -3,6 +3,7 @@
 #include "xiangqi/internal/moves.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <optional>
 
@@ -20,16 +21,16 @@ std::array<Position, 5> PossibleMovesGeneral(const Board& board,
                                              const Position pos,
                                              const Position opponent_general) {
   std::array<Position, 5> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   uint8_t res_idx = 0;
 
   // Flying general check.
   const Piece piece = board[pos];
   bool is_blocked = false;
-  if (opponent_general != kNoPosition && Col(opponent_general) == Col(pos)) {
-    for (Position cur = std::min(pos, opponent_general) + kTotalCol;
-         cur < std::max(pos, opponent_general); cur += kTotalCol) {
-      if (board[cur] != Piece::EMPTY) {
+  if (opponent_general != K_NO_POSITION && Col(opponent_general) == Col(pos)) {
+    for (Position cur = std::min(pos, opponent_general) + K_TOTAL_COL;
+         cur < std::max(pos, opponent_general); cur += K_TOTAL_COL) {
+      if (!IsEmpty(board[cur])) {
         is_blocked = true;
         break;
       }
@@ -39,16 +40,16 @@ std::array<Position, 5> PossibleMovesGeneral(const Board& board,
     }
   }
 
-  if (piece == Piece::R_GENERAL) {
+  if (piece == R_GENERAL) {
     if (((pos >= 66 && pos <= 68) || (pos >= 75 && pos <= 77)) &&
-        !IsRed(board[pos + kTotalCol])) {
+        !IsRed(board[pos + K_TOTAL_COL])) {
       // move down
-      result[res_idx++] = pos + kTotalCol;
+      result[res_idx++] = pos + K_TOTAL_COL;
     }
     if (((pos >= 75 && pos <= 77) || (pos >= 84 && pos <= 86)) &&
-        !IsRed(board[pos - kTotalCol])) {
+        !IsRed(board[pos - K_TOTAL_COL])) {
       // move up
-      result[res_idx++] = pos - kTotalCol;
+      result[res_idx++] = pos - K_TOTAL_COL;
     }
     if ((pos == 66 || pos == 67 || pos == 75 || pos == 76 || pos == 84 ||
          pos == 85) &&
@@ -62,16 +63,16 @@ std::array<Position, 5> PossibleMovesGeneral(const Board& board,
       // move left
       result[res_idx++] = pos - 1;
     }
-  } else if (piece == Piece::B_GENERAL) {
+  } else if (piece == B_GENERAL) {
     if (((pos >= 3 && pos <= 5) || (pos >= 12 && pos <= 14)) &&
-        !IsBlack(board[pos + kTotalCol])) {
+        !IsBlack(board[pos + K_TOTAL_COL])) {
       // move down
-      result[res_idx++] = pos + kTotalCol;
+      result[res_idx++] = pos + K_TOTAL_COL;
     }
     if (((pos >= 12 && pos <= 14) || (pos >= 21 && pos <= 23)) &&
-        !IsBlack(board[pos - kTotalCol])) {
+        !IsBlack(board[pos - K_TOTAL_COL])) {
       // move up
-      result[res_idx++] = pos - kTotalCol;
+      result[res_idx++] = pos - K_TOTAL_COL;
     }
     if ((pos == 3 || pos == 4 || pos == 12 || pos == 13 || pos == 21 ||
          pos == 22) &&
@@ -92,7 +93,7 @@ std::array<Position, 5> PossibleMovesGeneral(const Board& board,
 std::array<Position, 4> PossibleMovesAdvisor(const Board& board,
                                              const Position pos) {
   std::array<Position, 4> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   uint8_t res_idx = 0;
 
   if (IsRed(board[pos])) {
@@ -153,7 +154,7 @@ std::array<Position, 4> PossibleMovesAdvisor(const Board& board,
 std::array<Position, 4> PossibleMovesElephant(const Board& board,
                                               const Position pos) {
   std::array<Position, 4> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
 
   uint8_t res_idx = 0;
 
@@ -294,29 +295,29 @@ std::array<Position, 4> PossibleMovesElephant(const Board& board,
 std::array<Position, 8> PossibleMovesHorse(const Board& board,
                                            const Position pos) {
   std::array<Position, 8> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   const bool is_red = IsRed(board[pos]);
   const uint8_t col = Col(pos);
   uint8_t res_idx = 0;
 
-  if (pos > 17) {                           // can move up 2
-    if (IsEmpty(board[pos - kTotalCol])) {  // not blocked
-      const Position up = pos - 2 * kTotalCol;
+  if (pos > 17) {                             // can move up 2
+    if (IsEmpty(board[pos - K_TOTAL_COL])) {  // not blocked
+      const Position up = pos - 2 * K_TOTAL_COL;
       if (col > 0 && CanCapture(board[up - 1], is_red)) {
         result[res_idx++] = up - 1;
       }
-      if (col < kTotalCol - 1 && CanCapture(board[up + 1], is_red)) {
+      if (col < K_TOTAL_COL - 1 && CanCapture(board[up + 1], is_red)) {
         result[res_idx++] = up + 1;
       }
     }
   }
-  if (pos < 72) {                           // can move down 2
-    if (IsEmpty(board[pos + kTotalCol])) {  // not blocked
-      const Position down = pos + 2 * kTotalCol;
+  if (pos < 72) {                             // can move down 2
+    if (IsEmpty(board[pos + K_TOTAL_COL])) {  // not blocked
+      const Position down = pos + 2 * K_TOTAL_COL;
       if (col > 0 && CanCapture(board[down - 1], is_red)) {
         result[res_idx++] = down - 1;
       }
-      if (col < kTotalCol - 1 && CanCapture(board[down + 1], is_red)) {
+      if (col < K_TOTAL_COL - 1 && CanCapture(board[down + 1], is_red)) {
         result[res_idx++] = down + 1;
       }
     }
@@ -324,22 +325,22 @@ std::array<Position, 8> PossibleMovesHorse(const Board& board,
   if (col > 1) {                    // can move left 2
     if (IsEmpty(board[pos - 1])) {  // not blocked
       const Position left = pos - 2;
-      if (pos > 8 && CanCapture(board[left - kTotalCol], is_red)) {
-        result[res_idx++] = left - kTotalCol;
+      if (pos > 8 && CanCapture(board[left - K_TOTAL_COL], is_red)) {
+        result[res_idx++] = left - K_TOTAL_COL;
       }
-      if (pos < 81 && CanCapture(board[left + kTotalCol], is_red)) {
-        result[res_idx++] = left + kTotalCol;
+      if (pos < 81 && CanCapture(board[left + K_TOTAL_COL], is_red)) {
+        result[res_idx++] = left + K_TOTAL_COL;
       }
     }
   }
-  if (col < kTotalCol - 2) {        // can move right 2
+  if (col < K_TOTAL_COL - 2) {      // can move right 2
     if (IsEmpty(board[pos + 1])) {  // not blocked
       const Position right = pos + 2;
-      if (pos > 8 && CanCapture(board[right - kTotalCol], is_red)) {
-        result[res_idx++] = right - kTotalCol;
+      if (pos > 8 && CanCapture(board[right - K_TOTAL_COL], is_red)) {
+        result[res_idx++] = right - K_TOTAL_COL;
       }
-      if (pos < 81 && CanCapture(board[right + kTotalCol], is_red)) {
-        result[res_idx++] = right + kTotalCol;
+      if (pos < 81 && CanCapture(board[right + K_TOTAL_COL], is_red)) {
+        result[res_idx++] = right + K_TOTAL_COL;
       }
     }
   }
@@ -350,13 +351,13 @@ std::array<Position, 8> PossibleMovesHorse(const Board& board,
 std::array<Position, 17> PossibleMovesChariot(const Board& board,
                                               const Position pos) {
   std::array<Position, 17> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   const bool is_red = IsRed(board[pos]);
   uint8_t res_idx = 0;
 
   // Up
-  for (int8_t cur = static_cast<int8_t>(pos) - kTotalCol; cur >= 0;
-       cur -= kTotalCol) {
+  for (int8_t cur = static_cast<int8_t>(pos) - K_TOTAL_COL; cur >= 0;
+       cur -= K_TOTAL_COL) {
     if (CanCapture(board[cur], is_red)) {
       result[res_idx++] = static_cast<Position>(cur);
       if (!IsEmpty(board[cur])) {
@@ -368,8 +369,8 @@ std::array<Position, 17> PossibleMovesChariot(const Board& board,
   }
 
   // Down
-  for (int8_t cur = static_cast<int8_t>(pos) + kTotalCol; cur < kBoardSize;
-       cur += kTotalCol) {
+  for (int8_t cur = static_cast<int8_t>(pos) + K_TOTAL_COL; cur < K_BOARD_SIZE;
+       cur += K_TOTAL_COL) {
     if (CanCapture(board[cur], is_red)) {
       result[res_idx++] = static_cast<Position>(cur);
       if (!IsEmpty(board[cur])) {
@@ -382,7 +383,7 @@ std::array<Position, 17> PossibleMovesChariot(const Board& board,
 
   // Left
   for (int8_t cur = static_cast<int8_t>(pos) - 1;
-       cur >= (pos - pos % kTotalCol); cur--) {
+       cur >= (pos - pos % K_TOTAL_COL); cur--) {
     if (CanCapture(board[cur], is_red)) {
       result[res_idx++] = static_cast<Position>(cur);
       if (!IsEmpty(board[cur])) {
@@ -395,7 +396,7 @@ std::array<Position, 17> PossibleMovesChariot(const Board& board,
 
   // Right
   for (int8_t cur = static_cast<int8_t>(pos) + 1;
-       cur < ((pos / kTotalCol + 1) * kTotalCol); cur++) {
+       cur < ((pos / K_TOTAL_COL + 1) * K_TOTAL_COL); cur++) {
     if (CanCapture(board[cur], is_red)) {
       result[res_idx++] = static_cast<Position>(cur);
       if (!IsEmpty(board[cur])) {
@@ -412,14 +413,14 @@ std::array<Position, 17> PossibleMovesChariot(const Board& board,
 std::array<Position, 17> PossibleMovesCannon(const Board& board,
                                              const Position pos) {
   std::array<Position, 17> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   const bool is_red = IsRed(board[pos]);
   uint8_t res_idx = 0;
 
   // Up
   bool blocked = false;
-  for (int8_t cur = static_cast<int8_t>(pos) - kTotalCol; cur >= 0;
-       cur -= kTotalCol) {
+  for (int8_t cur = static_cast<int8_t>(pos) - K_TOTAL_COL; cur >= 0;
+       cur -= K_TOTAL_COL) {
     if (IsEmpty(board[cur])) {
       if (!blocked) {
         result[res_idx++] = static_cast<Position>(cur);
@@ -438,8 +439,8 @@ std::array<Position, 17> PossibleMovesCannon(const Board& board,
 
   // Down
   blocked = false;
-  for (int8_t cur = static_cast<int8_t>(pos) + kTotalCol; cur < kBoardSize;
-       cur += kTotalCol) {
+  for (int8_t cur = static_cast<int8_t>(pos) + K_TOTAL_COL; cur < K_BOARD_SIZE;
+       cur += K_TOTAL_COL) {
     if (IsEmpty(board[cur])) {
       if (!blocked) {
         result[res_idx++] = static_cast<Position>(cur);
@@ -459,7 +460,7 @@ std::array<Position, 17> PossibleMovesCannon(const Board& board,
   // Left
   blocked = false;
   for (int8_t cur = static_cast<int8_t>(pos) - 1;
-       cur >= (pos - pos % kTotalCol); cur--) {
+       cur >= (pos - pos % K_TOTAL_COL); cur--) {
     if (IsEmpty(board[cur])) {
       if (!blocked) {
         result[res_idx++] = static_cast<Position>(cur);
@@ -479,7 +480,7 @@ std::array<Position, 17> PossibleMovesCannon(const Board& board,
   // Right
   blocked = false;
   for (int8_t cur = static_cast<int8_t>(pos) + 1;
-       cur < ((pos / kTotalCol + 1) * kTotalCol); cur++) {
+       cur < ((pos / K_TOTAL_COL + 1) * K_TOTAL_COL); cur++) {
     if (IsEmpty(board[cur])) {
       if (!blocked) {
         result[res_idx++] = static_cast<Position>(cur);
@@ -502,40 +503,42 @@ std::array<Position, 17> PossibleMovesCannon(const Board& board,
 std::array<Position, 3> PossibleMovesSoldier(const Board& board,
                                              const Position pos) {
   std::array<Position, 3> result;
-  result.fill(kNoPosition);
+  result.fill(K_NO_POSITION);
   const bool is_red = IsRed(board[pos]);
   size_t res_idx = 0;
 
   if (is_red) {
-    if (pos >= kRedRiverStart && CanCapture(board[pos - kTotalCol], is_red)) {
-      result[0] = pos - kTotalCol;
+    if (pos >= K_RED_RIVER_START &&
+        CanCapture(board[pos - K_TOTAL_COL], is_red)) {
+      result[0] = pos - K_TOTAL_COL;
       return result;
     } else {
-      if (pos >= kTotalCol && CanCapture(board[pos - kTotalCol], is_red)) {
-        result[res_idx++] = pos - kTotalCol;
+      if (pos >= K_TOTAL_COL && CanCapture(board[pos - K_TOTAL_COL], is_red)) {
+        result[res_idx++] = pos - K_TOTAL_COL;
       }
       const uint8_t col = Col(pos);
       if (col > 0 && CanCapture(board[pos - 1], is_red)) {
         result[res_idx++] = pos - 1;
       }
-      if (col < kTotalCol - 1 && CanCapture(board[pos + 1], is_red)) {
+      if (col < K_TOTAL_COL - 1 && CanCapture(board[pos + 1], is_red)) {
         result[res_idx++] = pos + 1;
       }
       return result;
     }
   } else {
-    if (pos < kRedRiverStart && CanCapture(board[pos + kTotalCol], is_red)) {
-      result[0] = pos + kTotalCol;
+    if (pos < K_RED_RIVER_START &&
+        CanCapture(board[pos + K_TOTAL_COL], is_red)) {
+      result[0] = pos + K_TOTAL_COL;
       return result;
     } else {
-      if (pos < 81 && CanCapture(board[pos + kTotalCol], is_red)) {
-        result[res_idx++] = pos + kTotalCol;
+      if (pos < 81 && CanCapture(board[pos + K_TOTAL_COL], is_red)) {
+        result[res_idx++] = pos + K_TOTAL_COL;
       }
       const uint8_t col = Col(pos);
       if (col > 0 && CanCapture(board[pos - 1], is_red)) {
         result[res_idx++] = pos - 1;
       }
-      if (col < kTotalCol - 1 && CanCapture(board[pos + 1], is_red)) {
+      if (col < K_TOTAL_COL - 1 && CanCapture(board[pos + 1], is_red)) {
         result[res_idx++] = pos + 1;
       }
       return result;

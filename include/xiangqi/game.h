@@ -57,7 +57,7 @@ class Game {
   void RestoreMoves(const std::vector<Movement>& moves);
 
  private:
-  Player player_ = Player::RED;
+  Player player_ = PLAYER_RED;
   std::optional<BoardState> initial_board_state_ = std::nullopt;
   Board board_;
   std::vector<Piece> captured_;

@@ -13,36 +13,26 @@ namespace xq {
 using MovesPerPiece = std::array<Position, 17>;
 
 constexpr Board kStartingBoard = {
-    Piece::B_CHARIOT,  Piece::B_HORSE,   Piece::B_ELEPHANT,
-    Piece::B_ADVISOR,  Piece::B_GENERAL, Piece::B_ADVISOR,
-    Piece::B_ELEPHANT, Piece::B_HORSE,   Piece::B_CHARIOT,  // Row 0
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 1
-    Piece::EMPTY,      Piece::B_CANNON,  Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::B_CANNON,  Piece::EMPTY,  // Row 2
-    Piece::B_SOLDIER,  Piece::EMPTY,     Piece::B_SOLDIER,
-    Piece::EMPTY,      Piece::B_SOLDIER, Piece::EMPTY,
-    Piece::B_SOLDIER,  Piece::EMPTY,     Piece::B_SOLDIER,  // Row 3
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 4
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 5
-    Piece::R_SOLDIER,  Piece::EMPTY,     Piece::R_SOLDIER,
-    Piece::EMPTY,      Piece::R_SOLDIER, Piece::EMPTY,
-    Piece::R_SOLDIER,  Piece::EMPTY,     Piece::R_SOLDIER,  // Row 6
-    Piece::EMPTY,      Piece::R_CANNON,  Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::R_CANNON,  Piece::EMPTY,  // Row 7
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,
-    Piece::EMPTY,      Piece::EMPTY,     Piece::EMPTY,  // Row 8
-    Piece::R_CHARIOT,  Piece::R_HORSE,   Piece::R_ELEPHANT,
-    Piece::R_ADVISOR,  Piece::R_GENERAL, Piece::R_ADVISOR,
-    Piece::R_ELEPHANT, Piece::R_HORSE,   Piece::R_CHARIOT,  // Row 9
+    B_CHARIOT,   B_HORSE,     B_ELEPHANT,  B_ADVISOR,   B_GENERAL,
+    B_ADVISOR,   B_ELEPHANT,  B_HORSE,     B_CHARIOT,  // Row 0
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,  // Row 1
+    PIECE_EMPTY, B_CANNON,    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, B_CANNON,    PIECE_EMPTY,  // Row 2
+    B_SOLDIER,   PIECE_EMPTY, B_SOLDIER,   PIECE_EMPTY, B_SOLDIER,
+    PIECE_EMPTY, B_SOLDIER,   PIECE_EMPTY, B_SOLDIER,  // Row 3
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,  // Row 4
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,  // Row 5
+    R_SOLDIER,   PIECE_EMPTY, R_SOLDIER,   PIECE_EMPTY, R_SOLDIER,
+    PIECE_EMPTY, R_SOLDIER,   PIECE_EMPTY, R_SOLDIER,  // Row 6
+    PIECE_EMPTY, R_CANNON,    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, R_CANNON,    PIECE_EMPTY,  // Row 7
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,
+    PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY, PIECE_EMPTY,  // Row 8
+    R_CHARIOT,   R_HORSE,     R_ELEPHANT,  R_ADVISOR,   R_GENERAL,
+    R_ADVISOR,   R_ELEPHANT,  R_HORSE,     R_CHARIOT,  // Row 9
 };
 
 // Construct board from human-readable string.
