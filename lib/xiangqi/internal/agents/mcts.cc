@@ -20,8 +20,8 @@ using BoardState = std::array<uint64_t, 4>;
 
 constexpr size_t kDefaultNumSimulations = 1000;
 
-Winner MakeRandomMoveUntilGameOver(const Board<Piece>& board, Player player) {
-  Board<Piece> cur_board = board;
+Winner MakeRandomMoveUntilGameOver(const Board& board, Player player) {
+  Board cur_board = board;
   Player cur_player = player;
 
   std::random_device rd;
@@ -115,7 +115,7 @@ class Node {
         wins_{0.0f},
         visits_{0} {};
 
-  Node(const Board<Piece>& board, Player player, std::shared_ptr<Node> parent,
+  Node(const Board& board, Player player, std::shared_ptr<Node> parent,
        uint16_t produced_by_move)
       : board_{board},
         player_{player},
@@ -132,7 +132,7 @@ class Node {
   }
   ~Node() = default;
 
-  inline const Board<Piece>& GetBoard() const { return board_; }
+  inline const Board& GetBoard() const { return board_; }
   inline Player GetPlayer() const { return player_; }
   inline std::weak_ptr<Node> Parent() const { return parent_; }
   inline bool HasUntriedMoves() const { return !untried_moves_.empty(); }
@@ -160,7 +160,7 @@ class Node {
   }
 
  private:
-  Board<Piece> board_;
+  Board board_;
   Player player_;
   Winner winner_;
   uint16_t produced_by_move_;
@@ -179,7 +179,7 @@ std::shared_ptr<Node> TreePolicy(std::shared_ptr<Node> node,
       // -- Expansion --
       const uint16_t move = node->ChooseRandomUntriedMove();
       const Position from = move >> 8, to = move & 0xFF;
-      Board<Piece> next = node->GetBoard();
+      Board next = node->GetBoard();
       Move(next, from, to);
       const Player next_player = ChangePlayer(node->GetPlayer());
       auto child = std::make_shared<Node>(next, next_player, node, move);
@@ -214,11 +214,11 @@ std::shared_ptr<Node> TreePolicy(std::shared_ptr<Node> node,
   return node;
 }
 
-Winner DefaultPolicy(const Board<Piece>& board, Player player) {
+Winner DefaultPolicy(const Board& board, Player player) {
   // Simulate a random playout from the current board.
   constexpr size_t kMaxPlayoutSteps = 10000;
   size_t steps = 0;
-  Board<Piece> next = board;
+  Board next = board;
   while (!IsGameOver(next) && steps < kMaxPlayoutSteps) {
     std::vector<uint16_t> moves = AllPossibleNextMoves(next, player);
     if (moves.empty()) {
@@ -264,7 +264,7 @@ MCTS::MCTS(size_t num_iter, size_t depth, float exploration_constant)
       depth_{depth},
       exploration_constant_{exploration_constant} {}
 
-uint16_t MCTS::MakeMove(const Board<Piece>& board, Player player) const {
+uint16_t MCTS::MakeMove(const Board& board, Player player) const {
   auto root = std::make_shared<Node>(board, player,
                                      std::shared_ptr<Node>(nullptr), 0xFFFF);
   for (size_t i = 0; i < num_iter_; i++) {

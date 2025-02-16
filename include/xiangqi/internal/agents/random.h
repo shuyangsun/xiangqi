@@ -12,7 +12,7 @@ class Random : public IAgent {
   Random() = default;
   ~Random() = default;
 
-  virtual uint16_t MakeMove(const Board<Piece>& board,
+  virtual uint16_t MakeMove(const Board& board,
                             Player player) const override final;
 };
 

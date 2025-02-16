@@ -29,7 +29,7 @@ class Game {
   Piece PieceAt(Position pos) const;
 
   // Return reference of current board.
-  const Board<Piece>& CurrentBoard() const;
+  const Board& CurrentBoard() const;
 
   // Move a piece from a position to another position, returns the captured
   // piece. If no piece was captured, return EMPTY.
@@ -59,7 +59,7 @@ class Game {
  private:
   Player player_ = Player::RED;
   std::optional<BoardState> initial_board_state_ = std::nullopt;
-  Board<Piece> board_;
+  Board board_;
   std::vector<Piece> captured_;
   std::vector<Movement> moves_;
 };

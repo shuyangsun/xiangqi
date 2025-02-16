@@ -33,10 +33,6 @@ constexpr uint8_t kPalaceColMax = 5;
 // Starting position of red river.
 constexpr Position kRedRiverStart = 5 * kTotalCol;
 
-// Row-major board in flat 1-D array.
-template <typename T>
-using Board = std::array<T, kBoardSize>;
-
 using BoardState = std::array<uint64_t, 4>;
 
 enum class Player : bool { RED = true, BLACK = false };
@@ -59,6 +55,11 @@ enum class Piece : int8_t {
   R_SOLDIER = 7,
   B_SOLDIER = -7
 };
+
+// Row-major representation of the Xiangqi board in a 1-d array.
+// The first element is the top-left of the board, and the last element is the
+// bottom-right of the board.
+using Board = std::array<Piece, kBoardSize>;
 
 // Rotate the position so that it's from the opponent's perspective.
 inline Position FlipPosition(const Position position) {

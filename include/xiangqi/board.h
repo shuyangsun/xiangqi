@@ -12,7 +12,7 @@ namespace xq {
 
 using MovesPerPiece = std::array<Position, 17>;
 
-constexpr Board<Piece> kStartingBoard = {
+constexpr Board kStartingBoard = {
     Piece::B_CHARIOT,  Piece::B_HORSE,   Piece::B_ELEPHANT,
     Piece::B_ADVISOR,  Piece::B_GENERAL, Piece::B_ADVISOR,
     Piece::B_ELEPHANT, Piece::B_HORSE,   Piece::B_CHARIOT,  // Row 0
@@ -58,71 +58,69 @@ constexpr Board<Piece> kStartingBoard = {
 // "7 . C . * * * . C . \n"
 // "8 . . . * * * . . . \n"
 // "9 R H E A G A E H R \n";
-Board<Piece> BoardFromString(std::string_view str);
+Board BoardFromString(std::string_view str);
 
 // Convert board to human-readable string.
-std::string BoardToString(const Board<Piece>& board);
+std::string BoardToString(const Board& board);
 
 // Check if two boards are identical.
-bool BoardEq(const Board<Piece>& a, const Board<Piece>& b);
+bool BoardEq(const Board& a, const Board& b);
 
-bool operator==(const Board<Piece>& lhs, const Board<Piece>& rhs);
+bool operator==(const Board& lhs, const Board& rhs);
 
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.
-Position FindGeneral(const Board<Piece>& board, Player player);
+Position FindGeneral(const Board& board, Player player);
 
 // Returns true if it's checkmade for the given player. I.e., if the
 // current player does not take certain actions, the opponent can capture
 // the general with their next move.
-bool IsBeingCheckmate(const Board<Piece>& board, Player player);
+bool IsBeingCheckmate(const Board& board, Player player);
 
 // Returns the winner if one of the player's general is captured, returns NONE
 // if both generals are on the board.
 // Note that this function does not perform a future-looking search to check
 // if there is no possible move for one player to not be checkmate. To perform
 // future-looking winning evaluation, call the DidPlayerLose function.
-Winner GetWinner(const Board<Piece>& board);
+Winner GetWinner(const Board& board);
 
 // Returns true if all possible moves of the given player still result in the
 // player being checkmate.
-bool DidPlayerLose(const Board<Piece>& board, Player player);
+bool DidPlayerLose(const Board& board, Player player);
 
 // Rotate the board 180 degrees so that it's from the opponent's perspective.
 // Red and black pieces are also flipped.
-Board<Piece> FlipBoard(const Board<Piece>& board);
+Board FlipBoard(const Board& board);
 
 // Flip the board left and right.
-Board<Piece> MirrorBoardHorizontal(const Board<Piece>& board);
+Board MirrorBoardHorizontal(const Board& board);
 
 // Flip the board up and down.
-Board<Piece> MirrorBoardVertical(const Board<Piece>& board);
+Board MirrorBoardVertical(const Board& board);
 
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
-Piece Move(Board<Piece>& board, Movement movement);
+Piece Move(Board& board, Movement movement);
 
 // Returns all possible moves for the player with piece at position. Impossible
 // moves are filled with kNoPosition.
 // If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
-MovesPerPiece PossibleMoves(const Board<Piece>& board, Position pos,
+MovesPerPiece PossibleMoves(const Board& board, Position pos,
                             bool avoid_checkmate = false);
 
 // Returns a vector of all possible moves for player. Each move is a 16-bit
 // integer, representing "from" and "to" positions, each being 8 bits
 // (Position).
-std::vector<Movement> AllPossibleNextMoves(const Board<Piece>& board,
-                                           Player player,
+std::vector<Movement> AllPossibleNextMoves(const Board& board, Player player,
                                            bool avoid_checkmate = false);
 
 // Returns a vector of all possible boards for the given player after any valid
 // move.
 // If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
-std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
-                                                Player player,
-                                                bool avoid_checkmate = false);
+std::vector<Board> AllPossibleNextBoards(const Board& board, Player player,
+                                         bool avoid_checkmate = false);
 
 // Encode the board state using a small number of bytes, mainly used for the
 // game AI to identify a unique board state.
@@ -132,10 +130,10 @@ std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
 // (4 bits for each). If the piece is not present, use 0xF to represent it.
 // To make sure the same piece for the same player is treated in the same way,
 // all byte representations of a group of piece is sorted.
-BoardState EncodeBoardState(const Board<Piece>& board);
+BoardState EncodeBoardState(const Board& board);
 
 // Decode the encoded board state back to its original state.
-Board<Piece> DecodeBoardState(const BoardState& state);
+Board DecodeBoardState(const BoardState& state);
 
 }  // namespace xq
 

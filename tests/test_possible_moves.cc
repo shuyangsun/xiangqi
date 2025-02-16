@@ -53,7 +53,7 @@ TEST(TestPossibleMoves, General) {
   const MovesPerPiece moves_2 = PossibleMoves(kStartingBoard, PosStr("E9"));
   EXPECT_EQ(ToVec(moves_2), ToPos({"E8"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a * g . . . \n"
       "1 . . . * H * . . . \n"
@@ -80,7 +80,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_1, PosStr("E9"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_6), ToPos({"E8", "D9"}));
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * g * . . . \n"
@@ -107,7 +107,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_2, PosStr("E8"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_10), ToPos({"E7", "E9", "D8", "F8"}));
 
-  const Board<Piece> board_3 = BoardFromString(
+  const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * g * . . . \n"
@@ -127,7 +127,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_3, PosStr("E1"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_12), ToPos({"E0", "D1"}));
 
-  const Board<Piece> board_4 = BoardFromString(
+  const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * * * . . . \n"
@@ -154,7 +154,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_4, PosStr("E7"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_16), ToPos({"E8", "D7", "F7"}));
 
-  const Board<Piece> board_5 = BoardFromString(
+  const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * * * . . . \n"
@@ -181,7 +181,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_5, PosStr("D7"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_20), ToPos({"E7", "D8"}));
 
-  const Board<Piece> board_6 = BoardFromString(
+  const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * * * . . . \n"
@@ -208,7 +208,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_6, PosStr("F7"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_24), ToPos({"E7", "F8"}));
 
-  const Board<Piece> board_7 = BoardFromString(
+  const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * * g . . . \n"
@@ -235,7 +235,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_7, PosStr("F8"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_28), ToPos({"F7", "F9", "E8"}));
 
-  const Board<Piece> board_8 = BoardFromString(
+  const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . g * * . . . \n"
@@ -262,7 +262,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_8, PosStr("D8"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_32), ToPos({"D7", "D9", "E8"}));
 
-  const Board<Piece> board_9 = BoardFromString(
+  const Board board_9 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . g * * . . . \n"
       "1 . . . * * * . . . \n"
@@ -289,7 +289,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_9, PosStr("D9"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_36), ToPos({"D8", "E9"}));
 
-  const Board<Piece> board_10 = BoardFromString(
+  const Board board_10 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * g . . . \n"
       "1 . . . * * * . . . \n"
@@ -316,7 +316,7 @@ TEST(TestPossibleMoves, General) {
       PossibleMoves(board_10, PosStr("F9"), /*avoid_checkmate=*/true);
   EXPECT_EQ(ToVec(moves_40), ToPos({"F8", "E9"}));
 
-  const Board<Piece> board_11 = BoardFromString(
+  const Board board_11 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a * g . . . \n"
       "1 . . . * * * . . . \n"
@@ -354,7 +354,7 @@ TEST(TestPossibleMoves, Advisor) {
   const MovesPerPiece moves_4 = PossibleMoves(kStartingBoard, PosStr("F9"));
   EXPECT_EQ(ToVec(moves_4), ToPos({"E8"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a * g . . . \n"
       "1 . . . * a * . . . \n"
@@ -379,7 +379,7 @@ TEST(TestPossibleMoves, Advisor) {
   const MovesPerPiece moves_8 = PossibleMoves(board_1, PosStr("D9"));
   EXPECT_TRUE(ToVec(moves_8).empty());
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a * a . . . \n"
       "1 . . . * * g . . . \n"
@@ -404,7 +404,7 @@ TEST(TestPossibleMoves, Advisor) {
   const MovesPerPiece moves_12 = PossibleMoves(board_2, PosStr("F9"));
   EXPECT_EQ(ToVec(moves_12), ToPos({"E8"}));
 
-  const Board<Piece> board_3 = BoardFromString(
+  const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * * g . . . \n"
@@ -429,7 +429,7 @@ TEST(TestPossibleMoves, Advisor) {
   const MovesPerPiece moves_16 = PossibleMoves(board_3, PosStr("F7"));
   EXPECT_EQ(ToVec(moves_16), ToPos({"E8"}));
 
-  const Board<Piece> board_4 = BoardFromString(
+  const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
       "1 . . . * a g . . . \n"
@@ -448,7 +448,7 @@ TEST(TestPossibleMoves, Advisor) {
   const MovesPerPiece moves_18 = PossibleMoves(board_4, PosStr("E8"));
   EXPECT_EQ(ToVec(moves_18), ToPos({"D9", "F9", "D7", "F7"}));
 
-  const Board<Piece> board_5 = BoardFromString(
+  const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -471,7 +471,7 @@ TEST(TestPossibleMoves, Advisor) {
 // ---------------------------------------------------------------------
 
 TEST(TestPossibleMoves, Elephant) {
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . e a g * e . . \n"
       "1 . . . * a * . . . \n"
@@ -489,7 +489,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("C9"))), ToPos({"A7", "E7"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("G9"))), ToPos({"I7", "E7"}));
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . e a g * e . . \n"
       "1 . r . c a c . r . \n"
@@ -506,7 +506,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_TRUE(ToVec(PossibleMoves(board_2, PosStr("C9"))).empty());
   EXPECT_TRUE(ToVec(PossibleMoves(board_2, PosStr("G9"))).empty());
 
-  const Board<Piece> board_3 = BoardFromString(
+  const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -524,7 +524,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_EQ(ToVec(PossibleMoves(board_3, PosStr("C5"))), ToPos({"A7", "E7"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_3, PosStr("G5"))), ToPos({"I7", "E7"}));
 
-  const Board<Piece> board_4 = BoardFromString(
+  const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -541,7 +541,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_TRUE(ToVec(PossibleMoves(board_4, PosStr("C5"))).empty());
   EXPECT_TRUE(ToVec(PossibleMoves(board_4, PosStr("G5"))).empty());
 
-  const Board<Piece> board_5 = BoardFromString(
+  const Board board_5 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . R a g * C . . \n"
       "1 . . . * a * . . . \n"
@@ -559,7 +559,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("A7"))), ToPos({"C5", "C9"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_5, PosStr("I7"))), ToPos({"G5", "G9"}));
 
-  const Board<Piece> board_6 = BoardFromString(
+  const Board board_6 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . r . * a * . c . \n"
@@ -576,7 +576,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("A7"))).empty());
   EXPECT_TRUE(ToVec(PossibleMoves(board_6, PosStr("I7"))).empty());
 
-  const Board<Piece> board_7 = BoardFromString(
+  const Board board_7 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . R a g * C . . \n"
       "1 . . . * a * . . . \n"
@@ -593,7 +593,7 @@ TEST(TestPossibleMoves, Elephant) {
   EXPECT_EQ(ToVec(PossibleMoves(board_7, PosStr("E7"))),
             ToPos({"C9", "G9", "C5", "G5"}));
 
-  const Board<Piece> board_8 = BoardFromString(
+  const Board board_8 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . H a H . . . \n"
@@ -623,7 +623,7 @@ TEST(TestPossibleMoves, Horse) {
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("H0"))),
             ToPos({"G2", "I2"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 h . . a g * . . . \n"
       "1 . . C * a * . . . \n"
@@ -642,7 +642,7 @@ TEST(TestPossibleMoves, Horse) {
             ToPos({"B5", "B3", "C2", "E2", "F3", "F5", "E6", "C6"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_1, PosStr("A0"))), ToPos({"C1", "B2"}));
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . h \n"
       "1 . . C * a * . . . \n"
@@ -662,7 +662,7 @@ TEST(TestPossibleMoves, Horse) {
             ToPos({"B3", "B7", "C4", "C6"}));
   EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("I9"))), ToPos({"H7", "G8"}));
 
-  const Board<Piece> board_3 = BoardFromString(
+  const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -677,7 +677,7 @@ TEST(TestPossibleMoves, Horse) {
   EXPECT_TRUE(ToVec(PossibleMoves(board_3, PosStr("E2"))).empty());
   EXPECT_TRUE(ToVec(PossibleMoves(board_3, PosStr("E7"))).empty());
 
-  const Board<Piece> board_4 = BoardFromString(
+  const Board board_4 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * g . . . \n"
       "1 . . . * * * . . . \n"
@@ -708,7 +708,7 @@ TEST(TestPossibleMoves, Chariot) {
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I9"))),
             ToPos({"I8", "I7"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 R . . a g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -733,7 +733,7 @@ TEST(TestPossibleMoves, Chariot) {
             ToPos({"G0", "G1", "G2", "G3", "G5", "G6", "G7", "G8", "G9", "A4",
                    "B4", "C4", "D4", "E4", "F4", "H4", "I4"}));
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 R c . a g * . . . \n"
       "1 c . . * a * . . . \n"
@@ -752,7 +752,7 @@ TEST(TestPossibleMoves, Chariot) {
   EXPECT_EQ(ToVec(PossibleMoves(board_2, PosStr("G4"))),
             ToPos({"G3", "G5", "F4", "H4"}));
 
-  const Board<Piece> board_3 = BoardFromString(
+  const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 r C . a g * . . . \n"
       "1 C . . * a * . . . \n"
@@ -796,7 +796,7 @@ TEST(TestPossibleMoves, Cannon) {
             ToPos({"H8", "H6", "H5", "H4", "H3", "H0", "I7", "G7", "F7", "E7",
                    "D7", "C7"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -829,7 +829,7 @@ TEST(TestPossibleMoves, Soldier) {
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("G6"))), ToPos({"G5"}));
   EXPECT_EQ(ToVec(PossibleMoves(kStartingBoard, PosStr("I6"))), ToPos({"I5"}));
 
-  const Board<Piece> board_1 = BoardFromString(
+  const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a g * . . . \n"
       "1 . . . * a * . . . \n"
@@ -852,7 +852,7 @@ TEST(TestPossibleMoves, Soldier) {
       ToPos({"D3"}));
   EXPECT_TRUE(ToVec(PossibleMoves(board_1, PosStr("B3"))).empty());
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board board_2 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . a * g . . . \n"
       "1 . . . * a * . . . \n"

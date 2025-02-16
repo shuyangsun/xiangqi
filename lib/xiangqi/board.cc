@@ -14,8 +14,7 @@ namespace xq {
 
 namespace {
 
-bool IsPathClear(const Board<Piece>& board, const Position from,
-                 const Position to) {
+bool IsPathClear(const Board& board, const Position from, const Position to) {
   const uint8_t start = std::min(from, to);
   const uint8_t end = std::max(from, to);
   if (end - start < kTotalCol) {  // same row
@@ -53,7 +52,7 @@ bool ThreatensBySoldier(const Piece soldier, const Position pos,
              ))));
 }
 
-bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
+bool ThreatensByHorse(const Board& board, const Position pos,
                       const Position target) {
   const uint8_t pos_row = Row(pos);
   const uint8_t pos_col = Col(pos);
@@ -92,7 +91,7 @@ bool ThreatensByHorse(const Board<Piece>& board, const Position pos,
            ));
 }
 
-bool ThreatensByCannon(const Board<Piece>& board, const Position pos,
+bool ThreatensByCannon(const Board& board, const Position pos,
                        const Position target) {
   if (Row(pos) == Row(target)) {
     bool found_in_between = false;
@@ -209,10 +208,10 @@ Piece ChToPiece(const char ch) {
 
 }  // namespace
 
-Board<Piece> BoardFromString(const std::string_view str) {
+Board BoardFromString(const std::string_view str) {
   using enum Piece;
 
-  Board<Piece> result;
+  Board result;
   result.fill(EMPTY);
   size_t idx = 23;
   for (uint8_t row = 0; row < kTotalRow; row++) {
@@ -225,7 +224,7 @@ Board<Piece> BoardFromString(const std::string_view str) {
   return result;
 }
 
-std::string BoardToString(const Board<Piece>& board) {
+std::string BoardToString(const Board& board) {
   std::string result;
   result.reserve(242);
   result.append("  A B C D E F G H I \n");
@@ -241,7 +240,7 @@ std::string BoardToString(const Board<Piece>& board) {
   return result;
 }
 
-bool BoardEq(const Board<Piece>& a, const Board<Piece>& b) {
+bool BoardEq(const Board& a, const Board& b) {
   for (Position pos = 0; pos < kBoardSize; pos++) {
     if (a[pos] != b[pos]) {
       return false;
@@ -250,11 +249,11 @@ bool BoardEq(const Board<Piece>& a, const Board<Piece>& b) {
   return true;
 }
 
-bool operator==(const Board<Piece>& lhs, const Board<Piece>& rhs) {
+bool operator==(const Board& lhs, const Board& rhs) {
   return BoardEq(lhs, rhs);
 }
 
-bool IsBeingCheckmate(const Board<Piece>& board, Player player) {
+bool IsBeingCheckmate(const Board& board, Player player) {
   using enum Piece;
   const Piece general =
       (player == Player::RED) ? Piece::R_GENERAL : Piece::B_GENERAL;
@@ -305,7 +304,7 @@ bool IsBeingCheckmate(const Board<Piece>& board, Player player) {
   return false;
 }
 
-Winner GetWinner(const Board<Piece>& board) {
+Winner GetWinner(const Board& board) {
   const Position black_general_pos = FindGeneral(board, Player::BLACK);
   if (black_general_pos == kNoPosition) {
     return Winner::RED;
@@ -317,7 +316,7 @@ Winner GetWinner(const Board<Piece>& board) {
   return Winner::NONE;
 }
 
-bool DidPlayerLose(const Board<Piece>& board, Player player) {
+bool DidPlayerLose(const Board& board, Player player) {
   using namespace xq::internal::util;
   using enum Piece;
 
@@ -339,7 +338,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -352,7 +351,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -365,7 +364,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -378,7 +377,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -391,7 +390,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -404,7 +403,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -417,7 +416,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -430,7 +429,7 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
           if (to == kNoPosition) {
             break;
           }
-          Board<Piece> next = board;
+          Board next = board;
           const Piece capture = Move(next, NewMovement(pos, to));
           if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
             return false;
@@ -444,8 +443,8 @@ bool DidPlayerLose(const Board<Piece>& board, Player player) {
   return true;
 }
 
-Board<Piece> FlipBoard(const Board<Piece>& board) {
-  Board<Piece> result = board;
+Board FlipBoard(const Board& board) {
+  Board result = board;
   for (uint8_t pos = 0; pos < kBoardSize / 2; pos++) {
     const uint8_t pos_mirror = kBoardSize - 1 - pos;
     const Piece left_flipped = static_cast<Piece>(
@@ -457,8 +456,8 @@ Board<Piece> FlipBoard(const Board<Piece>& board) {
   return result;
 }
 
-Board<Piece> MirrorBoardHorizontal(const Board<Piece>& board) {
-  Board<Piece> result = board;
+Board MirrorBoardHorizontal(const Board& board) {
+  Board result = board;
   for (uint8_t row = 0; row < kTotalRow; row++) {
     const Position row_start = row * kTotalCol;
     for (uint8_t col = 0; col < kTotalCol / 2; col++) {
@@ -472,8 +471,8 @@ Board<Piece> MirrorBoardHorizontal(const Board<Piece>& board) {
   return result;
 }
 
-Board<Piece> MirrorBoardVertical(const Board<Piece>& board) {
-  Board<Piece> result = board;
+Board MirrorBoardVertical(const Board& board) {
+  Board result = board;
   result.fill(Piece::EMPTY);
   for (uint8_t row = 0; row < kTotalRow / 2; row++) {
     const size_t top_start = row * kTotalCol;
@@ -493,7 +492,7 @@ Board<Piece> MirrorBoardVertical(const Board<Piece>& board) {
   return result;
 }
 
-BoardState EncodeBoardState(const Board<Piece>& board) {
+BoardState EncodeBoardState(const Board& board) {
   using enum Piece;
 
   uint64_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
@@ -648,9 +647,9 @@ BoardState EncodeBoardState(const Board<Piece>& board) {
   return {res1, res2, res3, res4};
 }
 
-Board<Piece> DecodeBoardState(const BoardState& state) {
+Board DecodeBoardState(const BoardState& state) {
   // Initialize an empty board.
-  Board<Piece> board;
+  Board board;
   board.fill(Piece::EMPTY);
 
   // For red pieces, the encoded state is split between state[0] (res1) and
@@ -814,7 +813,7 @@ Board<Piece> DecodeBoardState(const BoardState& state) {
   return board;
 }
 
-MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
+MovesPerPiece PossibleMoves(const Board& board, const Position pos,
                             const bool avoid_checkmate) {
   using namespace xq::internal::util;
   using enum Piece;
@@ -867,7 +866,7 @@ MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
   if (avoid_checkmate) {
     const Player player = IsRed(piece) ? Player::RED : Player::BLACK;
     for (size_t i = 0; i < result.size() && result[i] != kNoPosition; i++) {
-      Board<Piece> next = board;
+      Board next = board;
       const Piece captured = Move(next, NewMovement(pos, result[i]));
       if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL) {
         continue;
@@ -881,7 +880,7 @@ MovesPerPiece PossibleMoves(const Board<Piece>& board, const Position pos,
   return result;
 }
 
-Piece Move(Board<Piece>& board, const Movement movement) {
+Piece Move(Board& board, const Movement movement) {
   using enum Player;
   const Position from = Orig(movement);
   const Position to = Dest(movement);
@@ -899,7 +898,7 @@ Piece Move(Board<Piece>& board, const Movement movement) {
 }
 
 // Returns a vector of all possible moves for player.
-std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
+std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
                                            const Player player,
                                            const bool avoid_checkmate) {
   using namespace xq::internal::util;
@@ -994,7 +993,7 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
     for (const Movement move : result) {
       const Player player =
           IsRed(board[Orig(move)]) ? Player::RED : Player::BLACK;
-      Board<Piece> next = board;
+      Board next = board;
       const Piece captured = Move(next, move);
       if (captured == Piece::R_GENERAL || captured == Piece::B_GENERAL ||
           !IsBeingCheckmate(next, player)) {
@@ -1005,24 +1004,24 @@ std::vector<uint16_t> AllPossibleNextMoves(const Board<Piece>& board,
   return result;
 }
 
-std::vector<Board<Piece>> AllPossibleNextBoards(const Board<Piece>& board,
-                                                const Player player,
-                                                const bool avoid_checkmate) {
+std::vector<Board> AllPossibleNextBoards(const Board& board,
+                                         const Player player,
+                                         const bool avoid_checkmate) {
   const std::vector<uint16_t> possible_moves =
       AllPossibleNextMoves(board, player, avoid_checkmate);
-  std::vector<Board<Piece>> result;
+  std::vector<Board> result;
   result.reserve(possible_moves.size());
   for (const uint16_t move : possible_moves) {
     const Position from = static_cast<Position>((move & 0xFF00) >> 8);
     const Position to = static_cast<Position>(move & 0x00FF);
-    Board<Piece> next = board;
+    Board next = board;
     Move(next, move);
     result.emplace_back(std::move(next));
   }
   return result;
 }
 
-Position FindGeneral(const Board<Piece>& board, const Player player) {
+Position FindGeneral(const Board& board, const Player player) {
   const bool find_red = player == Player::RED;
   const Piece general = find_red ? Piece::R_GENERAL : Piece::B_GENERAL;
   if (find_red) {

@@ -98,7 +98,7 @@ void PrintGame(const Game& game, bool is_vs_human) {
   }
   std::cout << "\n";
 
-  const Board<Piece>& board = game.CurrentBoard();
+  const Board& board = game.CurrentBoard();
   std::cout << BoardToString(board);
   std::cout << std::endl;
   if (!is_vs_human) {
@@ -208,7 +208,7 @@ int main() {
         }
         std::cout << '\n';
 
-        const Board<Piece> board = game.CurrentBoard();
+        const Board board = game.CurrentBoard();
 
         for (uint8_t row = 0; row < kTotalRow; ++row) {
           std::cout << static_cast<int>(row) << " ";

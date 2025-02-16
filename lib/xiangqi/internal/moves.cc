@@ -16,7 +16,7 @@ inline bool CanCapture(const Piece piece, const bool is_red) {
 
 }  // namespace
 
-std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
+std::array<Position, 5> PossibleMovesGeneral(const Board& board,
                                              const Position pos,
                                              const Position opponent_general) {
   std::array<Position, 5> result;
@@ -89,7 +89,7 @@ std::array<Position, 5> PossibleMovesGeneral(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 4> PossibleMovesAdvisor(const Board<Piece>& board,
+std::array<Position, 4> PossibleMovesAdvisor(const Board& board,
                                              const Position pos) {
   std::array<Position, 4> result;
   result.fill(kNoPosition);
@@ -150,7 +150,7 @@ std::array<Position, 4> PossibleMovesAdvisor(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
+std::array<Position, 4> PossibleMovesElephant(const Board& board,
                                               const Position pos) {
   std::array<Position, 4> result;
   result.fill(kNoPosition);
@@ -291,7 +291,7 @@ std::array<Position, 4> PossibleMovesElephant(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 8> PossibleMovesHorse(const Board<Piece>& board,
+std::array<Position, 8> PossibleMovesHorse(const Board& board,
                                            const Position pos) {
   std::array<Position, 8> result;
   result.fill(kNoPosition);
@@ -347,7 +347,7 @@ std::array<Position, 8> PossibleMovesHorse(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 17> PossibleMovesChariot(const Board<Piece>& board,
+std::array<Position, 17> PossibleMovesChariot(const Board& board,
                                               const Position pos) {
   std::array<Position, 17> result;
   result.fill(kNoPosition);
@@ -409,7 +409,7 @@ std::array<Position, 17> PossibleMovesChariot(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 17> PossibleMovesCannon(const Board<Piece>& board,
+std::array<Position, 17> PossibleMovesCannon(const Board& board,
                                              const Position pos) {
   std::array<Position, 17> result;
   result.fill(kNoPosition);
@@ -499,7 +499,7 @@ std::array<Position, 17> PossibleMovesCannon(const Board<Piece>& board,
   return result;
 }
 
-std::array<Position, 3> PossibleMovesSoldier(const Board<Piece>& board,
+std::array<Position, 3> PossibleMovesSoldier(const Board& board,
                                              const Position pos) {
   std::array<Position, 3> result;
   result.fill(kNoPosition);
