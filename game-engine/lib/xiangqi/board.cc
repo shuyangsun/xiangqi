@@ -482,6 +482,13 @@ Board<Piece> MirrorBoardVertical(const Board<Piece>& board) {
                 kTotalCol);
     std::memcpy(result.data() + bottom_start, board.data() + top_start,
                 kTotalCol);
+    for (uint8_t col = 0; col < kTotalCol; col++) {
+      result[top_start + col] = Piece(
+          -static_cast<std::underlying_type_t<Piece>>(result[top_start + col]));
+      result[bottom_start + col] =
+          Piece(-static_cast<std::underlying_type_t<Piece>>(
+              result[bottom_start + col]));
+    }
   }
   return result;
 }

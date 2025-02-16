@@ -75,10 +75,9 @@ TEST(BoardTest, FlipPosition) {
 }
 
 TEST(BoardTest, FlipBoard) {
-  const Board<Piece> board_1 = kStartingBoard;
-  EXPECT_EQ(board_1, FlipBoard(board_1));  // starting board is symetric
+  EXPECT_EQ(kStartingBoard, FlipBoard(kStartingBoard));
 
-  const Board<Piece> board_2 = BoardFromString(
+  const Board<Piece> board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 r h e a g a e h r \n"
       "1 . . . * * * . . . \n"
@@ -90,8 +89,8 @@ TEST(BoardTest, FlipBoard) {
       "7 . C . * * * . C . \n"
       "8 . . . * * * . . . \n"
       "9 R H E A G A E H R \n");
-  const Board<Piece> flipped_2 = FlipBoard(board_2);
-  const Board<Piece> expected_2 = BoardFromString(
+  const Board<Piece> flipped_1 = FlipBoard(board_1);
+  const Board<Piece> expected_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 r h e a g a e h r \n"
       "1 . . . * * * . . . \n"
@@ -103,8 +102,94 @@ TEST(BoardTest, FlipBoard) {
       "7 . C . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 R H E A G A E H R \n");
-  EXPECT_NE(board_2, flipped_2);
-  EXPECT_EQ(flipped_2, expected_2);
+  EXPECT_NE(board_1, flipped_1);
+  EXPECT_EQ(flipped_1, expected_1);
+}
+
+// ---------------------------------------------------------------------
+// Test MirrorPositionHorizontal and MirrorBoardHorizontal
+// ---------------------------------------------------------------------
+
+TEST(BoardTest, MirrorPositionHorizontal) {
+  EXPECT_EQ(MirrorPositionHorizontal(PosStr("C0")), PosStr("G0"));
+  EXPECT_EQ(MirrorPositionHorizontal(PosStr("E2")), PosStr("E2"));
+  EXPECT_EQ(MirrorPositionHorizontal(PosStr("A9")), PosStr("I9"));
+  EXPECT_EQ(MirrorPositionHorizontal(PosStr("D5")), PosStr("F5"));
+}
+
+TEST(BoardTest, MirrorBoardHorizontal) {
+  EXPECT_EQ(kStartingBoard, MirrorBoardHorizontal(kStartingBoard));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a g a e h r \n"
+      "1 . . . * * * . . . \n"
+      "2 . . . * * * . c . \n"
+      "3 s . s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S c S . S . S . S \n"
+      "7 . C . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  const Board<Piece> mirrored_1 = MirrorBoardHorizontal(board_1);
+  const Board<Piece> expected_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a g a e h r \n"
+      "1 . . . * * * . . . \n"
+      "2 . c . * * * . . . \n"
+      "3 s . s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S . S . S . S c S \n"
+      "7 . C . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  EXPECT_NE(board_1, mirrored_1);
+  EXPECT_EQ(mirrored_1, expected_1);
+}
+
+// ---------------------------------------------------------------------
+// Test MirrorPositionVertical and MirrorBoardVertical
+// ---------------------------------------------------------------------
+
+TEST(BoardTest, MirrorPositionVertical) {
+  EXPECT_EQ(MirrorPositionVertical(PosStr("C0")), PosStr("C9"));
+  EXPECT_EQ(MirrorPositionVertical(PosStr("E2")), PosStr("E7"));
+  EXPECT_EQ(MirrorPositionVertical(PosStr("A9")), PosStr("A0"));
+  EXPECT_EQ(MirrorPositionVertical(PosStr("D5")), PosStr("D4"));
+}
+
+TEST(BoardTest, MirrorBoardVertical) {
+  EXPECT_EQ(kStartingBoard, MirrorBoardVertical(kStartingBoard));
+
+  const Board<Piece> board_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a g a e h r \n"
+      "1 . . . * * * . . . \n"
+      "2 . . . * * * . c . \n"
+      "3 s . s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S c S . S . S . S \n"
+      "7 . C . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  const Board<Piece> mirrored_1 = MirrorBoardVertical(board_1);
+  const Board<Piece> expected_1 = BoardFromString(
+      "  A B C D E F G H I \n"
+      "0 r h e a g a e h r \n"
+      "1 . . . * * * . . . \n"
+      "2 . c . * * * . c . \n"
+      "3 s C s . s . s . s \n"
+      "4 - - - - - - - - - \n"
+      "5 - - - - - - - - - \n"
+      "6 S . S . S . S . S \n"
+      "7 . . . * * * . C . \n"
+      "8 . . . * * * . . . \n"
+      "9 R H E A G A E H R \n");
+  EXPECT_NE(board_1, mirrored_1);
+  EXPECT_EQ(mirrored_1, expected_1);
 }
 
 // ---------------------------------------------------------------------

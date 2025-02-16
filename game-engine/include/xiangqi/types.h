@@ -70,7 +70,7 @@ inline Position MirrorPositionHorizontal(const Position pos) {
   return pos - remainder + (kTotalCol - 1 - remainder);
 }
 
-inline Position MirrorPositionVertial(const Position pos) {
+inline Position MirrorPositionVertical(const Position pos) {
   const uint8_t remainder = pos % kTotalCol;
   return (kTotalRow - 1 - pos / kTotalCol) * kTotalCol + remainder;
 }
