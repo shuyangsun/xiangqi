@@ -58,20 +58,13 @@ bool BoardEq(const Board& a, const Board& b);
 
 bool operator==(const Board& lhs, const Board& rhs);
 
-// Returns the position of a player's general. If the player's general was
-// captured, return kNoPosition.
+// C++ wrapper of FindGeneral_C.
 Position FindGeneral(const Board& board, Player player);
 
-// Returns true if it's checkmade for the given player. I.e., if the
-// current player does not take certain actions, the opponent can capture
-// the general with their next move.
+// C++ wrapper of IsBeingCheckmate_C.
 bool IsBeingCheckmate(const Board& board, Player player);
 
-// Returns the winner if one of the player's general is captured, returns NONE
-// if both generals are on the board.
-// Note that this function does not perform a future-looking search to check
-// if there is no possible move for one player to not be checkmate. To perform
-// future-looking winning evaluation, call the DidPlayerLose function.
+// C++ wrapper of GetWinner_C.
 Winner GetWinner(const Board& board);
 
 // Returns true if all possible moves of the given player still result in the
