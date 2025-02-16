@@ -292,3 +292,29 @@ void FlipBoard_C(BoardC dest, const BoardC src) {
     dest[pos_mirror] = left_flipped;
   }
 }
+
+void MirrorBoardHorizontal_C(BoardC dest, const BoardC src) {
+  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
+    const Position row_start = row * K_TOTAL_COL;
+    for (uint8_t col = 0; col < K_TOTAL_COL / 2; col++) {
+      const Position left_pos = row_start + col;
+      const Position right_pos = row_start + K_TOTAL_COL - 1 - col;
+      dest[left_pos] = src[right_pos];
+      dest[right_pos] = src[left_pos];
+    }
+    dest[row_start + K_TOTAL_COL / 2] = src[row_start + K_TOTAL_COL / 2];
+  }
+}
+
+void MirrorBoardVertical_C(BoardC dest, const BoardC src) {
+  for (uint8_t row = 0; row < K_TOTAL_ROW / 2; row++) {
+    const size_t top_start = row * K_TOTAL_COL;
+    const size_t bottom_start = (K_TOTAL_ROW - 1 - row) * K_TOTAL_COL;
+    memcpy((void*)dest + top_start, (void*)src + bottom_start, K_TOTAL_COL);
+    memcpy((void*)dest + bottom_start, (void*)src + top_start, K_TOTAL_COL);
+    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
+      dest[top_start + col] = -dest[top_start + col];
+      dest[bottom_start + col] = -dest[bottom_start + col];
+    }
+  }
+}

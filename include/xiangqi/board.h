@@ -74,10 +74,10 @@ bool DidPlayerLose(const Board& board, Player player);
 // C++ wrapper of FlipBoard_C.
 Board FlipBoard(const Board& board);
 
-// Flip the board left and right.
+// C++ wrapper of MirrorBoardHorizontal_C.
 Board MirrorBoardHorizontal(const Board& board);
 
-// Flip the board up and down.
+// C++ wrapper of MirrorBoardVertical_C.
 Board MirrorBoardVertical(const Board& board);
 
 // C++ wrapper of Move_C.

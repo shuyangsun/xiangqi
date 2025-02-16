@@ -65,6 +65,12 @@ enum Piece Move_C(BoardC board, Movement movement);
 // Red and black pieces are also flipped.
 void FlipBoard_C(BoardC dest, const BoardC src);
 
+// Flip the board left and right.
+void MirrorBoardHorizontal_C(BoardC dest, const BoardC src);
+
+// Flip the board up and down.
+void MirrorBoardVertical_C(BoardC dest, const BoardC src);
+
 #ifdef __cplusplus
 }
 #endif

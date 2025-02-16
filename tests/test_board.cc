@@ -118,7 +118,10 @@ TEST(BoardTest, MirrorPositionHorizontal) {
 }
 
 TEST(BoardTest, MirrorBoardHorizontal) {
-  EXPECT_EQ(kStartingBoard, MirrorBoardHorizontal(kStartingBoard));
+  EXPECT_EQ(kStartingBoard, MirrorBoardHorizontal(kStartingBoard))
+      << "Expected board\n"
+      << BoardToString(MirrorBoardHorizontal(kStartingBoard))
+      << "to be the same as starting board.";
 
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"

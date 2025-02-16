@@ -280,38 +280,14 @@ Board FlipBoard(const Board& board) {
 }
 
 Board MirrorBoardHorizontal(const Board& board) {
-  Board result = board;
-  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
-    const Position row_start = row * K_TOTAL_COL;
-    for (uint8_t col = 0; col < K_TOTAL_COL / 2; col++) {
-      const Position left_pos = row_start + col;
-      const Position right_pos = row_start + K_TOTAL_COL - 1 - col;
-      const Piece left_piece = board[left_pos];
-      result[left_pos] = board[right_pos];
-      result[right_pos] = left_piece;
-    }
-  }
+  Board result;
+  MirrorBoardHorizontal_C(result.data(), board.data());
   return result;
 }
 
 Board MirrorBoardVertical(const Board& board) {
-  Board result = board;
-  result.fill(PIECE_EMPTY);
-  for (uint8_t row = 0; row < K_TOTAL_ROW / 2; row++) {
-    const size_t top_start = row * K_TOTAL_COL;
-    const size_t bottom_start = (K_TOTAL_ROW - 1 - row) * K_TOTAL_COL;
-    std::memcpy(result.data() + top_start, board.data() + bottom_start,
-                K_TOTAL_COL);
-    std::memcpy(result.data() + bottom_start, board.data() + top_start,
-                K_TOTAL_COL);
-    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
-      result[top_start + col] = Piece(
-          -static_cast<std::underlying_type_t<Piece>>(result[top_start + col]));
-      result[bottom_start + col] =
-          Piece(-static_cast<std::underlying_type_t<Piece>>(
-              result[bottom_start + col]));
-    }
-  }
+  Board result;
+  MirrorBoardVertical_C(result.data(), board.data());
   return result;
 }
 
