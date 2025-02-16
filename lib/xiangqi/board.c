@@ -116,7 +116,8 @@ bool ThreatensByCannon(const BoardC board, const Position pos,
 
 // --------------- Public Function ---------------
 
-// Copies destination board from source board.
+void ClearBoard_C(BoardC board) { memset(board, 0, K_BOARD_SIZE); }
+
 void CopyBoard_C(BoardC dest, const BoardC src) {
   memcpy(dest, src, K_BOARD_SIZE);
 }

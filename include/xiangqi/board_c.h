@@ -32,6 +32,12 @@ const BoardC K_STARTING_BOARD = {
     R_ADVISOR,   R_ELEPHANT,  R_HORSE,     R_CHARIOT,  // Row 9
 };
 
+// Remove all pieces from board.
+void ClearBoard_C(BoardC board);
+
+// Copies destination board from source board.
+void CopyBoard_C(BoardC dest, const BoardC src);
+
 // Copies destination board from source board.
 void CopyBoard_C(BoardC dest, const BoardC src);
 
