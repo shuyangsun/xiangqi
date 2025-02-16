@@ -94,12 +94,6 @@ inline Movement NewMovement(const Position orig, const Position dest) {
 inline Position Orig(const Movement movement) { return movement >> 8; }
 inline Position Dest(const Movement movement) { return movement & 0x00FF; }
 
-struct MoveAction {
-  Piece piece;
-  Movement movement;
-  Piece captured;
-};
-
 }  // namespace xq
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_H__

@@ -10,44 +10,13 @@
 
 namespace xq {
 
-namespace {
+Game::Game() : board_{kStartingBoard} {}
 
-using enum Piece;
-
-// Converts a piece map to a board. The resulting board will be completely empty
-// (all cells set to EMPTY) except for the positions specified in the map.
-Board<Piece> pieceMapToBoard(
-    const std::unordered_map<Position, Piece>& pos_piece) {
-  Board<Piece> board;
-  for (auto& row : board) {
-    row.fill(EMPTY);
-  }
-  for (const auto& entry : pos_piece) {
-    Position pos = entry.first;
-    const Piece piece = entry.second;
-    if (Row(pos) < kTotalRow && Col(pos) < kTotalCol) {
-      board[pos] = piece;
-    }
-  }
-  return board;
-}
-
-}  // namespace
-
-Game::Game() : history_{kStartingBoard} {}
-
-void Game::ResetFromBoard(const Board<Piece>& board) {
-  using enum Player;
+void Game::Restart() {
+  board_ = kStartingBoard;
+  initial_board_state_ = std::nullopt;
   moves_.clear();
-  history_.clear();
-  history_.emplace_back(std::move(board));
-  player_ = RED;
-}
-
-void Game::Reset() { ResetFromBoard(kStartingBoard); }
-
-void Game::ResetFromPos(const std::unordered_map<Position, Piece>& pos_piece) {
-  ResetFromBoard(pieceMapToBoard(pos_piece));
+  captured_.clear();
 }
 
 Player Game::CurrentPlayer() const { return player_; }
@@ -55,60 +24,71 @@ Player Game::CurrentPlayer() const { return player_; }
 size_t Game::MovesCount() const { return moves_.size(); }
 
 void Game::MakeBlackMoveFirst() {
-  if (history_.size() > 1) {
+  if (moves_.size() > 1) {
     return;
   }
   player_ = Player::BLACK;
 }
 
-Board<Piece> Game::StartingBoard() const { return {history_.front()}; }
-
-Board<Piece> Game::CurrentBoard() const { return {history_.back()}; }
-
-Piece Game::PieceAt(Position pos) const {
-  return history_.back()[Row(pos)][Col(pos)];
+BoardState Game::InitialBoardState() const {
+  if (initial_board_state_.has_value()) {
+    return *initial_board_state_;
+  }
+  return EncodeBoardState(kStartingBoard);
 }
 
-Piece Game::Move(Position from, Position to) {
-  Board<Piece> next = history_.back();
-  const Piece piece = next[Row(from)][Col(from)];
-  const Piece captured = xq::Move(next, from, to);
-  moves_.emplace_back(piece, from, to, captured);
-  history_.emplace_back(next);
-  player_ = player_ == Player::RED ? Player::BLACK : Player::RED;
+Piece Game::PieceAt(Position pos) const { return board_[pos]; }
+
+Piece Game::Move(const Movement move) {
+  moves_.emplace_back(move);
+  player_ = ChangePlayer(player_);
+  const Piece captured = xq::Move(board_, move);
+  captured_.emplace_back(captured);
   return captured;
 }
 
-bool Game::CanUndo() const { return history_.size() > 1; }
+bool Game::CanUndo() const { return moves_.size() > 1; }
 
-MoveAction Game::Undo() {
+Movement Game::Undo() {
   using enum Player;
 
   if (!CanUndo()) {
-    // Dummy move action.
-    return {Piece::EMPTY, kNoPosition, kNoPosition, Piece::EMPTY};
+    return kNoMovement;
   }
-  MoveAction result = moves_.back();
+  Movement result = moves_.back();
+  const Piece captured = captured_.back();
   moves_.pop_back();
-  history_.pop_back();
-  player_ = player_ == RED ? BLACK : RED;
-  return result;
-}
+  captured_.pop_back();
+  player_ = ChangePlayer(player_);
 
-std::vector<uint16_t> Game::ExportMoves() const {
-  std::vector<uint16_t> result;
-  result.reserve(moves_.size());
-  for (const MoveAction& move : moves_) {
-    result.emplace_back((static_cast<uint16_t>(move.from) << 8) |
-                        (static_cast<uint16_t>(move.to)));
+  xq::Move(board_, NewMovement(Dest(result), Orig(result)));
+  if (!IsEmpty(captured)) {
+    board_[Dest(result)] = captured;
   }
   return result;
 }
 
-void Game::RestoreMoves(const std::vector<uint16_t>& moves) {
-  for (const uint16_t move : moves) {
-    Move(static_cast<Position>((move & 0xFF00) >> 8),
-         static_cast<Position>(move & 0x00FF));
+std::vector<Movement> Game::ExportMoves() const { return moves_; }
+
+// Restores game state from inital state.
+void Game::RestoreBoard(const BoardState& state) {
+  initial_board_state_ = state;
+  board_ = DecodeBoardState(state);
+  moves_.clear();
+  captured_.clear();
+  player_ = Player::RED;
+}
+
+void Game::RestoreMoves(const std::vector<Movement>& moves) {
+  if (moves.empty()) {
+    return;
+  }
+  player_ = IsRed(board_[Orig(moves.back())]) ? Player::BLACK : Player::RED;
+  moves_ = moves;
+  captured_.clear();
+  captured_.reserve(moves.size());
+  for (const Movement move : moves) {
+    captured_.emplace_back(xq::Move(board_, move));
   }
 }
 

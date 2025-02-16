@@ -5,16 +5,16 @@ add_library(xiangqi_board_lib STATIC
     internal/moves.cc
 )
 
-# add_library(xiangqi_game_lib STATIC
-#     game.cc
-#     agent.cc
-#     internal/agents/util.cc
-#     internal/agents/mcts.cc
-#     internal/agents/random.cc
-# )
+add_library(xiangqi_game_lib STATIC
+    game.cc
+    # agent.cc
+    # internal/agents/util.cc
+    # internal/agents/mcts.cc
+    # internal/agents/random.cc
+)
 
-# target_link_libraries(xiangqi_game_lib PRIVATE xiangqi_board_lib)
+target_link_libraries(xiangqi_game_lib PRIVATE xiangqi_board_lib)
 
-# set_target_properties(xiangqi_game_lib PROPERTIES Swift_MODULE_NAME "SwiftXiangqiGameLib")
-# target_compile_options(xiangqi_game_lib PUBLIC
-#     "$<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>")
+set_target_properties(xiangqi_game_lib PROPERTIES Swift_MODULE_NAME "SwiftXiangqiGameLib")
+target_compile_options(xiangqi_game_lib PUBLIC
+    "$<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>")

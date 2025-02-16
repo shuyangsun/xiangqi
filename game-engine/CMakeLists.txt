@@ -57,12 +57,12 @@ add_executable(
     xiangqi_tests
     tests/test_board.cc
     tests/test_possible_moves.cc
-    # tests/test_game.cc
+    tests/test_game.cc
 )
 target_link_libraries(
     xiangqi_tests
     PRIVATE xiangqi_board_lib
-    # PRIVATE xiangqi_game_lib
+    PRIVATE xiangqi_game_lib
     gtest_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)
