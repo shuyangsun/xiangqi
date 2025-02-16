@@ -28,6 +28,9 @@ class Game {
   // Get the piece at a speific position of the current board.
   Piece PieceAt(Position pos) const;
 
+  // Return reference of current board.
+  const Board<Piece>& CurrentBoard() const;
+
   // Move a piece from a position to another position, returns the captured
   // piece. If no piece was captured, return EMPTY.
   Piece Move(Movement move);

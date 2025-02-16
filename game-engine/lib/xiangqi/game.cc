@@ -21,6 +21,8 @@ void Game::Restart() {
 
 Player Game::CurrentPlayer() const { return player_; }
 
+const Board<Piece>& Game::CurrentBoard() const { return board_; }
+
 size_t Game::MovesCount() const { return moves_.size(); }
 
 void Game::MakeBlackMoveFirst() {

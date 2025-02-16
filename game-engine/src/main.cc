@@ -15,12 +15,15 @@ namespace {
 using ::xq::AgentFactory;
 using ::xq::AllPossibleNextMoves;
 using ::xq::Board;
+using ::xq::BoardToString;
 using ::xq::Game;
 using ::xq::GetWinner;
 using ::xq::IAgent;
 using ::xq::IsBeingCheckmate;
 using ::xq::kTotalCol;
 using ::xq::kTotalRow;
+using ::xq::Movement;
+using ::xq::MovesPerPiece;
 using ::xq::Piece;
 using ::xq::Player;
 using ::xq::Pos;
@@ -95,14 +98,8 @@ void PrintGame(const Game& game, bool is_vs_human) {
   }
   std::cout << "\n";
 
-  const Board<Piece> board = game.CurrentBoard();
-  for (uint8_t row = 0; row < kTotalRow; ++row) {
-    std::cout << static_cast<int>(row) << ' ';
-    for (uint8_t col = 0; col < kTotalCol; ++col) {
-      std::cout << PieceToChar(board[row][col]) << ' ';
-    }
-    std::cout << std::endl;
-  }
+  const Board<Piece>& board = game.CurrentBoard();
+  std::cout << BoardToString(board);
   std::cout << std::endl;
   if (!is_vs_human) {
     return;
@@ -200,7 +197,7 @@ int main() {
         Position pos = Pos(row, col);
 
         // Get the possible moves for the piece at the given position.
-        Board<bool> moves = PossibleMoves(game.CurrentBoard(), pos);
+        MovesPerPiece moves = PossibleMoves(game.CurrentBoard(), pos);
 
         // Print the board overlaying possible moves with 'o'.
         std::cout << "\nPossible moves from (" << row << "," << col << "):\n";
