@@ -34,7 +34,12 @@ const BoardC K_STARTING_BOARD = {
 
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.
-Position FindGeneral_C(const enum Piece* board, enum Player player);
+Position FindGeneral_C(const BoardC board, enum Player player);
+
+// Returns true if it's checkmade for the given player. I.e., if the
+// current player does not take certain actions, the opponent can capture
+// the general with their next move.
+bool IsBeingCheckmate_C(const BoardC board, enum Player player);
 
 #ifdef __cplusplus
 }
