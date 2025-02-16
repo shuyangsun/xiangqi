@@ -243,3 +243,15 @@ bool IsBeingCheckmate_C(const BoardC board, const enum Player player) {
   }
   return false;
 }
+
+enum Winner GetWinner_C(const BoardC board) {
+  const Position black_general_pos = FindGeneral_C(board, PLAYER_BLACK);
+  if (black_general_pos == K_NO_POSITION) {
+    return WINNER_RED;
+  }
+  const Position red_general_pos = FindGeneral_C(board, PLAYER_RED);
+  if (red_general_pos == K_NO_POSITION) {
+    return WINNER_BLACK;
+  }
+  return WINNER_NONE;
+}

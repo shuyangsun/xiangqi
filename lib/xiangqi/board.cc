@@ -145,17 +145,7 @@ bool IsBeingCheckmate(const Board& board, Player player) {
   return IsBeingCheckmate_C(board.data(), player);
 }
 
-Winner GetWinner(const Board& board) {
-  const Position black_general_pos = FindGeneral(board, PLAYER_BLACK);
-  if (black_general_pos == K_NO_POSITION) {
-    return WINNER_RED;
-  }
-  const Position red_general_pos = FindGeneral(board, PLAYER_RED);
-  if (red_general_pos == K_NO_POSITION) {
-    return WINNER_BLACK;
-  }
-  return WINNER_NONE;
-}
+Winner GetWinner(const Board& board) { return GetWinner_C(board.data()); }
 
 bool DidPlayerLose(const Board& board, Player player) {
   using namespace xq::internal::util;

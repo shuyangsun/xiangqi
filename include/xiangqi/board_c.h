@@ -41,6 +41,13 @@ Position FindGeneral_C(const BoardC board, enum Player player);
 // the general with their next move.
 bool IsBeingCheckmate_C(const BoardC board, enum Player player);
 
+// Returns the winner if one of the player's general is captured, returns NONE
+// if both generals are on the board.
+// Note that this function does not perform a future-looking search to check
+// if there is no possible move for one player to not be checkmate. To perform
+// future-looking winning evaluation, call the DidPlayerLose function.
+enum Winner GetWinner_C(const BoardC board);
+
 #ifdef __cplusplus
 }
 #endif
