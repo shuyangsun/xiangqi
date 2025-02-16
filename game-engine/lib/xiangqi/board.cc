@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -452,6 +453,35 @@ Board<Piece> FlipBoard(const Board<Piece>& board) {
     result[pos] = static_cast<Piece>(
         -static_cast<std::underlying_type_t<Piece>>(board[pos_mirror]));
     result[pos_mirror] = left_flipped;
+  }
+  return result;
+}
+
+Board<Piece> MirrorBoardHorizontal(const Board<Piece>& board) {
+  Board<Piece> result = board;
+  for (uint8_t row = 0; row < kTotalRow; row++) {
+    const Position row_start = row * kTotalCol;
+    for (uint8_t col = 0; col < kTotalCol / 2; col++) {
+      const Position left_pos = row_start + col;
+      const Position right_pos = row_start + kTotalCol - 1 - col;
+      const Piece left_piece = board[left_pos];
+      result[left_pos] = board[right_pos];
+      result[right_pos] = left_piece;
+    }
+  }
+  return result;
+}
+
+Board<Piece> MirrorBoardVertical(const Board<Piece>& board) {
+  Board<Piece> result = board;
+  result.fill(Piece::EMPTY);
+  for (uint8_t row = 0; row < kTotalRow / 2; row++) {
+    const size_t top_start = row * kTotalCol;
+    const size_t bottom_start = (kTotalRow - 1 - row) * kTotalCol;
+    std::memcpy(result.data() + top_start, board.data() + bottom_start,
+                kTotalCol);
+    std::memcpy(result.data() + bottom_start, board.data() + top_start,
+                kTotalCol);
   }
   return result;
 }

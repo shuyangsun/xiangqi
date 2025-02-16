@@ -92,6 +92,12 @@ bool DidPlayerLose(const Board<Piece>& board, Player player);
 // Red and black pieces are also flipped.
 Board<Piece> FlipBoard(const Board<Piece>& board);
 
+// Flip the board left and right.
+Board<Piece> MirrorBoardHorizontal(const Board<Piece>& board);
+
+// Flip the board up and down.
+Board<Piece> MirrorBoardVertical(const Board<Piece>& board);
+
 // Move a piece from a position to another position, returns the captured
 // piece. If no piece was captured, return EMPTY.
 Piece Move(Board<Piece>& board, Movement movement);

@@ -61,8 +61,18 @@ enum class Piece : int8_t {
 };
 
 // Rotate the position so that it's from the opponent's perspective.
-inline Position FlipPosition(Position position) {
+inline Position FlipPosition(const Position position) {
   return kBoardSize - 1 - position;
+}
+
+inline Position MirrorPositionHorizontal(const Position pos) {
+  const uint8_t remainder = pos % kTotalCol;
+  return pos - remainder + (kTotalCol - 1 - remainder);
+}
+
+inline Position MirrorPositionVertial(const Position pos) {
+  const uint8_t remainder = pos % kTotalCol;
+  return (kTotalRow - 1 - pos / kTotalCol) * kTotalCol + remainder;
 }
 
 inline bool IsEmpty(const Piece piece) { return piece == Piece::EMPTY; }
