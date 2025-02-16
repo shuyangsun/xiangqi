@@ -1,5 +1,9 @@
+#include <string.h>
+
 #include "xiangqi/board_c.h"
 #include "xiangqi/types_c.h"
+
+// --------------- Helper Function ---------------
 
 bool IsPathClear(const BoardC board, const Position from, const Position to) {
   const uint8_t start = from < to ? from : to;
@@ -108,6 +112,13 @@ bool ThreatensByCannon(const BoardC board, const Position pos,
     return found_in_between;
   }
   return false;
+}
+
+// --------------- Public Function ---------------
+
+// Copies destination board from source board.
+void CopyBoard_C(BoardC dest, const BoardC src) {
+  memcpy(dest, src, K_BOARD_SIZE);
 }
 
 Position FindGeneral_C(const BoardC board, const enum Player player) {

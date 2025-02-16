@@ -32,6 +32,9 @@ const BoardC K_STARTING_BOARD = {
     R_ADVISOR,   R_ELEPHANT,  R_HORSE,     R_CHARIOT,  // Row 9
 };
 
+// Copies destination board from source board.
+void CopyBoard_C(BoardC dest, const BoardC src);
+
 // Returns the position of a player's general. If the player's general was
 // captured, return kNoPosition.
 Position FindGeneral_C(const BoardC board, enum Player player);
