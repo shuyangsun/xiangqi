@@ -708,19 +708,7 @@ MovesPerPiece PossibleMoves(const Board& board, const Position pos,
 }
 
 Piece Move(Board& board, const Movement movement) {
-  const Position from = Orig(movement);
-  const Position to = Dest(movement);
-  if (from == to) {
-    return PIECE_EMPTY;
-  }
-  const Piece piece = board[from];
-  if (piece == PIECE_EMPTY) {
-    return PIECE_EMPTY;
-  }
-  const Piece captured = board[to];
-  board[to] = piece;
-  board[from] = PIECE_EMPTY;
-  return captured;
+  return Move_C(board.data(), movement);
 }
 
 // Returns a vector of all possible moves for player.

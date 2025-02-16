@@ -266,3 +266,19 @@ enum Winner GetWinner_C(const BoardC board) {
   }
   return WINNER_NONE;
 }
+
+enum Piece Move_C(BoardC board, const Movement movement) {
+  const Position from = Orig(movement);
+  const Position to = Dest(movement);
+  if (from == to) {
+    return PIECE_EMPTY;
+  }
+  const enum Piece piece = board[from];
+  if (piece == PIECE_EMPTY) {
+    return PIECE_EMPTY;
+  }
+  const enum Piece captured = board[to];
+  board[to] = piece;
+  board[from] = PIECE_EMPTY;
+  return captured;
+}

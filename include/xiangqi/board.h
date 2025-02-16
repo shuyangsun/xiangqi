@@ -81,8 +81,7 @@ Board MirrorBoardHorizontal(const Board& board);
 // Flip the board up and down.
 Board MirrorBoardVertical(const Board& board);
 
-// Move a piece from a position to another position, returns the captured
-// piece. If no piece was captured, return EMPTY.
+// C++ wrapper of Move_C.
 Piece Move(Board& board, Movement movement);
 
 // Returns all possible moves for the player with piece at position. Impossible

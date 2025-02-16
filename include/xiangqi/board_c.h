@@ -51,6 +51,10 @@ bool IsBeingCheckmate_C(const BoardC board, enum Player player);
 // future-looking winning evaluation, call the DidPlayerLose function.
 enum Winner GetWinner_C(const BoardC board);
 
+// Move a piece from a position to another position, returns the captured
+// piece. If no piece was captured, return EMPTY.
+enum Piece Move_C(BoardC board, Movement movement);
+
 #ifdef __cplusplus
 }
 #endif
