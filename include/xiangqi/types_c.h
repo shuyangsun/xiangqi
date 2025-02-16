@@ -1,7 +1,11 @@
 #ifndef XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_C_H__
 #define XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_C_H__
 
-#include <cstdint>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Position on the board, range is [0, 90).
 typedef uint8_t Position;
@@ -48,7 +52,7 @@ enum Piece : int8_t {
 // Row-major representation of the Xiangqi board in a 1-d array.
 // The first element is the top-left of the board, and the last element is the
 // bottom-right of the board.
-typedef Piece BoardC[90];
+typedef enum Piece BoardC[90];
 typedef uint64_t BoardStateC[4];
 
 // Rotate the position so that it's from the opponent's perspective.
@@ -66,10 +70,12 @@ static inline Position MirrorPositionVertical(const Position pos) {
   return (K_TOTAL_ROW - 1 - pos / K_TOTAL_COL) * K_TOTAL_COL + remainder;
 }
 
-static inline bool IsEmpty(const Piece piece) { return piece == PIECE_EMPTY; }
-static inline bool IsRed(const Piece piece) { return piece > 0; }
-static inline bool IsBlack(const Piece piece) { return piece < 0; }
-static inline Player ChangePlayer(const Player player) {
+static inline bool IsEmpty(const enum Piece piece) {
+  return piece == PIECE_EMPTY;
+}
+static inline bool IsRed(const enum Piece piece) { return piece > 0; }
+static inline bool IsBlack(const enum Piece piece) { return piece < 0; }
+static inline enum Player ChangePlayer(const enum Player player) {
   return (player == PLAYER_RED) ? PLAYER_BLACK : PLAYER_RED;
 }
 
@@ -87,11 +93,15 @@ static inline Position PosStr(const char* str) {
 }
 
 static inline Movement NewMovement(const Position orig, const Position dest) {
-  return static_cast<Movement>(orig) << 8 | static_cast<Movement>(dest);
+  return ((Movement)orig) << 8 | ((Movement)dest);
 }
 static inline Position Orig(const Movement movement) { return movement >> 8; }
 static inline Position Dest(const Movement movement) {
   return movement & 0x00FF;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // XIANGQI_GAME_ENGINE_INCLUDE_XIANGQI_TYPES_C_H__
