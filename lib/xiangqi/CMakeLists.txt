@@ -1,15 +1,17 @@
 # Source: https://github.com/apple/swift-cmake-examples/blob/main/3_bidirectional_cxx_interop/lib/fibonacci/CMakeLists.txt
 
-add_library(xiangqi_board_clib STATIC
-    board.c
-)
+add_library(xiangqi_board_clib OBJECT board.c)
+set_property(TARGET xiangqi_board_clib PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+add_library(xiangqi_board_clib_shared SHARED $<TARGET_OBJECTS:xiangqi_board_clib>)
+add_library(xiangqi_board_clib_static STATIC $<TARGET_OBJECTS:xiangqi_board_clib>)
 
 add_library(xiangqi_board_lib STATIC
     board.cc
     internal/moves.cc
 )
 
-target_link_libraries(xiangqi_board_lib PRIVATE xiangqi_board_clib)
+target_link_libraries(xiangqi_board_lib PRIVATE xiangqi_board_clib_static)
 
 add_library(xiangqi_game_lib STATIC
     game.cc
