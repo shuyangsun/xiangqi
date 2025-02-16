@@ -23,13 +23,6 @@ constexpr uint8_t kTotalCol = 9;
 constexpr uint8_t kBoardSize = kTotalRow * kTotalCol;
 constexpr uint8_t kTotalPieces = 32;
 
-constexpr uint8_t kRedPalaceRowMin = 7;
-constexpr uint8_t kRedPalaceRowMax = kTotalRow - 1;
-constexpr uint8_t kBlackPalaceRowMin = 0;
-constexpr uint8_t kBlackPalaceRowMax = 3;
-constexpr uint8_t kPalaceColMin = 3;
-constexpr uint8_t kPalaceColMax = 5;
-
 // Starting position of red river.
 constexpr Position kRedRiverStart = 5 * kTotalCol;
 
