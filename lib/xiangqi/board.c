@@ -735,7 +735,6 @@ Position FindGeneral_C(const BoardC board, const enum Player player) {
 }
 
 bool IsBeingCheckmate_C(const BoardC board, const enum Player player) {
-  const enum Piece general = (player == PLAYER_RED) ? R_GENERAL : B_GENERAL;
   const Position general_pos = FindGeneral_C(board, player);
   if (general_pos == K_NO_POSITION) {
     return true;

@@ -588,7 +588,7 @@ TEST(Board, FindGeneralNone) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_1, PLAYER_BLACK), K_NO_POSITION);
+  EXPECT_EQ(FindGeneral(board_2, PLAYER_BLACK), K_NO_POSITION);
 
   const Board board_3 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -615,8 +615,8 @@ TEST(Board, FindGeneralNone) {
       "6 . . . . . . . . . \n"
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
-      "9 . . . G * A . . . \n");
-  EXPECT_EQ(FindGeneral(board_3, PLAYER_RED), K_NO_POSITION);
+      "9 . . . g * A . . . \n");
+  EXPECT_EQ(FindGeneral(board_4, PLAYER_RED), K_NO_POSITION);
 }
 
 // ---------------------------------------------------------------------
@@ -784,7 +784,7 @@ TEST(Board, IsBeingCheckmateChariot) {
       "7 . . . * * * . . . \n"
       "8 . . . * * * . . . \n"
       "9 . . . * G A . . . \n");
-  EXPECT_TRUE(IsBeingCheckmate(board_8, PLAYER_RED));
+  EXPECT_TRUE(IsBeingCheckmate(board_9, PLAYER_RED));
 
   const Board board_10 = BoardFromString(
       "  A B C D E F G H I \n"
