@@ -795,6 +795,9 @@ enum Winner GetWinner_C(const BoardC board) {
 }
 
 enum Piece Move_C(BoardC board, const Movement movement) {
+  if (movement == K_NO_MOVEMENT) {
+    return PIECE_EMPTY;
+  }
   const Position from = Orig(movement);
   const Position to = Dest(movement);
   if (from == to) {
@@ -1225,6 +1228,7 @@ uint8_t PossiblePositions_C(const BoardC board, const Position pos,
 
 uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
                         const bool avoid_checkmate, MaxMovesPerPlayerC out) {
+  memset(out, 0xFFFF, K_MAX_MOVE_PER_PLAYER);
   uint8_t res = 0;
   MovesPerPieceC buff;
   for (uint8_t pos = 0; pos < K_BOARD_SIZE; pos++) {
@@ -1244,6 +1248,7 @@ uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
 uint8_t PossibleBoards_C(const BoardC board, const enum Player player,
                          const bool avoid_checkmate,
                          enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]) {
+  memset(out, 0, K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER);
   MaxMovesPerPlayerC moves;
   uint8_t res = PossibleMoves_C(board, player, avoid_checkmate, moves);
   for (uint8_t i = 0; i < res; i++) {
