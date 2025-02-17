@@ -30,11 +30,29 @@ std::vector<Position> ToVec(const MovesPerPiece& moves) {
   return result;
 }
 
+std::vector<Movement> ToVec(const std::vector<Movement>& moves) {
+  std::vector<Movement> result{moves.begin(), moves.end()};
+  std::sort(result.begin(), result.end());
+  return result;
+}
+
 std::vector<Position> ToPos(const std::vector<std::string_view>& positions) {
   std::vector<Position> result;
   result.reserve(positions.size());
   for (const std::string_view& pos : positions) {
     result.emplace_back(PosStr(pos.data()));
+  }
+  std::sort(result.begin(), result.end());
+  return result;
+}
+
+std::vector<Movement> ToMoves(const std::vector<std::string_view>& moves) {
+  std::vector<Movement> result;
+  result.reserve(moves.size());
+  for (const std::string_view& move : moves) {
+    const Position from = PosStr(move.data());
+    const Position to = PosStr(move.data() + 3);
+    result.emplace_back(NewMovement(from, to));
   }
   std::sort(result.begin(), result.end());
   return result;
@@ -905,6 +923,67 @@ TEST(TestPossiblePositions, Soldier) {
       ToVec(PossiblePositions(board_2, PosStr("E6"), /*avoid_checkmate=*/true)),
       ToPos({"F6"}));
   EXPECT_TRUE(ToVec(PossiblePositions(board_2, PosStr("H6"))).empty());
+}
+
+TEST(TestPossibleMoves, StartingBoard) {
+  const std::vector<Movement> red_possible_moves =
+      PossibleMoves(kStartingBoard, PLAYER_RED, false);
+  const std::vector<Movement> black_possible_moves =
+      PossibleMoves(kStartingBoard, PLAYER_BLACK, false);
+
+  EXPECT_EQ(red_possible_moves.size(), 44);
+  EXPECT_EQ(black_possible_moves.size(), 44);
+
+  EXPECT_EQ(ToVec(red_possible_moves),
+            ToMoves({// Red soldiers
+                     "A6,A5", "C6,C5", "E6,E5", "G6,G5", "I6,I5",
+                     // Red cannon B7
+                     "B7,A7", "B7,C7", "B7,D7", "B7,E7", "B7,F7", "B7,G7",
+                     "B7,B8", "B7,B6", "B7,B5", "B7,B4", "B7,B3", "B7,B0",
+                     // Red cannon H7
+                     "H7,I7", "H7,G7", "H7,F7", "H7,E7", "H7,D7", "H7,C7",
+                     "H7,H8", "H7,H6", "H7,H5", "H7,H4", "H7,H3", "H7,H0",
+                     // Red chariot
+                     "A9,A8", "A9,A7", "I9,I8", "I9,I7",
+                     // Red horse
+                     "B9,A7", "B9,C7", "H9,G7", "H9,I7",
+                     // Red elephant
+                     "C9,A7", "C9,E7", "G9,I7", "G9,E7",
+                     // Red advisor
+                     "D9,E8", "F9,E8",
+                     // Red general
+                     "E9,E8"}));
+
+  // "  A B C D E F G H I \n"
+  // "0 r h e a g a e h r \n"
+  // "1 . . . * * * . . . \n"
+  // "2 . c . * * * . c . \n"
+  // "3 s . s . s . s . s \n"
+  // "4 - - - - - - - - - \n"
+  // "5 - - - - - - - - - \n"
+  // "6 S . S . S . S . S \n"
+  // "7 . C . * * * . C . \n"
+  // "8 . . . * * * . . . \n"
+  // "9 R H E A G A E H R \n";
+  EXPECT_EQ(ToVec(black_possible_moves),
+            ToMoves({// Black soldiers
+                     "A3,A4", "C3,C4", "E3,E4", "G3,G4", "I3,I4",
+                     // Black cannon B2
+                     "B2,A2", "B2,C2", "B2,D2", "B2,E2", "B2,F2", "B2,G2",
+                     "B2,B1", "B2,B3", "B2,B4", "B2,B5", "B2,B6", "B2,B9",
+                     // Black cannon H2
+                     "H2,I2", "H2,G2", "H2,F2", "H2,E2", "H2,D2", "H2,C2",
+                     "H2,H1", "H2,H3", "H2,H4", "H2,H5", "H2,H6", "H2,H9",
+                     // Black chariot
+                     "A0,A1", "A0,A2", "I0,I1", "I0,I2",
+                     // Black horse
+                     "B0,A2", "B0,C2", "H0,G2", "H0,I2",
+                     // Black elephant
+                     "C0,A2", "C0,E2", "G0,I2", "G0,E2",
+                     // Black advisor
+                     "D0,E1", "F0,E1",
+                     // Black general
+                     "E0,E1"}));
 }
 
 }  // namespace
