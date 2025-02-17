@@ -5,7 +5,10 @@
 
 // --------------- Helper Function ---------------
 
-bool IsPathClear(const BoardC board, const Position from, const Position to) {
+#define CAN_CAPTURE(a, b) ((b) ? ((a) <= 0) : ((a) >= 0))
+
+static inline bool IsPathClear(const BoardC board, const Position from,
+                               const Position to) {
   const uint8_t start = from < to ? from : to;
   const uint8_t end = from > to ? from : to;
   if (end - start < K_TOTAL_COL) {  // same row
@@ -26,8 +29,9 @@ bool IsPathClear(const BoardC board, const Position from, const Position to) {
   return false;
 }
 
-bool ThreatensBySoldier(const enum Piece soldier, const Position pos,
-                        const Position target) {
+static inline bool ThreatensBySoldier(const enum Piece soldier,
+                                      const Position pos,
+                                      const Position target) {
   const uint8_t pos_col = Col(pos);
   return ((soldier == R_SOLDIER) &&
           ((pos == target + K_TOTAL_COL) ||                    // up
@@ -43,8 +47,8 @@ bool ThreatensBySoldier(const enum Piece soldier, const Position pos,
              ))));
 }
 
-bool ThreatensByHorse(const BoardC board, const Position pos,
-                      const Position target) {
+static inline bool ThreatensByHorse(const BoardC board, const Position pos,
+                                    const Position target) {
   const uint8_t pos_row = Row(pos);
   const uint8_t pos_col = Col(pos);
   if ((target > pos + K_TOTAL_COL)    // target at least one row below
@@ -82,8 +86,8 @@ bool ThreatensByHorse(const BoardC board, const Position pos,
               ));
 }
 
-bool ThreatensByCannon(const BoardC board, const Position pos,
-                       const Position target) {
+static inline bool ThreatensByCannon(const BoardC board, const Position pos,
+                                     const Position target) {
   if (Row(pos) == Row(target)) {
     bool found_in_between = false;
     for (uint8_t p = (pos < target ? pos : target) + 1;
@@ -633,3 +637,5 @@ uint8_t PossibleMoves_C(const BoardC board, const Position pos,
                         const bool avoid_checkmate, MovesPerPieceC out) {
   return 0;  // TODO
 }
+
+#undef CAN_CAPTURE
