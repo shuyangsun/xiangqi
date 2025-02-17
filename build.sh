@@ -12,6 +12,6 @@ fi
 # Configure the main project (if needed).
 cd "$BUILD_DIR"
 echo "Configuring the project with CMake..."
-cmake -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE ..
+cmake -G "Ninja" -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=RELEASE ..
 ninja
 cd ..

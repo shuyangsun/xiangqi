@@ -50,12 +50,22 @@ add_subdirectory("${XIANGQI_LIB_DIR}/xiangqi")
 # ---------------------- GoogleTest ----------------------
 
 include(FetchContent)
+
+# GoogleTest
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# GoogleBechmark
 FetchContent_MakeAvailable(googletest)
+FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.9.1
+)
+FetchContent_MakeAvailable(googlebenchmark)
 
 add_executable(
     xiangqi_tests
@@ -70,3 +80,17 @@ target_link_libraries(
     gtest_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)
+
+add_executable(
+    xiangqi_benchmarks
+    benchmarks/bench_possible_moves.cc
+)
+target_link_libraries(
+    xiangqi_benchmarks
+    PRIVATE xiangqi_board_lib
+    PRIVATE xiangqi_game_lib
+    benchmark
+    benchmark_main
+)
+
+enable_testing()
