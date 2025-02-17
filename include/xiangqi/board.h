@@ -44,7 +44,7 @@ constexpr Board kStartingBoard = {
 // "3 s . s . s . s . s \n"
 // "4 - - - - - - - - - \n"
 // "5 - - - - - - - - - \n"
-// "7 S . S . S . S . S \n"
+// "6 S . S . S . S . S \n"
 // "7 . C . * * * . C . \n"
 // "8 . . . * * * . . . \n"
 // "9 R H E A G A E H R \n";
