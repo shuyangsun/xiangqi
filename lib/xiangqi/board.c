@@ -1237,6 +1237,21 @@ uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
   return res;
 }
 
+uint8_t AllPossibleNextBoards_C(
+    const BoardC board, const enum Player player, const bool avoid_checkmate,
+    enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]) {
+  memset(out, 0xFF, K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER);
+
+  MaxMovesPerPlayerC moves;
+  uint8_t res = PossibleMoves_C(board, player, avoid_checkmate, moves);
+  for (uint8_t i = 0; i < res; i++) {
+    enum Piece* out_start = out + i * K_BOARD_SIZE;
+    CopyBoard_C(out_start, board);
+    Move_C(out_start, moves[i]);
+  }
+  return res;
+}
+
 bool DidPlayerLose_C(const BoardC board, const enum Player player) {
   const enum Winner opponent = player == PLAYER_RED ? WINNER_BLACK : WINNER_RED;
   const enum Piece opponent_general =

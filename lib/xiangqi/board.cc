@@ -1,10 +1,9 @@
 #include "xiangqi/board.h"
 
-#include <algorithm>
 #include <cstdint>
-#include <cstring>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "xiangqi/board_c.h"
@@ -204,18 +203,17 @@ std::vector<Movement> PossibleMoves(const Board& board, const Player player,
 std::vector<Board> AllPossibleNextBoards(const Board& board,
                                          const Player player,
                                          const bool avoid_checkmate) {
-  const std::vector<uint16_t> possible_moves =
-      PossibleMoves(board, player, avoid_checkmate);
-  std::vector<Board> result;
-  result.reserve(possible_moves.size());
-  for (const uint16_t move : possible_moves) {
-    const Position from = static_cast<Position>((move & 0xFF00) >> 8);
-    const Position to = static_cast<Position>(move & 0x00FF);
-    Board next = board;
-    Move(next, move);
-    result.emplace_back(std::move(next));
+  Piece buff[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER];
+  const uint8_t moves =
+      AllPossibleNextBoards_C(board.data(), player, avoid_checkmate, buff);
+  std::vector<Board> res;
+  res.reserve(moves);
+  for (size_t i = 0; i < moves; i++) {
+    Board cur;
+    CopyBoard_C(cur.data(), buff + i * K_BOARD_SIZE);
+    res.emplace_back(std::move(cur));
   }
-  return result;
+  return res;
 }
 
 Position FindGeneral(const Board& board, const Player player) {

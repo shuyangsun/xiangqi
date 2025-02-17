@@ -101,6 +101,14 @@ uint8_t PossiblePositions_C(const BoardC board, Position pos,
 uint8_t PossibleMoves_C(const BoardC board, enum Player player,
                         bool avoid_checkmate, MaxMovesPerPlayerC out);
 
+// Returns a vector of all possible boards for the given player after any valid
+// move.
+// If avoid_checkmate is set to true, moves that result in being checkmade
+// will not be included.
+uint8_t AllPossibleNextBoards_C(
+    const BoardC board, enum Player player, bool avoid_checkmate,
+    enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]);
+
 // Returns true if all possible moves of the given player still result in the
 // player being checkmate.
 bool DidPlayerLose_C(const BoardC board, enum Player player);
