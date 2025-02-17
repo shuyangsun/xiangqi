@@ -35,6 +35,9 @@ const BoardC K_STARTING_BOARD = {
 // Remove all pieces from board.
 void ClearBoard_C(BoardC board);
 
+// Reset board to starting point.
+void ResetBoard_C(BoardC board);
+
 // Copies destination board from source board.
 void CopyBoard_C(BoardC dest, const BoardC src);
 
@@ -83,6 +86,13 @@ void EncodeBoardState_C(const BoardC board, BoardStateC out);
 
 // Decode the encoded board state back to its original state.
 void DecodeBoardState_C(const BoardStateC state, BoardC out);
+
+// Get all possible moves for the player with piece at position. Impossible
+// moves are filled with kNoPosition. Returns number of possible moves.
+// If avoid_checkmate is set to true, moves that result in being checkmade
+// will not be included.
+uint8_t PossibleMoves_C(const BoardC board, Position pos, bool avoid_checkmate,
+                        MovesPerPieceC out);
 
 #ifdef __cplusplus
 }

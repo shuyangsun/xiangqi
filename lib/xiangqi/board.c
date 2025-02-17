@@ -118,6 +118,10 @@ bool ThreatensByCannon(const BoardC board, const Position pos,
 
 void ClearBoard_C(BoardC board) { memset(board, 0, K_BOARD_SIZE); }
 
+void ResetBoard_C(BoardC board) {
+  memcpy(board, K_STARTING_BOARD, K_BOARD_SIZE);
+}
+
 void CopyBoard_C(BoardC dest, const BoardC src) {
   memcpy(dest, src, K_BOARD_SIZE);
 }
@@ -623,4 +627,9 @@ void DecodeBoardState_C(const BoardStateC state, BoardC out) {
       out[pos] = B_SOLDIER;
     }
   }
+}
+
+uint8_t PossibleMoves_C(const BoardC board, const Position pos,
+                        const bool avoid_checkmate, MovesPerPieceC out) {
+  return 0;  // TODO
 }
