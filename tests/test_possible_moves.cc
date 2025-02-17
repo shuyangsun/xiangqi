@@ -1,5 +1,6 @@
 // file: test_possible_moves.cc
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -17,6 +18,8 @@ namespace {
 namespace {
 
 using namespace ::xq;
+
+using ::testing::IsSupersetOf;
 
 std::vector<Position> ToVec(const MovesPerPiece& moves) {
   std::vector<Position> result;
@@ -983,6 +986,54 @@ TEST(PossibleBoards, StartingBoard) {
 
   EXPECT_EQ(red_possible_boards.size(), 44);
   EXPECT_EQ(black_possible_boards.size(), 44);
+
+  EXPECT_THAT(red_possible_boards,
+              IsSupersetOf({BoardFromString("  A B C D E F G H I \n"
+                                            "0 r C e a g a e h r \n"
+                                            "1 . . . * * * . . . \n"
+                                            "2 . c . * * * . c . \n"
+                                            "3 s . s . s . s . s \n"
+                                            "4 - - - - - - - - - \n"
+                                            "5 - - - - - - - - - \n"
+                                            "6 S . S . S . S . S \n"
+                                            "7 . . . * * * . C . \n"
+                                            "8 . . . * * * . . . \n"
+                                            "9 R H E A G A E H R \n"),
+                            BoardFromString("  A B C D E F G H I \n"
+                                            "0 r h e a g a e h r \n"
+                                            "1 . . . * * * . . . \n"
+                                            "2 . c . * * * . c . \n"
+                                            "3 s . s . s . s . s \n"
+                                            "4 - - - - - - - - - \n"
+                                            "5 - - - - - - - - - \n"
+                                            "6 S . S . S . S . S \n"
+                                            "7 . C H * * * . C . \n"
+                                            "8 . . . * * * . . . \n"
+                                            "9 R . E A G A E H R \n")}));
+
+  EXPECT_THAT(black_possible_boards,
+              IsSupersetOf({BoardFromString("  A B C D E F G H I \n"
+                                            "0 r h e a g a e h r \n"
+                                            "1 . . . * * * . . . \n"
+                                            "2 . . . * * * . c . \n"
+                                            "3 s . s . s . s . s \n"
+                                            "4 - - - - - - - - - \n"
+                                            "5 - - - - - - - - - \n"
+                                            "6 S . S . S . S . S \n"
+                                            "7 . C . * * * . C . \n"
+                                            "8 . . . * * * . . . \n"
+                                            "9 R c E A G A E H R \n"),
+                            BoardFromString("  A B C D E F G H I \n"
+                                            "0 r h . a g a e h r \n"
+                                            "1 . . . * * * . . . \n"
+                                            "2 . c . * e * . c . \n"
+                                            "3 s . s . s . s . s \n"
+                                            "4 - - - - - - - - - \n"
+                                            "5 - - - - - - - - - \n"
+                                            "6 S . S . S . S . S \n"
+                                            "7 . C . * * * . C . \n"
+                                            "8 . . . * * * . . . \n"
+                                            "9 R H E A G A E H R \n")}));
 }
 
 }  // namespace
