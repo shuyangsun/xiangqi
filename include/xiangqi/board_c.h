@@ -71,6 +71,16 @@ void MirrorBoardHorizontal_C(BoardC dest, const BoardC src);
 // Flip the board up and down.
 void MirrorBoardVertical_C(BoardC dest, const BoardC src);
 
+// Encode the board state using a small number of bytes, mainly used for the
+// game AI to identify a unique board state.
+//
+// There are a total of 32 pieces on the board, so the encoded board state is
+// 32 bytes, with each byte representing the row and column of that piece
+// (4 bits for each). If the piece is not present, use 0xF to represent it.
+// To make sure the same piece for the same player is treated in the same way,
+// all byte representations of a group of piece is sorted.
+void EncodeBoardState_C(const BoardC board, BoardStateC out);
+
 #ifdef __cplusplus
 }
 #endif

@@ -103,14 +103,7 @@ std::vector<Movement> AllPossibleNextMoves(const Board& board, Player player,
 std::vector<Board> AllPossibleNextBoards(const Board& board, Player player,
                                          bool avoid_checkmate = false);
 
-// Encode the board state using a small number of bytes, mainly used for the
-// game AI to identify a unique board state.
-//
-// There are a total of 32 pieces on the board, so the encoded board state is
-// 32 bytes, with each byte representing the row and column of that piece
-// (4 bits for each). If the piece is not present, use 0xF to represent it.
-// To make sure the same piece for the same player is treated in the same way,
-// all byte representations of a group of piece is sorted.
+// C++ wrapper of EncodeBoardState_C.
 BoardState EncodeBoardState(const Board& board);
 
 // Decode the encoded board state back to its original state.
