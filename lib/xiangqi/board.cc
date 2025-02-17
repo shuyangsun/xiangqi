@@ -13,50 +13,6 @@ namespace xq {
 
 namespace {
 
-char PieceToCh(const Piece piece, const uint8_t row, const uint8_t col) {
-  switch (piece) {
-    case PIECE_EMPTY:
-      if (row == 4 || row == 5) {
-        return '-';
-      } else if (col >= 3 && col <= 5 &&
-                 ((row >= 0 && row <= 2) || (row >= 7 && row <= 9))) {
-        return '*';
-      } else {
-        return '.';
-      }
-    case R_GENERAL:
-      return 'G';
-    case R_ADVISOR:
-      return 'A';
-    case R_ELEPHANT:
-      return 'E';
-    case R_HORSE:
-      return 'H';
-    case R_CHARIOT:
-      return 'R';
-    case R_CANNON:
-      return 'C';
-    case R_SOLDIER:
-      return 'S';
-    case B_GENERAL:
-      return 'g';
-    case B_ADVISOR:
-      return 'a';
-    case B_ELEPHANT:
-      return 'e';
-    case B_HORSE:
-      return 'h';
-    case B_CHARIOT:
-      return 'r';
-    case B_CANNON:
-      return 'c';
-    case B_SOLDIER:
-      return 's';
-    default:
-      return '?';
-  }
-}
-
 Piece ChToPiece(const char ch) {
   switch (ch) {
     case '.':
@@ -111,19 +67,9 @@ Board BoardFromString(const std::string_view str) {
 }
 
 std::string BoardToString(const Board& board) {
-  std::string result;
-  result.reserve(242);
-  result.append("  A B C D E F G H I \n");
-  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
-    result.append(std::to_string(row));
-    result.append(" ");
-    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
-      result += PieceToCh(board[Pos(row, col)], row, col);
-      result.append(" ");
-    }
-    result.append("\n");
-  }
-  return result;
+  char buff[K_BOARD_STR_SIZE];
+  BoardToString_C(board.data(), buff);
+  return {buff};
 }
 
 bool BoardEq(const Board& a, const Board& b) {

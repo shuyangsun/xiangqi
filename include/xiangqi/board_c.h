@@ -11,6 +11,8 @@ typedef Position MovesPerPieceC[K_MAX_MOVE_PER_PIECE];
 
 typedef Movement MaxMovesPerPlayerC[K_MAX_MOVE_PER_PLAYER];
 
+#define K_BOARD_STR_SIZE 232
+
 const BoardC K_STARTING_BOARD = {
     B_CHARIOT,   B_HORSE,     B_ELEPHANT,  B_ADVISOR,   B_GENERAL,
     B_ADVISOR,   B_ELEPHANT,  B_HORSE,     B_CHARIOT,  // Row 0
@@ -33,6 +35,9 @@ const BoardC K_STARTING_BOARD = {
     R_CHARIOT,   R_HORSE,     R_ELEPHANT,  R_ADVISOR,   R_GENERAL,
     R_ADVISOR,   R_ELEPHANT,  R_HORSE,     R_CHARIOT,  // Row 9
 };
+
+// Human-readable string representation of board.
+void BoardToString_C(const BoardC board, char out[K_BOARD_STR_SIZE]);
 
 // Remove all pieces from board.
 void ClearBoard_C(BoardC board);

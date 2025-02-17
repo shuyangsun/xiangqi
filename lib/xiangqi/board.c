@@ -9,6 +9,51 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+static inline char PieceToCh(const enum Piece piece, const uint8_t row,
+                             const uint8_t col) {
+  switch (piece) {
+    case PIECE_EMPTY:
+      if (row == 4 || row == 5) {
+        return '-';
+      } else if (col >= 3 && col <= 5 &&
+                 ((row >= 0 && row <= 2) || (row >= 7 && row <= 9))) {
+        return '*';
+      } else {
+        return '.';
+      }
+    case R_GENERAL:
+      return 'G';
+    case R_ADVISOR:
+      return 'A';
+    case R_ELEPHANT:
+      return 'E';
+    case R_HORSE:
+      return 'H';
+    case R_CHARIOT:
+      return 'R';
+    case R_CANNON:
+      return 'C';
+    case R_SOLDIER:
+      return 'S';
+    case B_GENERAL:
+      return 'g';
+    case B_ADVISOR:
+      return 'a';
+    case B_ELEPHANT:
+      return 'e';
+    case B_HORSE:
+      return 'h';
+    case B_CHARIOT:
+      return 'r';
+    case B_CANNON:
+      return 'c';
+    case B_SOLDIER:
+      return 's';
+    default:
+      return '?';
+  }
+}
+
 static inline bool IsPathClear(const BoardC board, const Position from,
                                const Position to) {
   const uint8_t start = from < to ? from : to;
@@ -638,6 +683,21 @@ static inline uint8_t PossiblePositionsSoldier(const BoardC board,
 }
 
 // --------------- Public Function ---------------
+
+void BoardToString_C(const BoardC board, char out[K_BOARD_STR_SIZE]) {
+  out[K_BOARD_STR_SIZE - 1] = '\0';
+  strcpy(out, "  A B C D E F G H I \n");
+  out += 21;
+  for (uint8_t row = 0; row < K_TOTAL_ROW; row++) {
+    *(out++) = ('0' + row);
+    *(out++) = ' ';
+    for (uint8_t col = 0; col < K_TOTAL_COL; col++) {
+      *(out++) = PieceToCh(board[Pos(row, col)], row, col);
+      *(out++) = ' ';
+    }
+    *(out++) = '\n';
+  }
+}
 
 void ClearBoard_C(BoardC board) { memset(board, 0, K_BOARD_SIZE); }
 

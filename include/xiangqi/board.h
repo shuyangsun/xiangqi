@@ -50,7 +50,7 @@ constexpr Board kStartingBoard = {
 // "9 R H E A G A E H R \n";
 Board BoardFromString(std::string_view str);
 
-// Convert board to human-readable string.
+// C++ wrapper of BoardToString_C.
 std::string BoardToString(const Board& board);
 
 // Check if two boards are identical.
