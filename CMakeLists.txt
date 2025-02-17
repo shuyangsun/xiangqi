@@ -78,6 +78,7 @@ target_link_libraries(
     PRIVATE xiangqi_board_lib
     PRIVATE xiangqi_game_lib
     gtest_main
+    gmock_main
 )
 add_test(NAME xiangqi_test COMMAND xiangqi_test)
 
