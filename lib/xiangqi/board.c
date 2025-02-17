@@ -857,9 +857,7 @@ void EncodeBoardState_C(const BoardC board, BoardStateC out) {
            b_chariot_poses = 0xFFFF, b_cannon_poses = 0xFFFF;
 
   uint8_t r_soldier_poses[5];
-  memset(r_soldier_poses, K_NO_POSITION, 5);
   uint8_t b_soldier_poses[5];
-  memset(b_soldier_poses, K_NO_POSITION, 5);
   uint8_t r_soldier_idx = 0, b_soldier_idx = 0;
 
   for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
@@ -952,6 +950,14 @@ void EncodeBoardState_C(const BoardC board, BoardStateC out) {
         b_soldier_poses[b_soldier_idx++] = pos;
         break;
     }
+  }
+
+  for (uint8_t i = r_soldier_idx; i < 5; i++) {
+    r_soldier_poses[i] = K_NO_POSITION;
+  }
+
+  for (uint8_t i = b_soldier_idx; i < 5; i++) {
+    b_soldier_poses[i] = K_NO_POSITION;
   }
 
   res1 |= ((uint64_t)r_general_pos) << (7 * 8);
@@ -1220,7 +1226,6 @@ uint8_t PossiblePositions_C(const BoardC board, const Position pos,
 uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
                         const bool avoid_checkmate, MaxMovesPerPlayerC out) {
   uint8_t res = 0;
-  memset(out, 0xFF, K_MAX_MOVE_PER_PLAYER);
   MovesPerPieceC buff;
   for (uint8_t pos = 0; pos < K_BOARD_SIZE; pos++) {
     const enum Piece piece = board[pos];
@@ -1239,8 +1244,6 @@ uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
 uint8_t PossibleBoards_C(const BoardC board, const enum Player player,
                          const bool avoid_checkmate,
                          enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]) {
-  memset(out, 0xFF, K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER);
-
   MaxMovesPerPlayerC moves;
   uint8_t res = PossibleMoves_C(board, player, avoid_checkmate, moves);
   for (uint8_t i = 0; i < res; i++) {
