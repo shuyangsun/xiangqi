@@ -306,67 +306,8 @@ Board DecodeBoardState(const BoardState& state) {
 
 MovesPerPiece PossibleMoves(const Board& board, const Position pos,
                             const bool avoid_checkmate) {
-  using namespace xq::internal::util;
-
-  const Piece piece = board[pos];
   MovesPerPiece result;
-  result.fill(K_NO_POSITION);
-  switch (piece) {
-    case PIECE_EMPTY:
-      return result;
-    case R_GENERAL:
-      memcpy(result.data(),
-             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_BLACK))
-                 .data(),
-             5);
-      break;
-    case B_GENERAL:
-      memcpy(result.data(),
-             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))
-                 .data(),
-             5);
-      break;
-    case R_ADVISOR:
-    case B_ADVISOR:
-      memcpy(result.data(), PossibleMovesAdvisor(board, pos).data(), 4);
-      break;
-    case R_ELEPHANT:
-    case B_ELEPHANT:
-      memcpy(result.data(), PossibleMovesElephant(board, pos).data(), 4);
-      break;
-    case R_HORSE:
-    case B_HORSE:
-      memcpy(result.data(), PossibleMovesHorse(board, pos).data(), 8);
-      break;
-    case R_CHARIOT:
-    case B_CHARIOT:
-      memcpy(result.data(), PossibleMovesChariot(board, pos).data(), 17);
-      break;
-    case R_CANNON:
-    case B_CANNON:
-      memcpy(result.data(), PossibleMovesCannon(board, pos).data(), 17);
-      break;
-    case R_SOLDIER:
-    case B_SOLDIER:
-      memcpy(result.data(), PossibleMovesSoldier(board, pos).data(), 3);
-      break;
-    default:
-      return result;
-  }
-  if (avoid_checkmate) {
-    const Player player = IsRed(piece) ? PLAYER_RED : PLAYER_BLACK;
-    for (size_t i = 0; i < result.size() && result[i] != K_NO_POSITION; i++) {
-      Board next = board;
-      const Piece captured = Move(next, NewMovement(pos, result[i]));
-      if (captured == R_GENERAL || captured == B_GENERAL) {
-        continue;
-      }
-      if (IsBeingCheckmate(next, player)) {
-        result[i] = K_NO_POSITION;
-      }
-    }
-    std::sort(result.begin(), result.end());
-  }
+  PossibleMoves_C(board.data(), pos, avoid_checkmate, result.data());
   return result;
 }
 
