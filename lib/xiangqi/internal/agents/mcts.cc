@@ -29,7 +29,7 @@ Winner MakeRandomMoveUntilGameOver(const Board& board, Player player) {
 
   while (!IsGameOver(cur_board)) {
     const std::vector<uint16_t> possible_moves =
-        AllPossibleNextMoves(cur_board, cur_player);
+        PossibleMoves(cur_board, cur_player);
     std::uniform_int_distribution<> distrib(
         0, static_cast<int>(possible_moves.size()) - 1);
     int rand_idx = distrib(rand_gen);
@@ -126,7 +126,7 @@ class Node {
         wins_{0.0f},
         visits_{0} {
     if (winner_ == Winner::NONE) {
-      untried_moves_ = AllPossibleNextMoves(board, player);
+      untried_moves_ = PossibleMoves(board, player);
       children_.reserve(untried_moves_.size());
     }
   }
@@ -220,7 +220,7 @@ Winner DefaultPolicy(const Board& board, Player player) {
   size_t steps = 0;
   Board next = board;
   while (!IsGameOver(next) && steps < kMaxPlayoutSteps) {
-    std::vector<uint16_t> moves = AllPossibleNextMoves(next, player);
+    std::vector<uint16_t> moves = PossibleMoves(next, player);
     if (moves.empty()) {
       break;
     }

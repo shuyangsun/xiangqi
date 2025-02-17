@@ -7,7 +7,9 @@
 extern "C" {
 #endif
 
-typedef Position MovesPerPieceC[17];
+typedef Position MovesPerPieceC[K_MAX_MOVE_PER_PIECE];
+
+typedef Movement MaxMovesPerPlayerC[K_MAX_MOVE_PER_PLAYER];
 
 const BoardC K_STARTING_BOARD = {
     B_CHARIOT,   B_HORSE,     B_ELEPHANT,  B_ADVISOR,   B_GENERAL,
@@ -91,8 +93,17 @@ void DecodeBoardState_C(const BoardStateC state, BoardC out);
 // moves are filled with kNoPosition. Returns number of possible moves.
 // If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
-uint8_t PossibleMoves_C(const BoardC board, Position pos, bool avoid_checkmate,
-                        MovesPerPieceC out);
+uint8_t PossiblePositions_C(const BoardC board, Position pos,
+                            bool avoid_checkmate, MovesPerPieceC out);
+
+// Get all possible moves for player. Each move is a 16-bit unsigned integer,
+// representing "from" and "to" positions, each being 8 bits (Position).
+uint8_t PossibleMoves_C(const BoardC board, enum Player player,
+                        bool avoid_checkmate, MaxMovesPerPlayerC out);
+
+// Returns true if all possible moves of the given player still result in the
+// player being checkmate.
+bool DidPlayerLose_C(const BoardC board, enum Player player);
 
 #ifdef __cplusplus
 }

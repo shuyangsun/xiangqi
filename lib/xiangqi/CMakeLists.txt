@@ -6,10 +6,7 @@ set_property(TARGET xiangqi_board_clib PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_library(xiangqi_board_clib_shared SHARED $<TARGET_OBJECTS:xiangqi_board_clib>)
 add_library(xiangqi_board_clib_static STATIC $<TARGET_OBJECTS:xiangqi_board_clib>)
 
-add_library(xiangqi_board_lib STATIC
-    board.cc
-    internal/moves.cc
-)
+add_library(xiangqi_board_lib STATIC board.cc)
 
 target_link_libraries(xiangqi_board_lib PRIVATE xiangqi_board_clib_static)
 

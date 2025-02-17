@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "xiangqi/board_c.h"
-#include "xiangqi/internal/moves.h"
 #include "xiangqi/types.h"
 
 namespace xq {
@@ -147,130 +146,8 @@ bool IsBeingCheckmate(const Board& board, Player player) {
 
 Winner GetWinner(const Board& board) { return GetWinner_C(board.data()); }
 
-bool DidPlayerLose(const Board& board, Player player) {
-  using namespace xq::internal::util;
-
-  const Winner opponent = player == PLAYER_RED ? WINNER_BLACK : WINNER_RED;
-  const Piece opponent_general = player == PLAYER_RED ? B_GENERAL : R_GENERAL;
-  if (GetWinner(board) == opponent) {
-    return true;
-  }
-
-  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
-    const Piece piece = board[pos];
-    if (piece == PIECE_EMPTY || IsRed(piece) != (player == PLAYER_RED)) {
-      continue;
-    }
-    switch (piece) {
-      case R_GENERAL:
-        for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, PLAYER_BLACK))) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case B_GENERAL:
-        for (const Position to :
-             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_ADVISOR:
-      case B_ADVISOR:
-        for (const Position to : PossibleMovesAdvisor(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_ELEPHANT:
-      case B_ELEPHANT:
-        for (const Position to : PossibleMovesElephant(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_HORSE:
-      case B_HORSE:
-        for (const Position to : PossibleMovesHorse(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_CHARIOT:
-      case B_CHARIOT:
-        for (const Position to : PossibleMovesChariot(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_CANNON:
-      case B_CANNON:
-        for (const Position to : PossibleMovesCannon(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      case R_SOLDIER:
-      case B_SOLDIER:
-        for (const Position to : PossibleMovesSoldier(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          Board next = board;
-          const Piece capture = Move(next, NewMovement(pos, to));
-          if (capture == opponent_general || !IsBeingCheckmate(next, player)) {
-            return false;
-          }
-        }
-        break;
-      default:
-        continue;
-    }
-  }
-  return true;
+bool DidPlayerLose(const Board& board, const Player player) {
+  return DidPlayerLose_C(board.data(), player);
 }
 
 Board FlipBoard(const Board& board) {
@@ -304,10 +181,10 @@ Board DecodeBoardState(const BoardState& state) {
   return result;
 }
 
-MovesPerPiece PossibleMoves(const Board& board, const Position pos,
-                            const bool avoid_checkmate) {
+MovesPerPiece PossiblePositions(const Board& board, const Position pos,
+                                const bool avoid_checkmate) {
   MovesPerPiece result;
-  PossibleMoves_C(board.data(), pos, avoid_checkmate, result.data());
+  PossiblePositions_C(board.data(), pos, avoid_checkmate, result.data());
   return result;
 }
 
@@ -316,116 +193,19 @@ Piece Move(Board& board, const Movement movement) {
 }
 
 // Returns a vector of all possible moves for player.
-std::vector<uint16_t> AllPossibleNextMoves(const Board& board,
-                                           const Player player,
-                                           const bool avoid_checkmate) {
-  using namespace xq::internal::util;
-
-  std::vector<uint16_t> result;
-  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
-    const Piece piece = board[pos];
-    if (piece == PIECE_EMPTY || IsRed(piece) != (player == PLAYER_RED)) {
-      continue;
-    }
-    const auto from_16bit = static_cast<uint16_t>(pos << 8);
-    switch (piece) {
-      case R_GENERAL:
-        for (const Position to : PossibleMovesGeneral(
-                 board, pos, FindGeneral(board, PLAYER_BLACK))) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case B_GENERAL:
-        for (const Position to :
-             PossibleMovesGeneral(board, pos, FindGeneral(board, PLAYER_RED))) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_ADVISOR:
-      case B_ADVISOR:
-        for (const Position to : PossibleMovesAdvisor(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_ELEPHANT:
-      case B_ELEPHANT:
-        for (const Position to : PossibleMovesElephant(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_HORSE:
-      case B_HORSE:
-        for (const Position to : PossibleMovesHorse(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_CHARIOT:
-      case B_CHARIOT:
-        for (const Position to : PossibleMovesChariot(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_CANNON:
-      case B_CANNON:
-        for (const Position to : PossibleMovesCannon(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      case R_SOLDIER:
-      case B_SOLDIER:
-        for (const Position to : PossibleMovesSoldier(board, pos)) {
-          if (to == K_NO_POSITION) {
-            break;
-          }
-          result.emplace_back(from_16bit | static_cast<uint16_t>(to));
-        }
-        break;
-      default:
-        continue;
-    }
-  }
-  if (avoid_checkmate) {
-    std::vector<Movement> final_result;
-    for (const Movement move : result) {
-      const Player player =
-          IsRed(board[Orig(move)]) ? PLAYER_RED : PLAYER_BLACK;
-      Board next = board;
-      const Piece captured = Move(next, move);
-      if (captured == R_GENERAL || captured == B_GENERAL ||
-          !IsBeingCheckmate(next, player)) {
-        final_result.emplace_back(move);
-      }
-    }
-  }
-  return result;
+std::vector<Movement> PossibleMoves(const Board& board, const Player player,
+                                    const bool avoid_checkmate) {
+  MaxMovesPerPlayerC buff;
+  const uint8_t num_moves =
+      PossibleMoves_C(board.data(), player, avoid_checkmate, buff);
+  return std::vector<Movement>{buff, buff + num_moves};
 }
 
 std::vector<Board> AllPossibleNextBoards(const Board& board,
                                          const Player player,
                                          const bool avoid_checkmate) {
   const std::vector<uint16_t> possible_moves =
-      AllPossibleNextMoves(board, player, avoid_checkmate);
+      PossibleMoves(board, player, avoid_checkmate);
   std::vector<Board> result;
   result.reserve(possible_moves.size());
   for (const uint16_t move : possible_moves) {

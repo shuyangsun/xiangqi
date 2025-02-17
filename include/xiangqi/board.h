@@ -10,7 +10,7 @@
 
 namespace xq {
 
-using MovesPerPiece = std::array<Position, 17>;
+using MovesPerPiece = std::array<Position, K_MAX_MOVE_PER_PIECE>;
 
 constexpr Board kStartingBoard = {
     B_CHARIOT,   B_HORSE,     B_ELEPHANT,  B_ADVISOR,   B_GENERAL,
@@ -67,8 +67,7 @@ bool IsBeingCheckmate(const Board& board, Player player);
 // C++ wrapper of GetWinner_C.
 Winner GetWinner(const Board& board);
 
-// Returns true if all possible moves of the given player still result in the
-// player being checkmate.
+// C++ wrapper of DidPlayerLose_C.
 bool DidPlayerLose(const Board& board, Player player);
 
 // C++ wrapper of FlipBoard_C.
@@ -83,18 +82,13 @@ Board MirrorBoardVertical(const Board& board);
 // C++ wrapper of Move_C.
 Piece Move(Board& board, Movement movement);
 
-// Returns all possible moves for the player with piece at position. Impossible
-// moves are filled with kNoPosition.
-// If avoid_checkmate is set to true, moves that result in being checkmade
-// will not be included.
-MovesPerPiece PossibleMoves(const Board& board, Position pos,
-                            bool avoid_checkmate = false);
+// C++ wrapper of PossiblePositions_C.
+MovesPerPiece PossiblePositions(const Board& board, Position pos,
+                                bool avoid_checkmate = false);
 
-// Returns a vector of all possible moves for player. Each move is a 16-bit
-// integer, representing "from" and "to" positions, each being 8 bits
-// (Position).
-std::vector<Movement> AllPossibleNextMoves(const Board& board, Player player,
-                                           bool avoid_checkmate = false);
+// C++ wrapper of PossibleMoves_C.
+std::vector<Movement> PossibleMoves(const Board& board, Player player,
+                                    bool avoid_checkmate = false);
 
 // Returns a vector of all possible boards for the given player after any valid
 // move.

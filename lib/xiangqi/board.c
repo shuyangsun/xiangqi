@@ -120,10 +120,10 @@ static inline bool ThreatensByCannon(const BoardC board, const Position pos,
   return false;
 }
 
-static inline uint8_t PossibleMovesGeneral(const BoardC board,
-                                           const Position pos,
-                                           const Position opponent_general,
-                                           Position* out) {
+static inline uint8_t PossiblePositionsGeneral(const BoardC board,
+                                               const Position pos,
+                                               const Position opponent_general,
+                                               Position* out) {
   uint8_t res = 0;
 
   // Flying general check.
@@ -192,8 +192,9 @@ static inline uint8_t PossibleMovesGeneral(const BoardC board,
   return res;
 }
 
-static inline uint8_t PossibleMovesAdvisor(const BoardC board,
-                                           const Position pos, Position* out) {
+static inline uint8_t PossiblePositionsAdvisor(const BoardC board,
+                                               const Position pos,
+                                               Position* out) {
   uint8_t res = 0;
 
   if (IsRed(board[pos])) {
@@ -251,8 +252,9 @@ static inline uint8_t PossibleMovesAdvisor(const BoardC board,
   return res;
 }
 
-static inline uint8_t PossibleMovesElephant(const BoardC board,
-                                            const Position pos, Position* out) {
+static inline uint8_t PossiblePositionsElephant(const BoardC board,
+                                                const Position pos,
+                                                Position* out) {
   uint8_t res = 0;
 
   if (IsRed(board[pos])) {
@@ -389,8 +391,9 @@ static inline uint8_t PossibleMovesElephant(const BoardC board,
   return res;
 }
 
-static inline uint8_t PossibleMovesHorse(const BoardC board, const Position pos,
-                                         Position* out) {
+static inline uint8_t PossiblePositionsHorse(const BoardC board,
+                                             const Position pos,
+                                             Position* out) {
   const bool is_red = IsRed(board[pos]);
   const uint8_t col = Col(pos);
   uint8_t res = 0;
@@ -443,8 +446,9 @@ static inline uint8_t PossibleMovesHorse(const BoardC board, const Position pos,
   return res;
 }
 
-static inline uint8_t PossibleMovesChariot(const BoardC board,
-                                           const Position pos, Position* out) {
+static inline uint8_t PossiblePositionsChariot(const BoardC board,
+                                               const Position pos,
+                                               Position* out) {
   const bool is_red = IsRed(board[pos]);
   uint8_t res = 0;
 
@@ -501,8 +505,9 @@ static inline uint8_t PossibleMovesChariot(const BoardC board,
   return res;
 }
 
-static inline uint8_t PossibleMovesCannon(const BoardC board,
-                                          const Position pos, Position* out) {
+static inline uint8_t PossiblePositionsCannon(const BoardC board,
+                                              const Position pos,
+                                              Position* out) {
   const bool is_red = IsRed(board[pos]);
   uint8_t res = 0;
 
@@ -587,8 +592,9 @@ static inline uint8_t PossibleMovesCannon(const BoardC board,
   return res;
 }
 
-static inline uint8_t PossibleMovesSoldier(const BoardC board,
-                                           const Position pos, Position* out) {
+static inline uint8_t PossiblePositionsSoldier(const BoardC board,
+                                               const Position pos,
+                                               Position* out) {
   const bool is_red = IsRed(board[pos]);
   uint8_t res = 0;
 
@@ -1146,9 +1152,9 @@ void DecodeBoardState_C(const BoardStateC state, BoardC out) {
   }
 }
 
-uint8_t PossibleMoves_C(const BoardC board, const Position pos,
-                        const bool avoid_checkmate, MovesPerPieceC out) {
-  memset(out, 0xFF, 17);
+uint8_t PossiblePositions_C(const BoardC board, const Position pos,
+                            const bool avoid_checkmate, MovesPerPieceC out) {
+  memset(out, 0xFF, K_MAX_MOVE_PER_PIECE);
   uint8_t res = 0;
 
   const enum Piece piece = board[pos];
@@ -1156,36 +1162,36 @@ uint8_t PossibleMoves_C(const BoardC board, const Position pos,
     case PIECE_EMPTY:
       return res;
     case R_GENERAL:
-      res = PossibleMovesGeneral(board, pos, FindGeneral_C(board, PLAYER_BLACK),
-                                 out);
+      res = PossiblePositionsGeneral(board, pos,
+                                     FindGeneral_C(board, PLAYER_BLACK), out);
       break;
     case B_GENERAL:
-      res = PossibleMovesGeneral(board, pos, FindGeneral_C(board, PLAYER_RED),
-                                 out);
+      res = PossiblePositionsGeneral(board, pos,
+                                     FindGeneral_C(board, PLAYER_RED), out);
       break;
     case R_ADVISOR:
     case B_ADVISOR:
-      res = PossibleMovesAdvisor(board, pos, out);
+      res = PossiblePositionsAdvisor(board, pos, out);
       break;
     case R_ELEPHANT:
     case B_ELEPHANT:
-      res = PossibleMovesElephant(board, pos, out);
+      res = PossiblePositionsElephant(board, pos, out);
       break;
     case R_HORSE:
     case B_HORSE:
-      res = PossibleMovesHorse(board, pos, out);
+      res = PossiblePositionsHorse(board, pos, out);
       break;
     case R_CHARIOT:
     case B_CHARIOT:
-      res = PossibleMovesChariot(board, pos, out);
+      res = PossiblePositionsChariot(board, pos, out);
       break;
     case R_CANNON:
     case B_CANNON:
-      res = PossibleMovesCannon(board, pos, out);
+      res = PossiblePositionsCannon(board, pos, out);
       break;
     case R_SOLDIER:
     case B_SOLDIER:
-      res = PossibleMovesSoldier(board, pos, out);
+      res = PossiblePositionsSoldier(board, pos, out);
       break;
     default:
       return res;
@@ -1210,6 +1216,152 @@ uint8_t PossibleMoves_C(const BoardC board, const Position pos,
     }
   }
   return res;
+}
+
+uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
+                        const bool avoid_checkmate, MaxMovesPerPlayerC out) {
+  uint8_t res = 0;
+  memset(out, 0xFF, K_MAX_MOVE_PER_PLAYER);
+  MovesPerPieceC buff;
+  for (uint8_t pos = 0; pos < K_BOARD_SIZE; pos++) {
+    const enum Piece piece = board[pos];
+    if (IsEmpty(piece) || ((player == PLAYER_RED) != (piece > 0))) {
+      continue;
+    }
+    const uint8_t num_moves =
+        PossiblePositions_C(board, pos, avoid_checkmate, buff);
+    for (uint8_t i = 0; i < num_moves; ++i) {
+      *(out + res++) = NewMovement(pos, buff[i]);
+    }
+  }
+  return res;
+}
+
+bool DidPlayerLose_C(const BoardC board, const enum Player player) {
+  const enum Winner opponent = player == PLAYER_RED ? WINNER_BLACK : WINNER_RED;
+  const enum Piece opponent_general =
+      player == PLAYER_RED ? B_GENERAL : R_GENERAL;
+  if (GetWinner_C(board) == opponent) {
+    return true;
+  }
+
+  MovesPerPieceC buff;
+  for (Position pos = 0; pos < K_BOARD_SIZE; pos++) {
+    const enum Piece piece = board[pos];
+    if (piece == PIECE_EMPTY || IsRed(piece) != (player == PLAYER_RED)) {
+      continue;
+    }
+    switch (piece) {
+      case R_GENERAL:
+        for (uint8_t i = 0;
+             i < PossiblePositionsGeneral(
+                     board, pos, FindGeneral_C(board, PLAYER_BLACK), buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case B_GENERAL:
+        for (uint8_t i = 0;
+             i < PossiblePositionsGeneral(
+                     board, pos, FindGeneral_C(board, PLAYER_RED), buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_ADVISOR:
+      case B_ADVISOR:
+        for (uint8_t i = 0; i < PossiblePositionsAdvisor(board, pos, buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_ELEPHANT:
+      case B_ELEPHANT:
+        for (uint8_t i = 0; i < PossiblePositionsElephant(board, pos, buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_HORSE:
+      case B_HORSE:
+        for (uint8_t i = 0; i < PossiblePositionsHorse(board, pos, buff); i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_CHARIOT:
+      case B_CHARIOT:
+        for (uint8_t i = 0; i < PossiblePositionsChariot(board, pos, buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_CANNON:
+      case B_CANNON:
+        for (uint8_t i = 0; i < PossiblePositionsCannon(board, pos, buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      case R_SOLDIER:
+      case B_SOLDIER:
+        for (uint8_t i = 0; i < PossiblePositionsSoldier(board, pos, buff);
+             i++) {
+          BoardC next;
+          CopyBoard_C(next, board);
+          const enum Piece capture = Move_C(next, NewMovement(pos, buff[i]));
+          if (capture == opponent_general ||
+              !IsBeingCheckmate_C(next, player)) {
+            return false;
+          }
+        }
+        break;
+      default:
+        continue;
+    }
+  }
+  return true;
 }
 
 #undef CAN_CAPTURE

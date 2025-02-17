@@ -9,8 +9,7 @@
 namespace xq::internal::agent {
 
 uint16_t Random::MakeMove(const Board& board, Player player) const {
-  const std::vector<uint16_t> possible_moves =
-      AllPossibleNextMoves(board, player);
+  const std::vector<uint16_t> possible_moves = PossibleMoves(board, player);
   std::uniform_int_distribution<> distrib(
       0, static_cast<int>(possible_moves.size()) - 1);
   int rand_idx = distrib(util::GetRNG());

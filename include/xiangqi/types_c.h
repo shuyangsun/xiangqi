@@ -23,6 +23,17 @@ typedef uint16_t Movement;
 
 #define K_RED_RIVER_START 45  // 5 * K_TOTAL_COL
 
+#define K_MAX_MOVE_PER_PIECE 17
+
+// Maximum number of possible moves per player is 112.
+// Chariot: 2 * 17 = 34
+// Cannon: 2 * 17 = 34
+// Horse: 2 * 8 = 16
+// Elephant: 4 + 2 = 6
+// Solider: 5 * 3 = 15
+// Advisor + General: 7
+#define K_MAX_MOVE_PER_PLAYER 112
+
 enum Player : bool { PLAYER_RED = true, PLAYER_BLACK = false };
 enum Winner : int8_t {
   WINNER_DRAW = 0,

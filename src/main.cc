@@ -13,7 +13,6 @@
 namespace {
 
 using ::xq::AgentFactory;
-using ::xq::AllPossibleNextMoves;
 using ::xq::Board;
 using ::xq::BoardToString;
 using ::xq::Game;
@@ -117,8 +116,7 @@ void PrintGame(const Game& game, bool is_vs_human) {
                                    : "None")
             << std::endl;
   std::cout << "Number next states: "
-            << AllPossibleNextMoves(board, game.CurrentPlayer()).size()
-            << std::endl;
+            << PossibleMoves(board, game.CurrentPlayer()).size() << std::endl;
   const auto start = std::chrono::high_resolution_clock::now();
   const size_t num_iter = 10000;
   const std::unique_ptr<IAgent> random_agent = AgentFactory::Random();
