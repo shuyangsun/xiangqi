@@ -81,6 +81,9 @@ void MirrorBoardVertical_C(BoardC dest, const BoardC src);
 // all byte representations of a group of piece is sorted.
 void EncodeBoardState_C(const BoardC board, BoardStateC out);
 
+// Decode the encoded board state back to its original state.
+void DecodeBoardState_C(const BoardStateC state, BoardC out);
+
 #ifdef __cplusplus
 }
 #endif

@@ -106,7 +106,7 @@ std::vector<Board> AllPossibleNextBoards(const Board& board, Player player,
 // C++ wrapper of EncodeBoardState_C.
 BoardState EncodeBoardState(const Board& board);
 
-// Decode the encoded board state back to its original state.
+// C++ wrapper of DecodeBoardState_C.
 Board DecodeBoardState(const BoardState& state);
 
 }  // namespace xq
