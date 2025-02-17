@@ -1237,9 +1237,9 @@ uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
   return res;
 }
 
-uint8_t AllPossibleNextBoards_C(
-    const BoardC board, const enum Player player, const bool avoid_checkmate,
-    enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]) {
+uint8_t PossibleBoards_C(const BoardC board, const enum Player player,
+                         const bool avoid_checkmate,
+                         enum Piece out[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER]) {
   memset(out, 0xFF, K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER);
 
   MaxMovesPerPlayerC moves;

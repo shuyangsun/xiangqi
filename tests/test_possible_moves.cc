@@ -954,17 +954,6 @@ TEST(TestPossibleMoves, StartingBoard) {
                      // Red general
                      "E9,E8"}));
 
-  // "  A B C D E F G H I \n"
-  // "0 r h e a g a e h r \n"
-  // "1 . . . * * * . . . \n"
-  // "2 . c . * * * . c . \n"
-  // "3 s . s . s . s . s \n"
-  // "4 - - - - - - - - - \n"
-  // "5 - - - - - - - - - \n"
-  // "6 S . S . S . S . S \n"
-  // "7 . C . * * * . C . \n"
-  // "8 . . . * * * . . . \n"
-  // "9 R H E A G A E H R \n";
   EXPECT_EQ(ToVec(black_possible_moves),
             ToMoves({// Black soldiers
                      "A3,A4", "C3,C4", "E3,E4", "G3,G4", "I3,I4",
@@ -984,6 +973,16 @@ TEST(TestPossibleMoves, StartingBoard) {
                      "D0,E1", "F0,E1",
                      // Black general
                      "E0,E1"}));
+}
+
+TEST(TestPossibleBoards, StartingBoard) {
+  const std::vector<Board> red_possible_boards =
+      PossibleBoards(kStartingBoard, PLAYER_RED, false);
+  const std::vector<Board> black_possible_boards =
+      PossibleBoards(kStartingBoard, PLAYER_BLACK, false);
+
+  EXPECT_EQ(red_possible_boards.size(), 44);
+  EXPECT_EQ(black_possible_boards.size(), 44);
 }
 
 }  // namespace

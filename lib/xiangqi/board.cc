@@ -200,12 +200,11 @@ std::vector<Movement> PossibleMoves(const Board& board, const Player player,
   return std::vector<Movement>{buff, buff + num_moves};
 }
 
-std::vector<Board> AllPossibleNextBoards(const Board& board,
-                                         const Player player,
-                                         const bool avoid_checkmate) {
+std::vector<Board> PossibleBoards(const Board& board, const Player player,
+                                  const bool avoid_checkmate) {
   Piece buff[K_BOARD_SIZE * K_MAX_MOVE_PER_PLAYER];
   const uint8_t moves =
-      AllPossibleNextBoards_C(board.data(), player, avoid_checkmate, buff);
+      PossibleBoards_C(board.data(), player, avoid_checkmate, buff);
   std::vector<Board> res;
   res.reserve(moves);
   for (size_t i = 0; i < moves; i++) {

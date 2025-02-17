@@ -94,8 +94,8 @@ std::vector<Movement> PossibleMoves(const Board& board, Player player,
 // move.
 // If avoid_checkmate is set to true, moves that result in being checkmade
 // will not be included.
-std::vector<Board> AllPossibleNextBoards(const Board& board, Player player,
-                                         bool avoid_checkmate = false);
+std::vector<Board> PossibleBoards(const Board& board, Player player,
+                                  bool avoid_checkmate = false);
 
 // C++ wrapper of EncodeBoardState_C.
 BoardState EncodeBoardState(const Board& board);
