@@ -20,7 +20,7 @@ using namespace ::xq;
 
 }  // namespace
 
-TEST(GameTest, InitialState) {
+TEST(Game, InitialState) {
   Game game;
   EXPECT_EQ(game.PieceAt(Pos(9, 4)), R_GENERAL);
   EXPECT_EQ(game.PieceAt(Pos(0, 4)), B_GENERAL);

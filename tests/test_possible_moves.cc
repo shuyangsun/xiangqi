@@ -64,7 +64,7 @@ std::vector<Movement> ToMoves(const std::vector<std::string_view>& moves) {
 // Test General
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, General) {
+TEST(PossiblePositions, General) {
   const MovesPerPiece moves_1 = PossiblePositions(kStartingBoard, PosStr("E0"));
   EXPECT_EQ(ToVec(moves_1), ToPos({"E1"}));
 
@@ -359,7 +359,7 @@ TEST(TestPossiblePositions, General) {
 // Test Advisor
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Advisor) {
+TEST(PossiblePositions, Advisor) {
   const MovesPerPiece moves_1 = PossiblePositions(kStartingBoard, PosStr("D0"));
   EXPECT_EQ(ToVec(moves_1), ToPos({"E1"}));
 
@@ -488,7 +488,7 @@ TEST(TestPossiblePositions, Advisor) {
 // Test Elephant
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Elephant) {
+TEST(PossiblePositions, Elephant) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . e a g * e . . \n"
@@ -643,7 +643,7 @@ TEST(TestPossiblePositions, Elephant) {
 // Test Horse
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Horse) {
+TEST(PossiblePositions, Horse) {
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("B9"))),
             ToPos({"A7", "C7"}));
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("H9"))),
@@ -732,7 +732,7 @@ TEST(TestPossiblePositions, Horse) {
 // Test Chariot
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Chariot) {
+TEST(PossiblePositions, Chariot) {
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("A0"))),
             ToPos({"A1", "A2"}));
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("I0"))),
@@ -818,7 +818,7 @@ TEST(TestPossiblePositions, Chariot) {
 // Test Cannon
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Cannon) {
+TEST(PossiblePositions, Cannon) {
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("B2"))),
             ToPos({"B1", "B3", "B4", "B5", "B6", "B9", "A2", "C2", "D2", "E2",
                    "F2", "G2"}));
@@ -854,7 +854,7 @@ TEST(TestPossiblePositions, Cannon) {
 // Test Soldier
 // ---------------------------------------------------------------------
 
-TEST(TestPossiblePositions, Soldier) {
+TEST(PossiblePositions, Soldier) {
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("A3"))),
             ToPos({"A4"}));
   EXPECT_EQ(ToVec(PossiblePositions(kStartingBoard, PosStr("C3"))),
@@ -925,7 +925,7 @@ TEST(TestPossiblePositions, Soldier) {
   EXPECT_TRUE(ToVec(PossiblePositions(board_2, PosStr("H6"))).empty());
 }
 
-TEST(TestPossibleMoves, StartingBoard) {
+TEST(PossibleMoves, StartingBoard) {
   const std::vector<Movement> red_possible_moves =
       PossibleMoves(kStartingBoard, PLAYER_RED, false);
   const std::vector<Movement> black_possible_moves =
@@ -975,7 +975,7 @@ TEST(TestPossibleMoves, StartingBoard) {
                      "E0,E1"}));
 }
 
-TEST(TestPossibleBoards, StartingBoard) {
+TEST(PossibleBoards, StartingBoard) {
   const std::vector<Board> red_possible_boards =
       PossibleBoards(kStartingBoard, PLAYER_RED, false);
   const std::vector<Board> black_possible_boards =

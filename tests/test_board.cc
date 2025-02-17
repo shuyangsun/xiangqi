@@ -27,34 +27,34 @@ constexpr std::string_view kStartingBoardStr =
 
 }  // namespace
 
-TEST(BoardTest, PosStr) {
+TEST(Board, PosStr) {
   EXPECT_EQ(PosStr("a0"), Pos(0, 0));
   EXPECT_EQ(PosStr("A2"), Pos(2, 0));
   EXPECT_EQ(PosStr("I5"), Pos(5, 8));
   EXPECT_EQ(PosStr("F9"), Pos(9, 5));
 }
 
-TEST(BoardTest, BoardEqual) {
+TEST(Board, BoardEqual) {
   const Board a = kStartingBoard;
   const Board b = kStartingBoard;
   EXPECT_EQ(a, b);
 }
 
-TEST(BoardTest, BoardNotEqual) {
+TEST(Board, BoardNotEqual) {
   const Board a = kStartingBoard;
   Board b = kStartingBoard;
   b[Pos(0, 0)] = PIECE_EMPTY;
   EXPECT_NE(a, b);
 }
 
-TEST(BoardTest, FromString) {
+TEST(Board, FromString) {
   const Board board = BoardFromString(kStartingBoardStr);
   EXPECT_EQ(board, kStartingBoard) << "Expected boards to equal:\n"
                                    << BoardToString(board) << "\n"
                                    << BoardToString(kStartingBoard);
 }
 
-TEST(BoardTest, ToString) {
+TEST(Board, ToString) {
   const std::string str = BoardToString(kStartingBoard);
   EXPECT_EQ(str, kStartingBoardStr) << "Expected board strings to equal:\n"
                                     << str << "\n"
@@ -65,7 +65,7 @@ TEST(BoardTest, ToString) {
 // Test FlipPosition and FlipBoard
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, FlipPosition) {
+TEST(Board, FlipPosition) {
   EXPECT_EQ(FlipPosition(PosStr("A0")), PosStr("I9"));
   EXPECT_EQ(FlipPosition(PosStr("B2")), PosStr("H7"));
   EXPECT_EQ(FlipPosition(PosStr("H2")), PosStr("B7"));
@@ -74,7 +74,7 @@ TEST(BoardTest, FlipPosition) {
   EXPECT_EQ(FlipPosition(PosStr("G4")), PosStr("C5"));
 }
 
-TEST(BoardTest, FlipBoard) {
+TEST(Board, FlipBoard) {
   EXPECT_EQ(kStartingBoard, FlipBoard(kStartingBoard));
 
   const Board board_1 = BoardFromString(
@@ -110,14 +110,14 @@ TEST(BoardTest, FlipBoard) {
 // Test MirrorPositionHorizontal and MirrorBoardHorizontal
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, MirrorPositionHorizontal) {
+TEST(Board, MirrorPositionHorizontal) {
   EXPECT_EQ(MirrorPositionHorizontal(PosStr("C0")), PosStr("G0"));
   EXPECT_EQ(MirrorPositionHorizontal(PosStr("E2")), PosStr("E2"));
   EXPECT_EQ(MirrorPositionHorizontal(PosStr("A9")), PosStr("I9"));
   EXPECT_EQ(MirrorPositionHorizontal(PosStr("D5")), PosStr("F5"));
 }
 
-TEST(BoardTest, MirrorBoardHorizontal) {
+TEST(Board, MirrorBoardHorizontal) {
   EXPECT_EQ(kStartingBoard, MirrorBoardHorizontal(kStartingBoard))
       << "Expected board\n"
       << BoardToString(MirrorBoardHorizontal(kStartingBoard))
@@ -156,14 +156,14 @@ TEST(BoardTest, MirrorBoardHorizontal) {
 // Test MirrorPositionVertical and MirrorBoardVertical
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, MirrorPositionVertical) {
+TEST(Board, MirrorPositionVertical) {
   EXPECT_EQ(MirrorPositionVertical(PosStr("C0")), PosStr("C9"));
   EXPECT_EQ(MirrorPositionVertical(PosStr("E2")), PosStr("E7"));
   EXPECT_EQ(MirrorPositionVertical(PosStr("A9")), PosStr("A0"));
   EXPECT_EQ(MirrorPositionVertical(PosStr("D5")), PosStr("D4"));
 }
 
-TEST(BoardTest, MirrorBoardVertical) {
+TEST(Board, MirrorBoardVertical) {
   EXPECT_EQ(kStartingBoard, MirrorBoardVertical(kStartingBoard));
 
   const Board board_1 = BoardFromString(
@@ -199,7 +199,7 @@ TEST(BoardTest, MirrorBoardVertical) {
 // Test Move
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, Move) {
+TEST(Board, Move) {
   Board board = kStartingBoard;
 
   Piece capture = Move(board, NewMovement(PosStr("B7"), PosStr("B0")));
@@ -240,7 +240,7 @@ TEST(BoardTest, Move) {
 // The Move function should not check if the movement is valid, as that is
 // a much more expensive calculation. Possible moves should be explicitly
 // calculated beforehand and be checked against before calling Move.
-TEST(BoardTest, CanDoInvalidMove) {
+TEST(Board, CanDoInvalidMove) {
   Board board = kStartingBoard;
 
   // Move cannon to capture general at the beginning.
@@ -287,7 +287,7 @@ TEST(BoardTest, CanDoInvalidMove) {
 // Test FindGeneral
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, FindGeneralOwnPalace) {
+TEST(Board, FindGeneralOwnPalace) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . g * a . . . \n"
@@ -424,7 +424,7 @@ TEST(BoardTest, FindGeneralOwnPalace) {
   EXPECT_EQ(FindGeneral(board_9, PLAYER_BLACK), PosStr("F2"));
 }
 
-TEST(BoardTest, FindGeneralOpponentPalace) {
+TEST(Board, FindGeneralOpponentPalace) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . G * A . . . \n"
@@ -561,7 +561,7 @@ TEST(BoardTest, FindGeneralOpponentPalace) {
   EXPECT_EQ(FindGeneral(board_9, PLAYER_BLACK), PosStr("F7"));
 }
 
-TEST(BoardTest, FindGeneralNone) {
+TEST(Board, FindGeneralNone) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . R * a . . . \n"
@@ -623,7 +623,7 @@ TEST(BoardTest, FindGeneralNone) {
 // Test IsBeingCheckmate
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, IsBeingCheckmateFlyingGeneral) {
+TEST(Board, IsBeingCheckmateFlyingGeneral) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . g * a . . . \n"
@@ -655,7 +655,7 @@ TEST(BoardTest, IsBeingCheckmateFlyingGeneral) {
   EXPECT_FALSE(IsBeingCheckmate(board_2, PLAYER_BLACK));
 }
 
-TEST(BoardTest, IsBeingCheckmateChariot) {
+TEST(Board, IsBeingCheckmateChariot) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . g * a . . . \n"
@@ -847,7 +847,7 @@ TEST(BoardTest, IsBeingCheckmateChariot) {
   EXPECT_TRUE(IsBeingCheckmate(board_13, PLAYER_BLACK));
 }
 
-TEST(BoardTest, IsBeingCheckmateHorse) {
+TEST(Board, IsBeingCheckmateHorse) {
   // Down left
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1121,7 +1121,7 @@ TEST(BoardTest, IsBeingCheckmateHorse) {
   EXPECT_FALSE(IsBeingCheckmate(board_17, PLAYER_BLACK));
 }
 
-TEST(BoardTest, IsBeingCheckmateCannon) {
+TEST(Board, IsBeingCheckmateCannon) {
   // Right
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
@@ -1203,7 +1203,7 @@ TEST(BoardTest, IsBeingCheckmateCannon) {
   EXPECT_FALSE(IsBeingCheckmate(board_5, PLAYER_BLACK));
 }
 
-TEST(BoardTest, IsBeingCheckmateSoldier) {
+TEST(Board, IsBeingCheckmateSoldier) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * * * . . . \n"
@@ -1321,7 +1321,7 @@ TEST(BoardTest, IsBeingCheckmateSoldier) {
 // Test GetWinner
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, GetWinner) {
+TEST(Board, GetWinner) {
   const Board board_1 = BoardFromString(
       "  A B C D E F G H I \n"
       "0 . . . * g * . . . \n"
@@ -1383,7 +1383,7 @@ TEST(BoardTest, GetWinner) {
 // Test EncodeBoardState and DecodeBoardState
 // ---------------------------------------------------------------------
 
-TEST(BoardTest, EncodeBoardState) {
+TEST(Board, EncodeBoardState) {
   EXPECT_EQ(DecodeBoardState(EncodeBoardState(kStartingBoard)), kStartingBoard);
 }
 
