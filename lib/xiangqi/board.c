@@ -1288,7 +1288,7 @@ uint8_t PossiblePositions_C(const BoardC board, const Position pos,
 
 uint8_t PossibleMoves_C(const BoardC board, const enum Player player,
                         const bool avoid_checkmate, MaxMovesPerPlayerC out) {
-  memset(out, 0xFFFF, K_MAX_MOVE_PER_PLAYER);
+  memset(out, 0xFFFF, K_MAX_MOVE_PER_PLAYER * sizeof(Movement));
   uint8_t res = 0;
   MovesPerPieceC buff;
   for (uint8_t pos = 0; pos < K_BOARD_SIZE; pos++) {
